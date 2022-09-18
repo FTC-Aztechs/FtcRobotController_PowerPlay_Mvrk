@@ -7,6 +7,7 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
+import org.openftc.easyopencv.OpenCvWebcam;
 
 @Autonomous(name="Skystone camera example", group="Auto")
 public class Skystone_OpenCvExample extends LinearOpMode {
@@ -14,7 +15,7 @@ public class Skystone_OpenCvExample extends LinearOpMode {
     @Override
     public void runOpMode()throws InterruptedException {
         int cameraMonitorViewId = hardwareMap.appContext
-                .getResources().getIdentifier("cameaMonitorViewId",
+                .getResources().getIdentifier("cameraMonitorViewId",
                         "id", hardwareMap.appContext.getPackageName());
         Sauron = OpenCvCameraFactory.getInstance()
                 .createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
