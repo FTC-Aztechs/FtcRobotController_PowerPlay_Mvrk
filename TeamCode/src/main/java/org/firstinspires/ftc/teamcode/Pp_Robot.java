@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode;
 //import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -237,7 +238,7 @@ public class Pp_Robot
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        upper_left.setDirection(DcMotor.Direction.REVERSE);  //-
+        upper_left.setDirection(DcMotor.Direction.FORWARD);  //-
         upper_right.setDirection(DcMotor.Direction.FORWARD); //+
         lower_left.setDirection(DcMotor.Direction.REVERSE); //- used to be
         lower_right.setDirection(DcMotor.Direction.FORWARD); //+ used to be
@@ -251,6 +252,8 @@ public class Pp_Robot
 
         //mecanumDrive = new SampleMecanumDrive(hwMap);
         eyeOfSauron = hwMap.get(WebcamName.class, "Sauron");
+
+
 
 //        Touche_Linac.setMode(DigitalChannel.Mode.INPUT);
 //        Touche_Winch.setMode(DigitalChannel.Mode.INPUT);
