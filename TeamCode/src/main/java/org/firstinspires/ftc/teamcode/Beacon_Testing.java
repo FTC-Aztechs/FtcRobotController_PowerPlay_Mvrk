@@ -47,20 +47,16 @@ public class Beacon_Testing extends OpMode {
     }
 
     class examplePipeline extends OpenCvPipeline {
-        Mat YCbCr = new Mat();
+        Mat HSV = new Mat();
         Mat picCrop;
-        Mat redCrop;
-        Mat blueCrop;
-        double redAvgfin;
-        double blueAvgfin;
+        double Avgfin;
         Mat outPut = new Mat();
-        Scalar rectColor = new Scalar(255.0,0.0,0.0);
-        double maxValue = 1.0;
+        Scalar rectColor = new Scalar(0.0,0.0,0.0);
 
 
         public Mat processFrame(Mat input) {
 
-            Imgproc.cvtColor(input, YCbCr, Imgproc.COLOR_RGB2YCrCb);
+            Imgproc.cvtColor(input, HSV, Imgproc.COLOR_RGB2HSV);
             telemetry.addLine("pipeline running");
 
 
@@ -69,13 +65,13 @@ public class Beacon_Testing extends OpMode {
             input.copyTo(outPut);
             Imgproc.rectangle(outPut, mainRect,rectColor,2);
 
-            picCrop = YCbCr.submat(mainRect);
+            picCrop = HSV.submat(mainRect);
 
             Scalar Average = Core.mean(picCrop);
 
+            Core.extractChannel(picCrop, picCrop, 1);
 
-            redAvgfin = Average.val[0];
-            blueAvgfin = Average.val[2];
+            Avgfin = Average.val[0];
 
 //            if (redAvgfin > GreenAvgfin) {
 //                telemetry.addLine("Left");
@@ -83,9 +79,7 @@ public class Beacon_Testing extends OpMode {
 //                telemetry.addLine("Right");
 //            }
 
-            telemetry.addData("red", "%f", redAvgfin);
-            telemetry.addData("blue", "%f", blueAvgfin);
-
+            telemetry.addData("Hue", "%f", Avgfin);
 
 
             return(outPut);
