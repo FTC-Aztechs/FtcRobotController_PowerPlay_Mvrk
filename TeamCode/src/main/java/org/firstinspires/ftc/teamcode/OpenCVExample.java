@@ -67,9 +67,7 @@ public class OpenCVExample extends OpMode {
 
             input.copyTo(outPut);
             Imgproc.rectangle(outPut, leftRect,rectColor,2);
-            Imgproc.rectangle(outPut, leftRect,rectColor,2);
             Imgproc.rectangle(outPut, rightRect,rectColor,2);
-
 
             leftCrop = YCbCr.submat(leftRect);
             rightCrop = YCbCr.submat(rightRect);
