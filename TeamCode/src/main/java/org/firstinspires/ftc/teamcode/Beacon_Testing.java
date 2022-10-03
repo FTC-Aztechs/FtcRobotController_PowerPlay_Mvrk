@@ -49,10 +49,12 @@ public class Beacon_Testing extends OpMode {
     class examplePipeline extends OpenCvPipeline {
         Mat HSV = new Mat();
         Mat picCrop;
-        double Avgfin;
+        double Hue;
         Mat outPut = new Mat();
         Scalar rectColor = new Scalar(0.0,0.0,0.0);
-
+       int[] red = {160, 180, 0, 10};
+       int[] green = {60, 80};
+       int[] blue = {100, 120};
 
         public Mat processFrame(Mat input) {
 
@@ -71,15 +73,19 @@ public class Beacon_Testing extends OpMode {
 
             Core.extractChannel(picCrop, picCrop, 1);
 
-            Avgfin = Average.val[0];
+            Hue = Average.val[0];
 
-//            if (redAvgfin > GreenAvgfin) {
-//                telemetry.addLine("Left");
-//            } else {
-//                telemetry.addLine("Right");
-//            }
+            if ( (red[0] < Hue && Hue < red[1]) || (red[2] < Hue && Hue < red[3])) {
+                telemetry.addLine("Red");
+            } else if ( green[0] < Hue && Hue < green[1]) {
+                telemetry.addLine("Green");
+            } else if ( blue[0] < Hue && Hue < blue[1]) {
+                telemetry.addLine("Blue");
+            } else {
+                telemetry.addLine("Color Not detected");
+            }
 
-            telemetry.addData("Hue", "%f", Avgfin);
+            telemetry.addData("Hue", "%f", Hue);
 
 
             return(outPut);
