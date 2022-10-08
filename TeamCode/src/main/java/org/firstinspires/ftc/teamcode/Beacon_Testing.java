@@ -53,8 +53,8 @@ public class Beacon_Testing extends OpMode {
         Mat outPut = new Mat();
         Scalar rectColor = new Scalar(0.0,0.0,0.0);
        int[] red = {160, 180, 0, 10};
-       int[] green = {60, 80};
-       int[] blue = {100, 120};
+       int[] green = {50, 65};
+       int[] blue = {70, 90};
 
         public Mat processFrame(Mat input) {
 
@@ -62,7 +62,7 @@ public class Beacon_Testing extends OpMode {
             telemetry.addLine("pipeline running");
 
 
-            Rect mainRect = new Rect(80, 60, 159, 119);
+            Rect mainRect = new Rect(120, 90, 79, 59);
 
             input.copyTo(outPut);
             Imgproc.rectangle(outPut, mainRect,rectColor,2);

@@ -30,72 +30,68 @@
 package org.firstinspires.ftc.teamcode;
 
 //import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 //import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 import java.util.Locale;
 
 
-public class Pp_Robot
+public class Ryk_Robot
 {
-    enum MrvMotors
+    enum RykMotors
     {
         UPPER_LEFT,
         LOWER_LEFT,
         UPPER_RIGHT,
         LOWER_RIGHT,
-//        DUCK_WHEELS,
-//        LIN_AC,
-//        DA_WINCHI,
-//        ALL_DRIVES,
-//        ALL_ATTACHMENTS,
-//        ALL
+        CAT_MOUSE,
+        ALL_DRIVES,
+        ALL_ATTACHMENTS,
+        ALL
     }
 
-//    enum MrvServos
-//    {
-//        LEFT_CLAW,
-//        RIGHT_CLAW,
-//        WRISTY,
-//        CHUTEY,
-//        ALL
-//    }
+    enum RykServos
+    {
+        HANDSEL,
+        GRABBEL,
+        WRISTY,
+        CHUTEY,
+        ALL
+    }
 
     /* Public OpMode members. */
     public DcMotor upper_right = null;
     public DcMotor upper_left = null;
     public DcMotor lower_left = null;
     public DcMotor lower_right = null;
-//    public DcMotor duck_wheel = null;
+
+    public DcMotor Jerry = null;
+    public DcMotor Tom = null;
+
+    //    public DcMotor duck_wheel = null;
 //    public DcMotor another_duck_wheel = null;
 //    public DcMotor Linac = null;
 //    public DcMotor Da_Winch = null;
 //    //public Servo The_Claw = null;
-//    public CRServo Claw_Left = null;
-//    public CRServo Claw_Right = null;
-//    public Servo Wristy = null;
-//    public Servo Flappy_Bird = null;
+    public Servo Handsel = null;
+    public Servo Grabbel = null;
     public WebcamName eyeOfSauron = null;
 //    public DigitalChannel Touche_Linac = null;
 //    public DigitalChannel Touche_Winch = null;
 
 //    Orientation angles;
 //
-//    public static int stallDetectionThreshold = 500;
-//    public static ElapsedTime leftClawTimer  = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-//    public static ElapsedTime rightClawTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-//    public static double leftClawLastPos = 0.0f;
-//    public static double rightClawLastPos = 0.0f;
+    public static int stallDetectionThreshold = 500;
+    public static ElapsedTime HandselClawTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    public static ElapsedTime GrabbelClawTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+    public static double HandselClawLastPos = 0.0f;
+    public static double GrabbelClawLastPos = 0.0f;
 
 //
 //    // TFOD detection
@@ -179,7 +175,7 @@ public class Pp_Robot
 //    public static double offsetLowerToPickup = -0.3;    // 9. Offset to lower to pickup position (Start to do this after retracting from drop-off position)
 //    public static double offsetRaiseToDropOff = -0.2;   // 10. Offset to raise to drop-off position (Start to do this after retracting from pickup position)
 //
-//    //mrv_autonomous debugging variables
+//    //Ryk_autonomous debugging variables
 //    public static boolean runProfiling = false;
 //    public static boolean profileUsingRunToPosition = true;
 //    public static boolean runPositionTrajectories = true;
@@ -190,7 +186,7 @@ public class Pp_Robot
     //SampleMecanumDrive mecanumDrive;
 
     /* Constructor */
-    public Pp_Robot(){
+    public Ryk_Robot(){
 
     }
 
@@ -204,6 +200,8 @@ public class Pp_Robot
         upper_left = hwMap.get(DcMotor.class, "Upper_Left");
         lower_left = hwMap.get(DcMotor.class, "Lower_Left");
         lower_right = hwMap.get(DcMotor.class, "Lower_Right");
+        Jerry = hwMap.get(DcMotor.class, "Jerry");
+        Tom = hwMap.get(DcMotor.class, "Tom");
 //        duck_wheel = hwMap.get(DcMotor.class, "Duck_Wheel");
 //        another_duck_wheel = hwMap.get(DcMotor.class, "Duck_Wheel_2");
 //        Linac = hwMap.get(DcMotor.class, "Linac_2.0");
@@ -212,8 +210,8 @@ public class Pp_Robot
 
         //Servo
         //  The_Claw = hwMap.get(Servo.class, "The_Clawww");
-//        Claw_Left = hwMap.get(CRServo.class, "Left_Claw");
-//        Claw_Right = hwMap.get(CRServo.class, "Right_Claw");
+        Handsel = hwMap.get(Servo.class, "Handsel");
+        Grabbel = hwMap.get(Servo.class, "Grabbel");
 //        Wristy = hwMap.get(Servo.class, "Wristy");
 //        Flappy_Bird = hwMap.get(Servo.class, "Flappy_Bird");
 
@@ -230,6 +228,8 @@ public class Pp_Robot
         upper_right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         lower_left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         lower_right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        Jerry.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        Tom.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //        duck_wheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //        another_duck_wheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //        Linac.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -242,12 +242,14 @@ public class Pp_Robot
         upper_right.setDirection(DcMotor.Direction.FORWARD); //+
         lower_left.setDirection(DcMotor.Direction.REVERSE); //- used to be
         lower_right.setDirection(DcMotor.Direction.FORWARD); //+ used to be
+        Jerry.setDirection(DcMotor.Direction.FORWARD); //- used to be
+        Tom.setDirection(DcMotor.Direction.REVERSE); //+ used to be
 //        duck_wheel.setDirection(DcMotor.Direction.FORWARD);
 //        another_duck_wheel.setDirection(DcMotor.Direction.REVERSE);
 //        Linac.setDirection(DcMotor.Direction.REVERSE);
 //        Da_Winch.setDirection(DcMotor.Direction.FORWARD);
-//        Claw_Left.setDirection(CRServo.Direction.REVERSE);
-//        Claw_Right.setDirection(CRServo.Direction.FORWARD);
+        Handsel.setDirection(Servo.Direction.FORWARD);
+        Grabbel.setDirection(Servo.Direction.FORWARD);
 
 
         //mecanumDrive = new SampleMecanumDrive(hwMap);
@@ -259,55 +261,55 @@ public class Pp_Robot
 //        Touche_Winch.setMode(DigitalChannel.Mode.INPUT);
 
     }
-//    String formatAngle( AngleUnit angleUnit, double angle) {
-//        return formatDegrees(angleUnit.DEGREES.fromUnit(angleUnit, angle));
-//    }
-//
-//    String formatDegrees(double degrees) {
-//        return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
-//    }
+    String formatAngle( AngleUnit angleUnit, double angle) {
+        return formatDegrees(angleUnit.DEGREES.fromUnit(angleUnit, angle));
+    }
 
-//    public boolean killPowerIfStalled(MrvServos eWhichServo)
+    String formatDegrees(double degrees) {
+        return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
+    }
+
+//    public boolean killPowerIfStalled(RykServos eWhichServo)
 //    {
 //        switch( eWhichServo ) {
-//            case LEFT_CLAW:
-//                if(Claw_Left.getPower() !=0f)
+//            case HANDSEL:
+//                if(Handsel.getPower() !=0f)
 //                    break;
-//                double currentPos = Claw_Left.getController().getServoPosition(0);
-//                if(leftClawLastPos == 0f)
-//                    leftClawLastPos = currentPos;
+//                double currentPos = Handsel.getController().getServoPosition(0);
+//                if(HandselClawLastPos == 0f)
+//                    HandselClawLastPos = currentPos;
 //
-//                if(  leftClawLastPos != 0f &&
-//                     ( (leftClawLastPos-currentPos) != 0f ) &&
-//                     ( (leftClawTimer.time() > stallDetectionThreshold ) ) )
+//                if(  HandselClawLastPos != 0f &&
+//                     ( (HandselClawLastPos -currentPos) != 0f ) &&
+//                     ( (HandselClawTimer.time() > stallDetectionThreshold ) ) )
 //                {
-//                    Claw_Left.setPower(0f);
-//                    leftClawTimer.reset();
+//                    Handsel.setPower(0f);
+//                    HandselClawTimer.reset();
 //                }
 //                else {
-//                    leftClawTimer.reset();
-//                    leftClawTimer.startTime();
-//                    leftClawLastPos = 0f;
+//                    HandselClawTimer.reset();
+//                    HandselClawTimer.startTime();
+//                    HandselClawLastPos = 0f;
 //                }
 //                break;
-//            case RIGHT_CLAW:
-//                if(Claw_Right.getPower() !=0f)
+//            case GRABBEL:
+//                if(Grabbel.getPower() !=0f)
 //                    break;
-//                double currentPos = Claw_Right.getController().getServoPosition(0);
-//                if(rightClawLastPos == 0f)
-//                    rightClawLastPos = currentPos;
+//                double currentPos = Grabbel.getController().getServoPosition(0);
+//                if(GrabbelClawLastPos == 0f)
+//                    GrabbelClawLastPos = currentPos;
 //
-//                if(  rightClawLastPos != 0f &&
-//                        ( (rightClawLastPos-currentPos) != 0f ) &&
-//                        ( (rightClawTimer.time() > stallDetectionThreshold ) ) )
+//                if(  GrabbelClawLastPos != 0f &&
+//                        ( (GrabbelClawLastPos -currentPos) != 0f ) &&
+//                        ( (GrabbelClawTimer.time() > stallDetectionThreshold ) ) )
 //                {
-//                    Claw_Right.setPower(0f);
-//                    rightClawTimer.reset();
+//                    Grabbel.setPower(0f);
+//                    GrabbelClawTimer.reset();
 //                }
 //                else {
-//                    rightClawTimer.reset();
-//                    rightClawTimer.startTime();
-//                    rightClawLastPos = 0f;
+//                    GrabbelClawTimer.reset();
+//                    GrabbelClawTimer.startTime();
+//                    GrabbelClawLastPos = 0f;
 //                }
 //                break;
 //            default:
@@ -317,7 +319,7 @@ public class Pp_Robot
 //    }
 
 
-    public void setRunMode(MrvMotors eWhichMotor, DcMotor.RunMode eMode )
+    public void setRunMode(RykMotors eWhichMotor, DcMotor.RunMode eMode )
     {
 
         switch (eWhichMotor){
@@ -343,32 +345,38 @@ public class Pp_Robot
 //            case DA_WINCHI:
 //                Da_Winch.setMode(eMode);
 //                break;
-//            case ALL_DRIVES:
-//                lower_right.setMode(eMode);
-//                lower_left.setMode(eMode);
-//                upper_right.setMode(eMode);
-//                upper_left.setMode(eMode);
-//                break;
-//            case ALL_ATTACHMENTS:
+            case CAT_MOUSE:
+                Jerry.setMode(eMode);
+                Tom.setMode(eMode);
+                break;
+            case ALL_DRIVES:
+                lower_right.setMode(eMode);
+                lower_left.setMode(eMode);
+                upper_right.setMode(eMode);
+                upper_left.setMode(eMode);
+                break;
+            case ALL_ATTACHMENTS:
 //                Linac.setMode(eMode);
 //                duck_wheel.setMode(eMode);
 //                another_duck_wheel.setMode(eMode);
 //                Da_Winch.setMode(eMode);
-//                break;
-//            case ALL:
-//                lower_right.setMode(eMode);
-//                lower_left.setMode(eMode);
-//                upper_right.setMode(eMode);
-//                upper_left.setMode(eMode);
+                break;
+            case ALL:
+                lower_right.setMode(eMode);
+                lower_left.setMode(eMode);
+                upper_right.setMode(eMode);
+                upper_left.setMode(eMode);
+                Jerry.setMode(eMode);
+                Tom.setMode(eMode);
 //                duck_wheel.setMode(eMode);
 //                another_duck_wheel.setMode(eMode);
 //                Da_Winch.setMode(eMode);
 //                Linac.setMode(eMode);
-//                break;
+                break;
         }
     }
 
-    public void setPower(MrvMotors eWhichMotor, double dPower )
+    public void setPower(RykMotors eWhichMotor, double dPower )
     {
 
         switch (eWhichMotor){
@@ -394,26 +402,32 @@ public class Pp_Robot
 //            case DA_WINCHI:
 //                Da_Winch.setPower(dPower);
 //                break;
-//            case ALL_DRIVES:
-//                lower_right.setPower(dPower);
-//                lower_left.setPower(dPower);
-//                upper_right.setPower(dPower);
-//                upper_left.setPower(dPower);
-//                break;
-//            case ALL:
-//                lower_right.setPower(dPower);
-//                lower_left.setPower(dPower);
-//                upper_right.setPower(dPower);
-//                upper_left.setPower(dPower);
+            case CAT_MOUSE:
+                Jerry.setPower(dPower);
+                Tom.setPower(dPower);
+                break;
+            case ALL_DRIVES:
+                lower_right.setPower(dPower);
+                lower_left.setPower(dPower);
+                upper_right.setPower(dPower);
+                upper_left.setPower(dPower);
+                break;
+            case ALL:
+                lower_right.setPower(dPower);
+                lower_left.setPower(dPower);
+                upper_right.setPower(dPower);
+                upper_left.setPower(dPower);
+                Jerry.setPower(dPower);
+                Tom.setPower(dPower);
 //                duck_wheel.setPower(dPower);
 //                another_duck_wheel.setPower(dPower);
 //                Da_Winch.setPower(dPower);
 //                Linac.setPower(dPower);
-//                break;
+                break;
         }
     }
 
-    public int getCurrentPosition( MrvMotors eWhichMotor )
+    public int getCurrentPosition( RykMotors eWhichMotor )
     {
         switch(eWhichMotor)
         {
@@ -434,7 +448,7 @@ public class Pp_Robot
         }
     }
 
-    public void setTargetPosition( MrvMotors eWhichMotor, int iPos )
+    public void setTargetPosition( RykMotors eWhichMotor, int iPos )
     {
         switch( eWhichMotor)
         {
@@ -450,23 +464,29 @@ public class Pp_Robot
             case LOWER_RIGHT:
                 lower_right.setTargetPosition(iPos);
                 break;
+            case CAT_MOUSE:
+                Jerry.setTargetPosition(iPos);
+                Tom.setTargetPosition(iPos);
+                break;
 //            case LIN_AC:
 //                Linac.setTargetPosition(iPos);
 //                break;
 //            case DA_WINCHI:
 //                Da_Winch.setTargetPosition(iPos);
 //                break;
-//            case ALL_DRIVES:
-//                lower_right.setTargetPosition(iPos);
-//                lower_left.setTargetPosition(iPos);
-//                upper_right.setTargetPosition(iPos);
-//                upper_left.setTargetPosition(iPos);
-//                break;
-//            case ALL:
-//                lower_right.setTargetPosition(iPos);
-//                lower_left.setTargetPosition(iPos);
-//                upper_right.setTargetPosition(iPos);
-//                upper_left.setTargetPosition(iPos);
+            case ALL_DRIVES:
+                lower_right.setTargetPosition(iPos);
+                lower_left.setTargetPosition(iPos);
+                upper_right.setTargetPosition(iPos);
+                upper_left.setTargetPosition(iPos);
+                break;
+            case ALL:
+                lower_right.setTargetPosition(iPos);
+                lower_left.setTargetPosition(iPos);
+                upper_right.setTargetPosition(iPos);
+                upper_left.setTargetPosition(iPos);
+                Jerry.setTargetPosition(iPos);
+                Tom.setTargetPosition(iPos);
 //                duck_wheel.setTargetPosition(iPos);
 //                another_duck_wheel.setTargetPosition(iPos);
 //                Da_Winch.setTargetPosition(iPos);
@@ -476,7 +496,7 @@ public class Pp_Robot
         }
     }
 
-    public boolean areMotorsBusy(MrvMotors eWhichMotor) {
+    public boolean areMotorsBusy(RykMotors eWhichMotor) {
 
         switch(eWhichMotor)
         {
@@ -494,12 +514,15 @@ public class Pp_Robot
 //                return Linac.isBusy();
 //            case DA_WINCHI:
 //                return Da_Winch.isBusy();
-//            case ALL_DRIVES: // All Drives
-//                return lower_left.isBusy() && lower_right.isBusy() && upper_left.isBusy() && upper_right.isBusy();
-//            case ALL_ATTACHMENTS:
-//                return Linac.isBusy() && duck_wheel.isBusy() && Da_Winch.isBusy();
-//            case ALL:
-//                return lower_left.isBusy() && lower_right.isBusy() && upper_left.isBusy() && upper_right.isBusy() && duck_wheel.isBusy() && Linac.isBusy()&& Da_Winch.isBusy();
+            case CAT_MOUSE:
+                return Jerry.isBusy() && Tom.isBusy();
+            case ALL_DRIVES: // All Drives
+                return lower_left.isBusy() && lower_right.isBusy() && upper_left.isBusy() && upper_right.isBusy();
+            case ALL_ATTACHMENTS:
+                //return Linac.isBusy() && duck_wheel.isBusy() && Da_Winch.isBusy();
+            case ALL:
+                return lower_left.isBusy() && lower_right.isBusy() && upper_left.isBusy() && upper_right.isBusy();
+                        //&& duck_wheel.isBusy() && Linac.isBusy()&& Da_Winch.isBusy();
             default:
                 return false;
         }

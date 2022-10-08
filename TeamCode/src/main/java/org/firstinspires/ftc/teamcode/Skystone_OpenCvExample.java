@@ -3,19 +3,17 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvInternalCamera;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 @Autonomous(name="Skystone camera example", group="Auto")
 @Disabled
 public class Skystone_OpenCvExample extends LinearOpMode {
-    Pp_Robot Powerslay =new Pp_Robot();
+    Ryk_Robot Powerslay =new Ryk_Robot();
 
     @Override
     public void runOpMode()throws InterruptedException {

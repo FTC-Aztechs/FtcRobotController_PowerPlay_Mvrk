@@ -33,6 +33,7 @@ package org.firstinspires.ftc.teamcode;
 //import com.acmerobotics.dashboard.config.Config;
 import static com.qualcomm.robotcore.util.ElapsedTime.Resolution.MILLISECONDS;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -41,29 +42,32 @@ import java.util.concurrent.TimeUnit;
 
 
 //@Config
-@TeleOp(name="Mrv_Manual", group="Manual mode")
+@TeleOp(name="Ryk_Manual", group="Manual mode")
 //@Disabled
-public class Mrv_Manual extends LinearOpMode {
+public class Ryk_Manual extends LinearOpMode {
     // Declare OpMode members.
-    Pp_Robot powerslay = new Pp_Robot();
+    Ryk_Robot powerslay = new Ryk_Robot();
 //
 //    static final double INCREMENT = 0.1;     // amount to slew servo each CYCLE_MS cycle
 //    static final double[] RANGE_FULL = {0.0, 1.0};
 
     public static double speedAdjust = 5;
-//    public static double linacAdjust = 10;
-//    public static double dawinchAdjust = 6;
+    //    public static double linacAdjust = 10;
+    public static double UpAdjust = 5;
+    //    public static double dawinchAdjust = 6;
 //    private boolean assumingPickPosition = false;
 //    private boolean assumingDropPosition = false;
     private boolean changingWheelSpeed = false;
-//    private boolean changingLinacSpeed = false;
+    private boolean changingLinacSpeed = false;
 //    private boolean changingDaWinchiSpeed = false;
 //    private boolean changingWrist = false;
 
 //    public static double duck_power = 0.29;
 //
-//    boolean ServoTurn = true;
-//    double position = 0.5; // Start at halfway position
+    boolean ServoTurn = false;
+    double Handsel_Position = 0.0; // Start at halfway position
+    double Grabbel_Position = 0.0; // Start at halfway position
+
 //    public static double Wrist_Parallel_to_Linac = 0.425; // Parallel to arm
 //    public static double Wrist_chute_dropoff = 0.26; // Perpendicular to Arm at top
 //    public static double Wrist_TSE_Pickup_Pos = 0.325;
@@ -76,17 +80,19 @@ public class Mrv_Manual extends LinearOpMode {
 //    public static double door_open = 0.8;
 //    public static double door_close = 0.50;
 
-//
-//    //0.52 for picking up preset
-//    public static double Claw_Open_Pos = 0.4;
-//    public static double Claw_Close_Pos = 0.0;
+    //
+    //0.52 for picking up preset
+    public static double Handsel_Claw_Open_Pos = 0.5;
+    public static double Handsel_Claw_Close_Pos = 0.0;
+    public static double Grabbel_Claw_Open_Pos = 0.5;
+    public static double Grabbel_Claw_Close_Pos = 0.0;
 //    public static int Winch_Parallel_to_ground = 100;
 //    public static int Linac_Parallel_to_ground = 100;
 //    public static int Winch_Chute_Dropoff = 100;
 //    public static int Linac_Chute_Dropoff = 100;
 //
     public static int BUTTON_TRIGGER_TIMER_MS = 500;
-//    public static int Wristy_Button_Trigger_Timer_Ms = 85;
+    //    public static int Wristy_Button_Trigger_Timer_Ms = 85;
 //    public static int Linac_Grab_Position_Ticks = 288; // From REV Robotics Core HEX
 //    public static int Dawinchi_Grab_Position_Ticks = 1120; // From REV Robotics HD HEX 40:1
 //
@@ -105,15 +111,15 @@ public class Mrv_Manual extends LinearOpMode {
 //    ;
 //    private static ElapsedTime timer_gp2_dpad_up = new ElapsedTime(MILLISECONDS);
 //    private static ElapsedTime timer_gp2_dpad_down = new ElapsedTime(MILLISECONDS);
-//    private static ElapsedTime timer_gp2_dpad_left = new ElapsedTime(MILLISECONDS);
-//    private static ElapsedTime timer_gp2_dpad_right = new ElapsedTime(MILLISECONDS);
+    private static ElapsedTime timer_gp2_dpad_left = new ElapsedTime(MILLISECONDS);
+    private static ElapsedTime timer_gp2_dpad_right = new ElapsedTime(MILLISECONDS);
 
 
 //    int DuckPowerDir = 1;
 //    public static final String VUFORIA_LICENSE_KEY = "AZRnab7/////AAABmTUhzFGJLEyEnSXEYWthkjhGRzu8klNOmOa9WEHaryl9AZCo2bZwq/rtvx83YRIgV60/Jy/2aivoXaHNzwi7dEMGoaglSVmdmzPF/zOPyiz27dDJgLVvIROD8ww7lYzL8eweJ+5PqLAavvX3wgrahkOxxOCNeKG9Tl0LkbS5R11ATXL7LLWeUv5FP1aDNgMZvb8P/u96OdOvD6D40Nf01Xf+KnkF5EXwNQKk1r7qd/hiv9h80gvBXMFqMkVgUyogwEnlK2BfmeUhGVm/99BiwwW65LpKSaLVPpW/6xqz9SyPgZ/L/vshbWgSkTB/KoERiV8MsW79RPUuQS6NTOLY32I/kukmsis3MFst5LP/d3gx";
 
     //boolean DuckOn = false;
-   // FtcDashboard mrvDashboard;
+    FtcDashboard rykDashboard;
 
     @Override
     public void runOpMode() {
@@ -123,11 +129,14 @@ public class Mrv_Manual extends LinearOpMode {
 
         waitForStart();
 
-        initMarvyn();
+        initMavryk();
 
         while (opModeIsActive()) {
             PpManualDrive();
 //            mrvDuckWheel();
+            rykUpSlide();
+            rykClaw();
+
 //            mrvLinAc();
 //            mrvDaWinchi();
 //            mrvWrist();
@@ -152,11 +161,12 @@ public class Mrv_Manual extends LinearOpMode {
 //        }
 //    }
 
-    public void initMarvyn() {
+    public void initMavryk() {
         msStuckDetectStop = 2500;
-        //mrvDashboard = FtcDashboard.getInstance();
+        rykDashboard = FtcDashboard.getInstance();
 
-        //Wrist_Pos = Wrist_Start_Pos;
+        Handsel_Position = Handsel_Claw_Close_Pos;
+        Grabbel_Position = Grabbel_Claw_Close_Pos;
 
         telemetry.addData("Status:", "Robot is ready to roll!");
         telemetry.update();
@@ -247,16 +257,54 @@ public class Mrv_Manual extends LinearOpMode {
 //        return;
 //    }
 //
-//    public void mrvClaw() {
-//        ServoTurn = gamepad2.right_trigger == 1f;
-//        // slew the servo, according to the rampUp (direction) variable.
-//        if (ServoTurn) {
-//            position = Claw_Open_Pos;
-//        } else {
-//            position = Claw_Close_Pos;
+    public void rykClaw() {
+        ServoTurn = gamepad2.right_trigger == 1f;
+        // slew the servo, according to the rampUp (direction) variable.
+//        if (gamepad2.dpad_left) {
+//            if (!changingLinacSpeed) {
+//                timer_gp1_dpad_left.reset();
+//                changingLinacSpeed = true;
+//            } else if (timer_gp1_dpad_left.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+//                if (UpAdjust <= 1) {
+//                    UpAdjust = 1;
+//                } else {
+//                    UpAdjust -= 1;
+//                }
+//                telemetry.addData("Current slides speed: ", "%f", UpAdjust);
+//                telemetry.update();
+//                changingLinacSpeed = false;
+//            }
 //        }
 //
-//    }
+//        //gamepad right -> increase wheel speed
+//        if (gamepad2.dpad_right) {
+//            if (!changingLinacSpeed) {
+//                timer_gp2_dpad_right.reset();
+//                changingLinacSpeed = true;
+//            } else if (timer_gp2_dpad_right.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+//                if (UpAdjust >= 10) {
+//                    UpAdjust = 10;
+//                } else {
+//                    UpAdjust += 1;
+//                }
+//                telemetry.addData("Current slides speed: ", "%f", UpAdjust);
+//                telemetry.update();
+//                changingLinacSpeed = false;
+//            }
+//        }
+
+        if (ServoTurn) {
+            Handsel_Position = Handsel_Claw_Open_Pos;
+            Grabbel_Position = Grabbel_Claw_Open_Pos;
+        } else {
+            Handsel_Position = Handsel_Claw_Close_Pos;
+            Grabbel_Position = Grabbel_Claw_Close_Pos;
+        }
+
+        powerslay.Handsel.setPosition(Handsel_Position);
+        powerslay.Grabbel.setPosition(Grabbel_Position);
+
+    }
 //
 //    public void mrvWrist() {
 //        // if (gamepad2.left_trigger == 1f) {
@@ -366,6 +414,13 @@ public class Mrv_Manual extends LinearOpMode {
 //            powerslay.setPower(Pp_Robot.MrvMotors.LIN_AC, -gamepad2.left_stick_y * (linacAdjust / 10));
 //        }
 //    }
+
+
+    public void rykUpSlide() {
+
+
+        powerslay.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, -gamepad2.left_stick_y * (UpAdjust / 10));
+
 //
 //
 //
@@ -381,6 +436,7 @@ public class Mrv_Manual extends LinearOpMode {
 //            powerslay.setPower(Pp_Robot.MrvMotors.DA_WINCHI, gamepad2.right_stick_y * (dawinchAdjust / 10));
 //        }
 //    }
+    }
 }
 
 
