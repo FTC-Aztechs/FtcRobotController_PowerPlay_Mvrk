@@ -65,8 +65,7 @@ public class Ryk_Manual extends LinearOpMode {
 //    public static double duck_power = 0.29;
 //
     boolean ServoTurn = false;
-    double Handsel_Position = 0.0; // Start at halfway position
-    double Grabbel_Position = 0.0; // Start at halfway position
+    double Claw_Position; // Start at halfway position
 
 //    public static double Wrist_Parallel_to_Linac = 0.425; // Parallel to arm
 //    public static double Wrist_chute_dropoff = 0.26; // Perpendicular to Arm at top
@@ -82,10 +81,8 @@ public class Ryk_Manual extends LinearOpMode {
 
     //
     //0.52 for picking up preset
-    public static double Handsel_Claw_Open_Pos = 0.5;
-    public static double Handsel_Claw_Close_Pos = 0.0;
-    public static double Grabbel_Claw_Open_Pos = 0.5;
-    public static double Grabbel_Claw_Close_Pos = 0.0;
+    public static double Claw_Open_Pos = 0.6;
+    public static double Claw_Close_Pos = 0.5;
 //    public static int Winch_Parallel_to_ground = 100;
 //    public static int Linac_Parallel_to_ground = 100;
 //    public static int Winch_Chute_Dropoff = 100;
@@ -165,8 +162,7 @@ public class Ryk_Manual extends LinearOpMode {
         msStuckDetectStop = 2500;
         rykDashboard = FtcDashboard.getInstance();
 
-        Handsel_Position = Handsel_Claw_Close_Pos;
-        Grabbel_Position = Grabbel_Claw_Close_Pos;
+        Claw_Position = Claw_Close_Pos;
 
         telemetry.addData("Status:", "Robot is ready to roll!");
         telemetry.update();
@@ -294,15 +290,13 @@ public class Ryk_Manual extends LinearOpMode {
 //        }
 
         if (ServoTurn) {
-            Handsel_Position = Handsel_Claw_Open_Pos;
-            Grabbel_Position = Grabbel_Claw_Open_Pos;
+            Claw_Position = Claw_Close_Pos;
         } else {
-            Handsel_Position = Handsel_Claw_Close_Pos;
-            Grabbel_Position = Grabbel_Claw_Close_Pos;
+            Claw_Position = Claw_Open_Pos;
         }
 
-        powerslay.Handsel.setPosition(Handsel_Position);
-        powerslay.Grabbel.setPosition(Grabbel_Position);
+        powerslay.Handsel.setPosition(Claw_Position);
+        powerslay.Grabbel.setPosition(Claw_Position);
 
     }
 //
