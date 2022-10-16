@@ -34,6 +34,7 @@ package org.firstinspires.ftc.teamcode;
 import static com.qualcomm.robotcore.util.ElapsedTime.Resolution.MILLISECONDS;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -44,7 +45,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import java.util.concurrent.TimeUnit;
 
 
-//@Config
+@Config
 @TeleOp(name="Ryk_Manual", group="Manual mode")
 //@Disabled
 public class Ryk_Manual extends LinearOpMode {

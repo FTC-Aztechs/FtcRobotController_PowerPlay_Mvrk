@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -17,6 +18,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
+@Config
 @Autonomous
 public class Beacon_Testing extends OpMode {
 
@@ -27,6 +29,7 @@ public class Beacon_Testing extends OpMode {
 
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Sauron");
         FtcDashboard rykDashboard = FtcDashboard.getInstance();
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam1 = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
@@ -50,7 +53,7 @@ public class Beacon_Testing extends OpMode {
 
     }
 
-    class examplePipeline extends OpenCvPipeline {
+    public class examplePipeline extends OpenCvPipeline {
         Mat HSV = new Mat();
         Mat picCrop;
         double Hue;
@@ -59,6 +62,7 @@ public class Beacon_Testing extends OpMode {
        int[] red = {160, 180, 0, 10};
        int[] green = {50, 65};
        int[] blue = {70, 90};
+
 
         public Mat processFrame(Mat input) {
 
