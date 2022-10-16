@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
@@ -24,6 +26,7 @@ public class Beacon_Testing extends OpMode {
     public void init() {
 
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Sauron");
+        FtcDashboard rykDashboard = FtcDashboard.getInstance();
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam1 = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
@@ -33,6 +36,7 @@ public class Beacon_Testing extends OpMode {
         webcam1.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             public void onOpened(){
                 webcam1.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+                rykDashboard.startCameraStream(webcam1, 0);
             }
 
             public void onError(int errorCode){

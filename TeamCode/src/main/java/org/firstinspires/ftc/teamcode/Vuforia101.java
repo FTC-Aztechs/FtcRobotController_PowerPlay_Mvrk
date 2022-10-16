@@ -29,6 +29,8 @@ package org.firstinspires.ftc.teamcode;
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -207,7 +209,10 @@ public class Vuforia101 extends LinearOpMode {
          * To restore the normal opmode structure, just un-comment the following line:
          */
 
-        // waitForStart();
+        FtcDashboard.getInstance().startCameraStream(vuforia, 0);
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
+        waitForStart();
 
         /* Note: To use the remote camera preview:
          * AFTER you hit Init on the Driver Station, use the "options menu" to select "Camera Stream"

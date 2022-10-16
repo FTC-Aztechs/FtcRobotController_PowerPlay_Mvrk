@@ -22,6 +22,8 @@ package org.firstinspires.ftc.teamcode;
  */
 
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -40,6 +42,9 @@ import org.openftc.easyopencv.OpenCvWebcam;
 public class Webcam_Testing extends LinearOpMode
 {
     OpenCvWebcam webcam;
+    FtcDashboard rykDashboard = FtcDashboard.getInstance();
+
+
 
     @Override
     public void runOpMode()
@@ -99,6 +104,9 @@ public class Webcam_Testing extends LinearOpMode
                  * away from the user.
                  */
                 webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+                rykDashboard.startCameraStream(webcam, 0);
+                telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
             }
 
             @Override
@@ -158,6 +166,7 @@ public class Webcam_Testing extends LinearOpMode
                  * the above "important note".
                  */
                 webcam.stopStreaming();
+                rykDashboard.stopCameraStream();
                 //webcam.closeCameraDevice();
             }
 

@@ -34,9 +34,12 @@ package org.firstinspires.ftc.teamcode;
 import static com.qualcomm.robotcore.util.ElapsedTime.Resolution.MILLISECONDS;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import java.util.concurrent.TimeUnit;
 
@@ -117,16 +120,15 @@ public class Ryk_Manual extends LinearOpMode {
 
     //boolean DuckOn = false;
     FtcDashboard rykDashboard;
-
     @Override
     public void runOpMode() {
 
         // Initialize the drive system vriables
         powerslay.init(hardwareMap);
 
+        initMavryk();
         waitForStart();
 
-        initMavryk();
 
         while (opModeIsActive()) {
             PpManualDrive();
@@ -160,10 +162,11 @@ public class Ryk_Manual extends LinearOpMode {
 
     public void initMavryk() {
         msStuckDetectStop = 2500;
-        rykDashboard = FtcDashboard.getInstance();
+        FtcDashboard Dash = rykDashboard;
 
         Claw_Position = Claw_Close_Pos;
 
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.addData("Status:", "Robot is ready to roll!");
         telemetry.update();
 

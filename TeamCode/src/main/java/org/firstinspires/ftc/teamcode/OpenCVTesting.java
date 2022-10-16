@@ -13,6 +13,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 public class OpenCVTesting extends OpenCvPipeline {
     Telemetry telemetry;
+
     Mat mat = new Mat();
     public enum Location {
         LEFT,

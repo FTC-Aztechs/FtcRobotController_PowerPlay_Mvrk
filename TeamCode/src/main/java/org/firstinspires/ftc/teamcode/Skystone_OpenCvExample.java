@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -14,6 +16,8 @@ import org.openftc.easyopencv.OpenCvWebcam;
 @Disabled
 public class Skystone_OpenCvExample extends LinearOpMode {
     Ryk_Robot Powerslay =new Ryk_Robot();
+    FtcDashboard rykDashboard = FtcDashboard.getInstance();
+
 
     @Override
     public void runOpMode()throws InterruptedException {
@@ -30,7 +34,11 @@ public class Skystone_OpenCvExample extends LinearOpMode {
             public void onOpened()
             {
                 // Usually this is where you'll want to start streaming from the camera (see section 4)
+                telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
                 webcam.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
+                rykDashboard.startCameraStream(webcam,0);
+
+
 
             }
             @Override
