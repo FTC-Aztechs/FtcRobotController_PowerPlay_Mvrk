@@ -209,7 +209,7 @@ public class Vuforia101 extends LinearOpMode {
          * To restore the normal opmode structure, just un-comment the following line:
          */
 
-        FtcDashboard.getInstance().startCameraStream(vuforia, 0);
+        FtcDashboard.getInstance().startCameraStream(vuforia, 30);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         waitForStart();

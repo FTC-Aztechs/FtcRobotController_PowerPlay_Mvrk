@@ -59,8 +59,8 @@ public class Beacon_Testing extends OpMode {
         Mat outPut = new Mat();
         Scalar rectColor = new Scalar(0.0,0.0,0.0);
        int[] red = {160, 180, 0, 10};
-       int[] green = {50, 65};
-       int[] blue = {70, 90};
+       int[] green = {40, 70};
+       int[] blue = {90, 120};
 
 
         public Mat processFrame(Mat input) {
