@@ -40,8 +40,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-
 import java.util.concurrent.TimeUnit;
 
 
@@ -57,12 +55,12 @@ public class Ryk_Manual extends LinearOpMode {
 
     public static double speedAdjust = 5;
     //    public static double linacAdjust = 10;
-    public static double UpAdjust = 5;
+    public static double UpAdjust = 10;
     //    public static double dawinchAdjust = 6;
 //    private boolean assumingPickPosition = false;
 //    private boolean assumingDropPosition = false;
     private boolean changingWheelSpeed = false;
-    private boolean changingLinacSpeed = false;
+    private boolean changingSlideSpeed = false;
 //    private boolean changingDaWinchiSpeed = false;
 //    private boolean changingWrist = false;
 
@@ -416,6 +414,39 @@ public class Ryk_Manual extends LinearOpMode {
 
     public void rykUpSlide() {
 
+        //Gamepad2 left -> Decrease Speed
+        if (gamepad2.dpad_left) {
+            if (!changingSlideSpeed) {
+                timer_gp2_dpad_left.reset();
+                changingSlideSpeed = true;
+            } else if (timer_gp2_dpad_left.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+                if (UpAdjust <= 1) {
+                    UpAdjust = 1;
+                } else {
+                    UpAdjust -= 1;
+                }
+                telemetry.addData("Current Slide speed: ", "%f", UpAdjust);
+                telemetry.update();
+                changingSlideSpeed = false;
+            }
+        }
+
+        //Gamepad 2right -> Increase Speed
+        if (gamepad2.dpad_right) {
+            if (!changingSlideSpeed) {
+                timer_gp2_dpad_right.reset();
+                changingSlideSpeed = true;
+            } else if (timer_gp2_dpad_right.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+                if (UpAdjust >= 10) {
+                    UpAdjust = 10;
+                } else {
+                    UpAdjust += 1;
+                }
+                telemetry.addData("Current Slide Speed: ", "%f", speedAdjust);
+                telemetry.update();
+                changingSlideSpeed = false;
+            }
+        }
 
         powerslay.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, -gamepad2.left_stick_y * (UpAdjust / 10));
 
