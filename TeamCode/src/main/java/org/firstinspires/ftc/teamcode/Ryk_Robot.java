@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode;
 //import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -40,7 +41,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-//import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.Locale;
 
@@ -63,9 +65,7 @@ public class Ryk_Robot
     {
         HANDSEL,
         GRABBEL,
-        WRISTY,
-        CHUTEY,
-        ALL
+        TWIN_TOWERS,
     }
 
 
@@ -87,6 +87,8 @@ public class Ryk_Robot
     public Servo Handsel = null;
     public Servo Grabbel = null;
     public WebcamName eyeOfSauron = null;
+    OpenCvWebcam Sauron = null;
+
 //    public DigitalChannel Touche_Linac = null;
 //    public DigitalChannel Touche_Winch = null;
 
@@ -110,45 +112,50 @@ public class Ryk_Robot
 
 
 
-//    public static Pose2d blue_1_pose_estimate = new Pose2d(-33.75, 62.625, Math.toRadians(-90));
-//    public static Pose2d red_1_pose_estimate = new Pose2d(-33.75, -62.625, Math.toRadians(90));
-//
-//    public static Pose2d blue_2_pose_estimate = new Pose2d(13, 62.625, Math.toRadians(-90));
-//    public static Pose2d red_2_pose_estimate = new Pose2d(9.75, -62.625, Math.toRadians(90));
-//
-//    public static Pose2d blue_1_shipping_hub_pos = new Pose2d(-21.5, 43.25, Math.toRadians(-65));
-//    public static Pose2d red_1_shipping_hub_pos = new Pose2d(-21.5, -43.25, Math.toRadians(65));
-//
-//    public static Pose2d blue_2_shipping_hub_pos = new Pose2d(-10, 44.5, Math.toRadians(-102));
-//    public static Pose2d red_2_shipping_hub_pos = new Pose2d(-10, -44.5, Math.toRadians(102));
-//
-//    public static Pose2d blue_duck_wheel_pos       = new Pose2d(-59.75, 56, Math.toRadians(0));
-//    public static Pose2d red_duck_wheel_pos        = new Pose2d(-59.75, -56, Math.toRadians(0));
-//
-//    public static Pose2d blue_warehouse_enter_pos = new Pose2d(11, 63.75, Math.toRadians(0));
-//    public static Pose2d red_warehouse_enter_pos = new Pose2d(11, -63.75, Math.toRadians(0));
-//
-//    public static Pose2d blue_warehouse_pos1 = new Pose2d(42.75, 63.75, Math.toRadians(0));
-//    public static Pose2d red_warehouse_pos1 = new Pose2d(42.75, -63.75, Math.toRadians(0));
-//
-//    public static Pose2d blue_warehouse_pos2 = new Pose2d(46.75, 63.75, Math.toRadians(-15));
-//    public static Pose2d red_warehouse_pos2 = new Pose2d(46.75, -63.75, Math.toRadians(15));
-//
-//    public static Pose2d blue_warehouse_pos = new Pose2d(36.5, 63.75, Math.toRadians(0));
-//    public static Pose2d red_warehouse_pos = new Pose2d(36.5, -63.75, Math.toRadians(0));
-//
-//    public static Pose2d blue_storage_pos = new Pose2d(-61.75, 35.5, Math.toRadians(0));
-//    public static Pose2d red_storage_pos = new Pose2d(-61.75, -35.5, Math.toRadians(0));
-//
-//    public static Pose2d blue_warehouse_park_pos = new Pose2d(36.5, 37, Math.toRadians(0));
-//    public static Pose2d red_warehouse_park_pos = new Pose2d(36.5, -37, Math.toRadians(0));
+    public static Pose2d blue_1_pose_estimate = new Pose2d(-33.75, 62.625, Math.toRadians(-90));
+    public static Pose2d red_1_pose_estimate = new Pose2d(-33.75, -62.625, Math.toRadians(90));
+
+    public static Pose2d blue_2_pose_estimate = new Pose2d(13, 62.625, Math.toRadians(-90));
+    public static Pose2d red_2_pose_estimate = new Pose2d(9.75, -62.625, Math.toRadians(90));
+
+    public static Pose2d blue_1_shipping_hub_pos = new Pose2d(-21.5, 43.25, Math.toRadians(-65));
+    public static Pose2d red_1_shipping_hub_pos = new Pose2d(-21.5, -43.25, Math.toRadians(65));
+
+    public static Pose2d blue_2_shipping_hub_pos = new Pose2d(-10, 44.5, Math.toRadians(-102));
+    public static Pose2d red_2_shipping_hub_pos = new Pose2d(-10, -44.5, Math.toRadians(102));
+
+    public static Pose2d blue_duck_wheel_pos       = new Pose2d(-59.75, 56, Math.toRadians(0));
+    public static Pose2d red_duck_wheel_pos        = new Pose2d(-59.75, -56, Math.toRadians(0));
+
+    public static Pose2d blue_warehouse_enter_pos = new Pose2d(11, 63.75, Math.toRadians(0));
+    public static Pose2d red_warehouse_enter_pos = new Pose2d(11, -63.75, Math.toRadians(0));
+
+    public static Pose2d blue_warehouse_pos1 = new Pose2d(42.75, 63.75, Math.toRadians(0));
+    public static Pose2d red_warehouse_pos1 = new Pose2d(42.75, -63.75, Math.toRadians(0));
+
+    public static Pose2d blue_warehouse_pos2 = new Pose2d(46.75, 63.75, Math.toRadians(-15));
+    public static Pose2d red_warehouse_pos2 = new Pose2d(46.75, -63.75, Math.toRadians(15));
+
+    public static Pose2d blue_warehouse_pos = new Pose2d(36.5, 63.75, Math.toRadians(0));
+    public static Pose2d red_warehouse_pos = new Pose2d(36.5, -63.75, Math.toRadians(0));
+
+    public static Pose2d blue_storage_pos = new Pose2d(-61.75, 35.5, Math.toRadians(0));
+    public static Pose2d red_storage_pos = new Pose2d(-61.75, -35.5, Math.toRadians(0));
+
+    public static Pose2d blue_warehouse_park_pos = new Pose2d(36.5, 37, Math.toRadians(0));
+    public static Pose2d red_warehouse_park_pos = new Pose2d(36.5, -37, Math.toRadians(0));
 
 
 //    public static int Dawinchi_Ticks_Per_Rev = 1060; // 295; // From REV Robotics HD HEX 40:1
-//    public static int Linac_Ticks_Per_Rev = 288; // From REV Robotics Core HEX
+    public static double Slide_Ticks_Per_Rev = 537.7; // From REV Robotics Core HEX
 //
+    double dSlidePower = 1;
+
 //    public static double Wrist_Pickup_Pos = 0.39;
 //    public static double Wrist_Dropoff_Pos = 0.355;
+
+    public static double Claw_Open_Pos = 0.6;
+    public static double Claw_Close_Pos = 0.5;
 //
 //    // Speed control variables
 //    public static double slower_speed = 40;
@@ -165,10 +172,17 @@ public class Ryk_Robot
 //
 //    public static double DaWinchi_Power = 0.5;
 //
-//    public static double Linac_Dropoff_Revs = 0.7;
-//    public static double Linac_Pickup_Revs = 0.9;
-//    public static double Linac_Neutral = 0;
-//
+    public static double Slide_Ground_Revs = 0.7;
+    public static double Slide_Low_Revs = 0.7;
+    public static double Slide_Mid_Revs = 0.7;
+    public static double Slide_High_Revs = 0.7;
+    public static double Slide_rest = 0;
+
+    public static double Slide_Min_Pickup_Revs = 0.9;
+    public static double Slide_increment_Pickup_Revs = 0.9;
+
+
+
 //    public static double dFromLevel0ToPickup = 0.2;    // 1. Time to lower from level 0 -> Pickup
 //    public static double dFromLevel1ToPickup = 0.3;    // 2. Time to lower from level 1 -> Pickup
 //    public static double dFromLevel2ToPickup = 0.36;    // 3. Time to lower from level 2 -> Pickup
@@ -188,7 +202,7 @@ public class Ryk_Robot
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
     private ElapsedTime period  = new ElapsedTime();
-    //SampleMecanumDrive mecanumDrive;
+    SampleMecanumDrive mecanumDrive;
 
     /* Constructor */
     public Ryk_Robot(){
@@ -257,7 +271,7 @@ public class Ryk_Robot
         Grabbel.setDirection(Servo.Direction.FORWARD);
 
 
-        //mecanumDrive = new SampleMecanumDrive(hwMap);
+        mecanumDrive = new SampleMecanumDrive(hwMap);
         eyeOfSauron = hwMap.get(WebcamName.class, "Sauron");
 
 
@@ -453,10 +467,58 @@ public class Ryk_Robot
         }
     }
 
-    public void setTargetPosition( RykMotors eWhichMotor, int iPos )
+    public void setPosition( RykServos eWhichServo, double iPos )
     {
-        switch( eWhichMotor)
+        switch( eWhichServo)
         {
+            case HANDSEL:
+                Handsel.setPosition(iPos);
+                break;
+            case GRABBEL:
+                Grabbel.setPosition(iPos);
+                break;
+            case TWIN_TOWERS:
+                upper_right.setTargetPosition(iPos);
+                break;
+            default :
+                break;
+        }
+    }
+
+    public boolean areMotorsBusy(RykMotors eWhichMotor) {
+
+        switch(eWhichMotor)
+        {
+            case UPPER_LEFT: // upper left
+                return upper_left.isBusy();
+            case LOWER_LEFT: // lower left
+                return lower_left.isBusy();
+            case UPPER_RIGHT: // upper right
+                return upper_right.isBusy();
+            case LOWER_RIGHT: // lower right
+                return lower_right.isBusy();
+//            case DUCK_WHEELS:
+//                return duck_wheel.isBusy() && another_duck_wheel.isBusy();
+//            case LIN_AC:
+//                return Linac.isBusy();
+//            case DA_WINCHI:
+//                return Da_Winch.isBusy();
+            case CAT_MOUSE:
+                return Jerry.isBusy() && Tom.isBusy();
+            case ALL_DRIVES: // All Drives
+                return lower_left.isBusy() && lower_right.isBusy() && upper_left.isBusy() && upper_right.isBusy();
+            case ALL_ATTACHMENTS:
+                //return Linac.isBusy() && duck_wheel.isBusy() && Da_Winch.isBusy();
+            case ALL:
+                return lower_left.isBusy() && lower_right.isBusy() && upper_left.isBusy() && upper_right.isBusy();
+                        //&& duck_wheel.isBusy() && Linac.isBusy()&& Da_Winch.isBusy();
+            default:
+                return false;
+        }
+    }
+
+    public void setTargetPosition( RykMotors eWhichMotor, int iPos ) {
+        switch (eWhichMotor) {
             case UPPER_LEFT:
                 upper_left.setTargetPosition(iPos);
                 break;
@@ -496,42 +558,9 @@ public class Ryk_Robot
 //                another_duck_wheel.setTargetPosition(iPos);
 //                Da_Winch.setTargetPosition(iPos);
 //                Linac.setTargetPosition(iPos);
-            default :
+            default:
                 break;
         }
     }
-
-    public boolean areMotorsBusy(RykMotors eWhichMotor) {
-
-        switch(eWhichMotor)
-        {
-            case UPPER_LEFT: // upper left
-                return upper_left.isBusy();
-            case LOWER_LEFT: // lower left
-                return lower_left.isBusy();
-            case UPPER_RIGHT: // upper right
-                return upper_right.isBusy();
-            case LOWER_RIGHT: // lower right
-                return lower_right.isBusy();
-//            case DUCK_WHEELS:
-//                return duck_wheel.isBusy() && another_duck_wheel.isBusy();
-//            case LIN_AC:
-//                return Linac.isBusy();
-//            case DA_WINCHI:
-//                return Da_Winch.isBusy();
-            case CAT_MOUSE:
-                return Jerry.isBusy() && Tom.isBusy();
-            case ALL_DRIVES: // All Drives
-                return lower_left.isBusy() && lower_right.isBusy() && upper_left.isBusy() && upper_right.isBusy();
-            case ALL_ATTACHMENTS:
-                //return Linac.isBusy() && duck_wheel.isBusy() && Da_Winch.isBusy();
-            case ALL:
-                return lower_left.isBusy() && lower_right.isBusy() && upper_left.isBusy() && upper_right.isBusy();
-                        //&& duck_wheel.isBusy() && Linac.isBusy()&& Da_Winch.isBusy();
-            default:
-                return false;
-        }
-    }
-
 }
 

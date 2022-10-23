@@ -48,7 +48,7 @@ import java.util.concurrent.TimeUnit;
 //@Disabled
 public class Ryk_Manual extends LinearOpMode {
     // Declare OpMode members.
-    Ryk_Robot powerslay = new Ryk_Robot();
+    Ryk_Robot Mavryk = new Ryk_Robot();
 //
 //    static final double INCREMENT = 0.1;     // amount to slew servo each CYCLE_MS cycle
 //    static final double[] RANGE_FULL = {0.0, 1.0};
@@ -83,8 +83,6 @@ public class Ryk_Manual extends LinearOpMode {
 
     //
     //0.52 for picking up preset
-    public static double Claw_Open_Pos = 0.6;
-    public static double Claw_Close_Pos = 0.5;
 //    public static int Winch_Parallel_to_ground = 100;
 //    public static int Linac_Parallel_to_ground = 100;
 //    public static int Winch_Chute_Dropoff = 100;
@@ -123,7 +121,7 @@ public class Ryk_Manual extends LinearOpMode {
     public void runOpMode() {
 
         // Initialize the drive system vriables
-        powerslay.init(hardwareMap);
+        Mavryk.init(hardwareMap);
 
         initMavryk();
         waitForStart();
@@ -163,7 +161,7 @@ public class Ryk_Manual extends LinearOpMode {
         msStuckDetectStop = 2500;
         FtcDashboard Dash = rykDashboard;
 
-        Claw_Position = Claw_Close_Pos;
+        Claw_Position = Mavryk.Claw_Close_Pos;
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.addData("Status:", "Robot is ready to roll!");
@@ -215,10 +213,10 @@ public class Ryk_Manual extends LinearOpMode {
         } else if (turnDir < -1) {
             turnDir = -1;
         }
-        powerslay.lower_left.setPower((moveDir + strafeDir - turnDir) * (-speedAdjust / 10)); // 1.0
-        powerslay.lower_right.setPower((moveDir - strafeDir + turnDir) * (-speedAdjust / 10)); // 1.0
-        powerslay.upper_left.setPower((moveDir - strafeDir - turnDir) * (-speedAdjust / 10)); // 0
-        powerslay.upper_right.setPower((moveDir + strafeDir + turnDir) * (-speedAdjust / 10)); // 0
+        Mavryk.lower_left.setPower((moveDir + strafeDir - turnDir) * (-speedAdjust / 10)); // 1.0
+        Mavryk.lower_right.setPower((moveDir - strafeDir + turnDir) * (-speedAdjust / 10)); // 1.0
+        Mavryk.upper_left.setPower((moveDir - strafeDir - turnDir) * (-speedAdjust / 10)); // 0
+        Mavryk.upper_right.setPower((moveDir + strafeDir + turnDir) * (-speedAdjust / 10)); // 0
 
         return;
     }
@@ -292,13 +290,12 @@ public class Ryk_Manual extends LinearOpMode {
 //        }
 
         if (ServoTurn) {
-            Claw_Position = Claw_Close_Pos;
+            Claw_Position = Mavryk.Claw_Close_Pos;
         } else {
-            Claw_Position = Claw_Open_Pos;
+            Claw_Position = Mavryk.Claw_Open_Pos;
         }
 
-        powerslay.Handsel.setPosition(Claw_Position);
-        powerslay.Grabbel.setPosition(Claw_Position);
+        Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Position);
 
     }
 //
@@ -448,7 +445,7 @@ public class Ryk_Manual extends LinearOpMode {
             }
         }
 
-        powerslay.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, -gamepad2.left_stick_y * (UpAdjust / 10));
+        Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, -gamepad2.left_stick_y * (UpAdjust / 10));
 
 //
 //
