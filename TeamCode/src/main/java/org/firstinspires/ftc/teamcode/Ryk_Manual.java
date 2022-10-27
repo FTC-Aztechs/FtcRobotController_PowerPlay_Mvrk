@@ -255,44 +255,12 @@ public class Ryk_Manual extends LinearOpMode {
 //
     public void rykClaw() {
         ServoTurn = gamepad2.right_trigger == 1f;
-        // slew the servo, according to the rampUp (direction) variable.
-//        if (gamepad2.dpad_left) {
-//            if (!changingLinacSpeed) {
-//                timer_gp1_dpad_left.reset();
-//                changingLinacSpeed = true;
-//            } else if (timer_gp1_dpad_left.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-//                if (UpAdjust <= 1) {
-//                    UpAdjust = 1;
-//                } else {
-//                    UpAdjust -= 1;
-//                }
-//                telemetry.addData("Current slides speed: ", "%f", UpAdjust);
-//                telemetry.update();
-//                changingLinacSpeed = false;
-//            }
-//        }
-//
-//        //gamepad right -> increase wheel speed
-//        if (gamepad2.dpad_right) {
-//            if (!changingLinacSpeed) {
-//                timer_gp2_dpad_right.reset();
-//                changingLinacSpeed = true;
-//            } else if (timer_gp2_dpad_right.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-//                if (UpAdjust >= 10) {
-//                    UpAdjust = 10;
-//                } else {
-//                    UpAdjust += 1;
-//                }
-//                telemetry.addData("Current slides speed: ", "%f", UpAdjust);
-//                telemetry.update();
-//                changingLinacSpeed = false;
-//            }
-//        }
+
 
         if (ServoTurn) {
-            Claw_Position = Mavryk.Claw_Close_Pos;
-        } else {
             Claw_Position = Mavryk.Claw_Open_Pos;
+        } else {
+            Claw_Position = Mavryk.Claw_Close_Pos;
         }
 
         Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Position);
@@ -422,7 +390,7 @@ public class Ryk_Manual extends LinearOpMode {
                 } else {
                     UpAdjust -= 1;
                 }
-                telemetry.addData("Current Slide speed: ", "%f", UpAdjust);
+                telemetry.addData("Current Slide Speed: ", "%f", UpAdjust);
                 telemetry.update();
                 changingSlideSpeed = false;
             }
@@ -439,7 +407,7 @@ public class Ryk_Manual extends LinearOpMode {
                 } else {
                     UpAdjust += 1;
                 }
-                telemetry.addData("Current Slide Speed: ", "%f", speedAdjust);
+                telemetry.addData("Current Slide Speed: ", "%f", UpAdjust);
                 telemetry.update();
                 changingSlideSpeed = false;
             }

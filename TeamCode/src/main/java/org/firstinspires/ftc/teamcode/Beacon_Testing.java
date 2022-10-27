@@ -18,7 +18,9 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
+
 @Autonomous
+
 public class Beacon_Testing extends OpMode {
 
     OpenCvWebcam webcam1 = null;
@@ -37,7 +39,7 @@ public class Beacon_Testing extends OpMode {
 
         webcam1.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             public void onOpened(){
-                webcam1.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+                webcam1.startStreaming(1920, 1080, OpenCvCameraRotation.UPRIGHT);
                 rykDashboard.startCameraStream(webcam1, 0);
             }
 
@@ -63,13 +65,16 @@ public class Beacon_Testing extends OpMode {
        int[] blue = {90, 120};
 
 
+
+
+
         public Mat processFrame(Mat input) {
 
             Imgproc.cvtColor(input, HSV, Imgproc.COLOR_RGB2HSV);
-            telemetry.addLine("pipeline running");
+            //telemetry.addLine("pipeline running");
 
 
-            Rect mainRect = new Rect(120, 90, 79, 59);
+            Rect mainRect = new Rect(560, 480, 120, 200);
 
             input.copyTo(outPut);
             Imgproc.rectangle(outPut, mainRect,rectColor,2);

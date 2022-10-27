@@ -112,41 +112,18 @@ public class Ryk_Robot
 
 
 
-    public static Pose2d blue_1_pose_estimate = new Pose2d(-33.75, 62.625, Math.toRadians(-90));
-    public static Pose2d red_1_pose_estimate = new Pose2d(-33.75, -62.625, Math.toRadians(90));
+    public static Pose2d Start = new Pose2d(36, 60, Math.toRadians(-90));
 
-    public static Pose2d blue_2_pose_estimate = new Pose2d(13, 62.625, Math.toRadians(-90));
-    public static Pose2d red_2_pose_estimate = new Pose2d(9.75, -62.625, Math.toRadians(90));
+    public static Pose2d Position1_Dodge = new Pose2d(60,60, Math.toRadians(-90));
+    public static Pose2d Position3_Dodge = new Pose2d(12,60, Math.toRadians(-90));
 
-    public static Pose2d blue_1_shipping_hub_pos = new Pose2d(-21.5, 43.25, Math.toRadians(-65));
-    public static Pose2d red_1_shipping_hub_pos = new Pose2d(-21.5, -43.25, Math.toRadians(65));
-
-    public static Pose2d blue_2_shipping_hub_pos = new Pose2d(-10, 44.5, Math.toRadians(-102));
-    public static Pose2d red_2_shipping_hub_pos = new Pose2d(-10, -44.5, Math.toRadians(102));
-
-    public static Pose2d blue_duck_wheel_pos       = new Pose2d(-59.75, 56, Math.toRadians(0));
-    public static Pose2d red_duck_wheel_pos        = new Pose2d(-59.75, -56, Math.toRadians(0));
-
-    public static Pose2d blue_warehouse_enter_pos = new Pose2d(11, 63.75, Math.toRadians(0));
-    public static Pose2d red_warehouse_enter_pos = new Pose2d(11, -63.75, Math.toRadians(0));
-
-    public static Pose2d blue_warehouse_pos1 = new Pose2d(42.75, 63.75, Math.toRadians(0));
-    public static Pose2d red_warehouse_pos1 = new Pose2d(42.75, -63.75, Math.toRadians(0));
-
-    public static Pose2d blue_warehouse_pos2 = new Pose2d(46.75, 63.75, Math.toRadians(-15));
-    public static Pose2d red_warehouse_pos2 = new Pose2d(46.75, -63.75, Math.toRadians(15));
-
-    public static Pose2d blue_warehouse_pos = new Pose2d(36.5, 63.75, Math.toRadians(0));
-    public static Pose2d red_warehouse_pos = new Pose2d(36.5, -63.75, Math.toRadians(0));
-
-    public static Pose2d blue_storage_pos = new Pose2d(-61.75, 35.5, Math.toRadians(0));
-    public static Pose2d red_storage_pos = new Pose2d(-61.75, -35.5, Math.toRadians(0));
-
-    public static Pose2d blue_warehouse_park_pos = new Pose2d(36.5, 37, Math.toRadians(0));
-    public static Pose2d red_warehouse_park_pos = new Pose2d(36.5, -37, Math.toRadians(0));
+    public static Pose2d Park_Pos1 = new Pose2d(60,24, Math.toRadians(-90));
+    public static Pose2d Park_Pos2 = new Pose2d(36,24, Math.toRadians(-90));
+    public static Pose2d Park_Pos3 = new Pose2d(12,24, Math.toRadians(-90));
 
 
-//    public static int Dawinchi_Ticks_Per_Rev = 1060; // 295; // From REV Robotics HD HEX 40:1
+
+    //    public static int Dawinchi_Ticks_Per_Rev = 1060; // 295; // From REV Robotics HD HEX 40:1
     public static double Slide_Ticks_Per_Rev = 537.7; // From REV Robotics Core HEX
 //
     double dSlidePower = 1;
@@ -154,8 +131,8 @@ public class Ryk_Robot
 //    public static double Wrist_Pickup_Pos = 0.39;
 //    public static double Wrist_Dropoff_Pos = 0.355;
 
-    public static double Claw_Open_Pos = 0.6;
-    public static double Claw_Close_Pos = 0.5;
+    public static double Claw_Open_Pos = 0.5;
+    public static double Claw_Close_Pos = 0.35;
 //
 //    // Speed control variables
 //    public static double slower_speed = 40;
@@ -478,7 +455,8 @@ public class Ryk_Robot
                 Grabbel.setPosition(iPos);
                 break;
             case TWIN_TOWERS:
-                upper_right.setTargetPosition(iPos);
+                Handsel.setPosition(iPos);
+                Grabbel.setPosition(iPos);
                 break;
             default :
                 break;
