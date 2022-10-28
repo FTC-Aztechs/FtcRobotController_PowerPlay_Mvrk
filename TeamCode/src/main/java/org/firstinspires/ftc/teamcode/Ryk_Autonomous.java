@@ -67,6 +67,8 @@ public class Ryk_Autonomous extends LinearOpMode {
     public TrajectorySequence Position1;
     public TrajectorySequence Position2;
     public TrajectorySequence Position3;
+    public TrajectorySequence Terminal;
+
 
     public TrajectorySequence Park;
 
@@ -178,7 +180,10 @@ public class Ryk_Autonomous extends LinearOpMode {
                         .build();
                 break;
             case NONE:
-
+                Park = Terminal;
+                Terminal = Mavryk.mecanumDrive.trajectorySequenceBuilder(Ryk_Robot.Start)
+                        .lineToLinearHeading(Ryk_Robot.Position1_Dodge)
+                        .build();
                 break;
         }
 

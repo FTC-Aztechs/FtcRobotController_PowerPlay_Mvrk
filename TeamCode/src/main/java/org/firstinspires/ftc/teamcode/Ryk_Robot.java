@@ -112,10 +112,10 @@ public class Ryk_Robot
 
 
 
-    public static Pose2d Start = new Pose2d(36, 60, Math.toRadians(-90));
+    public static Pose2d Start = new Pose2d(36, 64.5, Math.toRadians(-90));
 
-    public static Pose2d Position1_Dodge = new Pose2d(60,60, Math.toRadians(-90));
-    public static Pose2d Position3_Dodge = new Pose2d(12,60, Math.toRadians(-90));
+    public static Pose2d Position1_Dodge = new Pose2d(60,64.5, Math.toRadians(-90));
+    public static Pose2d Position3_Dodge = new Pose2d(12,64.5, Math.toRadians(-90));
 
     public static Pose2d Park_Pos1 = new Pose2d(60,24, Math.toRadians(-90));
     public static Pose2d Park_Pos2 = new Pose2d(36,24, Math.toRadians(-90));
