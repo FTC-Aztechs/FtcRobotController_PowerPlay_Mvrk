@@ -112,16 +112,26 @@ public class Ryk_Robot
 
 
 
-    public static Pose2d Start = new Pose2d(36, 64.5, Math.toRadians(-90));
+    public static Pose2d Red_Start = new Pose2d(40.5, 64.5, Math.toRadians(-90));
 
-    public static Pose2d Position1_Dodge = new Pose2d(60,64.5, Math.toRadians(-90));
-    public static Pose2d Position3_Dodge = new Pose2d(12,64.5, Math.toRadians(-90));
+    public static Pose2d Red_Position1_Dodge = new Pose2d(62,64.5, Math.toRadians(-90));
+    public static Pose2d Red_Position2_Dodge = new Pose2d(35, 64.5, Math.toRadians(-90));
+    public static Pose2d Red_Position3_Dodge = new Pose2d(11,64.5, Math.toRadians(-90));
 
-    public static Pose2d Park_Pos1 = new Pose2d(60,24, Math.toRadians(-90));
-    public static Pose2d Park_Pos2 = new Pose2d(36,24, Math.toRadians(-90));
-    public static Pose2d Park_Pos3 = new Pose2d(12,24, Math.toRadians(-90));
+    public static Pose2d Red_Park_Pos1 = new Pose2d(62,26, Math.toRadians(-90));
+    public static Pose2d Red_Park_Pos2 = new Pose2d(35,26, Math.toRadians(-90));
+    public static Pose2d Red_Park_Pos3 = new Pose2d(11,26, Math.toRadians(-90));
 
 
+    public static Pose2d Blue_Start = new Pose2d(-31.5, 64.5, Math.toRadians(-90));
+
+    public static Pose2d Blue_Position1_Dodge = new Pose2d(-11,64.5, Math.toRadians(-90));
+    public static Pose2d Blue_Position2_Dodge = new Pose2d(-35, 64.5, Math.toRadians(-90));
+    public static Pose2d Blue_Position3_Dodge = new Pose2d(-62,64.5, Math.toRadians(-90));
+
+    public static Pose2d Blue_Park_Pos1 = new Pose2d(-11,26, Math.toRadians(-90));
+    public static Pose2d Blue_Park_Pos2 = new Pose2d(-35,26, Math.toRadians(-90));
+    public static Pose2d Blue_Park_Pos3 = new Pose2d(-62,26, Math.toRadians(-90));
 
     //    public static int Dawinchi_Ticks_Per_Rev = 1060; // 295; // From REV Robotics HD HEX 40:1
     public static double Slide_Ticks_Per_Rev = 537.7; // From REV Robotics Core HEX

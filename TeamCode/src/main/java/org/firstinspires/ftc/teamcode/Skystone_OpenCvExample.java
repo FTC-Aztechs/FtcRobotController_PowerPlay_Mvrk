@@ -12,8 +12,8 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-@Autonomous(name="Skystone camera example", group="Auto")
 @Disabled
+@Autonomous(name="Skystone camera example", group="Auto")
 public class Skystone_OpenCvExample extends LinearOpMode {
     Ryk_Robot Powerslay =new Ryk_Robot();
     FtcDashboard rykDashboard = FtcDashboard.getInstance();

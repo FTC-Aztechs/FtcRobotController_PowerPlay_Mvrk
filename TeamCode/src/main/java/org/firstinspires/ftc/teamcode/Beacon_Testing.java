@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -19,6 +20,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 
+@Disabled
 @Autonomous
 
 public class Beacon_Testing extends OpMode {
@@ -60,13 +62,9 @@ public class Beacon_Testing extends OpMode {
         double Hue;
         Mat outPut = new Mat();
         Scalar rectColor = new Scalar(0.0,0.0,0.0);
-       int[] red = {160, 180, 0, 10};
-       int[] green = {40, 70};
-       int[] blue = {90, 120};
-
-
-
-
+       int[] red = {150, 180, 0, 10};
+       int[] green = {70, 90};
+       int[] blue = {100, 120};
 
         public Mat processFrame(Mat input) {
 
@@ -74,7 +72,7 @@ public class Beacon_Testing extends OpMode {
             //telemetry.addLine("pipeline running");
 
 
-            Rect mainRect = new Rect(560, 480, 120, 200);
+            Rect mainRect = new Rect(650, 620, 100, 200);
 
             input.copyTo(outPut);
             Imgproc.rectangle(outPut, mainRect,rectColor,2);
@@ -98,7 +96,6 @@ public class Beacon_Testing extends OpMode {
             }
 
             telemetry.addData("Hue", "%f", Hue);
-
 
             return(outPut);
         }

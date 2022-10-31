@@ -9,10 +9,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -36,7 +34,7 @@ import static com.qualcomm.robotcore.util.ElapsedTime.Resolution.MILLISECONDS;
 
 @Config
 @Autonomous(name="Red Corner",group = "Autonomous")
-public class Ryk_Autonomous extends LinearOpMode {
+public class Ryk_Autonomous_Red extends LinearOpMode {
 
     enum RykAllianceField {
         RED,
@@ -72,10 +70,64 @@ public class Ryk_Autonomous extends LinearOpMode {
 
     public TrajectorySequence Park;
 
+    public static int col = 1;
+
     double SlideHigh = (Mavryk.Slide_High_Revs * Mavryk.Slide_Ticks_Per_Rev);
     double SlidePickup = (Mavryk.Slide_Min_Pickup_Revs * Mavryk.Slide_Ticks_Per_Rev);
     double SlideRest = (Mavryk.Slide_rest * Mavryk.Slide_Ticks_Per_Rev);
 
+    public static class examplePipeline extends OpenCvPipeline {
+
+        public enum Color
+        {
+            RED,
+            GREEN,
+            BLUE,
+            NONE
+        }
+
+        Mat HSV = new Mat();
+        Mat picCrop;
+        double Hue;
+        Mat outPut = new Mat();
+        Scalar rectColor = new Scalar(0.0,0.0,0.0);
+        int[] red = {135, 180, 0, 10};
+        int[] green = {70, 90};
+        int[] blue = {100, 120};
+
+        private volatile examplePipeline.Color color = examplePipeline.Color.NONE;
+
+        public Mat processFrame(Mat input) {
+
+            Imgproc.cvtColor(input, HSV, Imgproc.COLOR_RGB2HSV);
+            Rect mainRect = new Rect(850, 620, 100, 200);
+
+            input.copyTo(outPut);
+            Imgproc.rectangle(outPut, mainRect,rectColor,2);
+
+            picCrop = HSV.submat(mainRect);
+            Scalar Average = Core.mean(picCrop);
+
+            Core.extractChannel(picCrop, picCrop, 1);
+            Hue = Average.val[0];
+
+            if ( (red[0] < Hue && Hue < red[1]) || (red[2] < Hue && Hue < red[3])) {
+                color = Color.RED;
+            } else if ( green[0] < Hue && Hue < green[1]) {
+                color = Color.GREEN;
+            } else if ( blue[0] < Hue && Hue < blue[1]) {
+                color = Color.BLUE;
+            } else {
+                color = Color.NONE;
+            }
+
+            return(outPut);
+        }
+        public double getAnalysis()
+        {
+            return Hue;
+        }
+    }
 
 
     @Override
@@ -94,32 +146,71 @@ public class Ryk_Autonomous extends LinearOpMode {
         double volts = getBatteryVoltage();
         telemetry.addLine(String.format("%d. Battery voltage: %.1f volts", iTeleCt++, volts));
 
-        // init VUFORIA
-        VuforiaLocalizer.Parameters vuParams = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
-        vuParams.vuforiaLicenseKey = VUFORIA_LICENSE_KEY;
-        vuParams.cameraName = Mavryk.eyeOfSauron;
-        vuParams.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-        vuParams.cameraMonitorFeedback = VuforiaLocalizer.Parameters.CameraMonitorFeedback.AXES;
-        vuParams.useExtendedTracking = false;
-        VuforiaLocalizer rykVuforia = ClassFactory.getInstance().createVuforia(vuParams);
+        Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Mavryk.Claw_Close_Pos);
+        sleep(3000);
 
-        // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status: ", "Initializing camera......");
         telemetry.update();
-        
-        acquireCamera();
 
+        //init
+        //acquireCamera();
+
+        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Sauron");
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        Sauron = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
+        examplePipeline pipeline = new examplePipeline();
+        Sauron.setPipeline(pipeline);
+        telemetry.addData("Status: ", "Pipeline set ...");
+
+        // We set the viewport policy to optimized view so the preview doesn't appear 90 deg
+        // out when the RC activity is in portrait. We do our actual image processing assuming
+        // landscape orientation, though.
+        Sauron.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            public void onOpened() {
+                Sauron.startStreaming(1920, 1080, OpenCvCameraRotation.UPRIGHT);
+                telemetry.addData("Status: ", "Sauron Streaming ...");
+                rykRobot.startCameraStream(Sauron, 0);
+            }
+            public void onError(int errorCode) {
+                return;
+            }
+         });
+
+        sleep(7000);
         telemetry.addData("Status: ", "Ready");
         telemetry.update();
 
+
+        // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
+
         // 1. Calculate Parking Position
-        telemetry.addLine(String.format("%d. Detected Warehouse Level: %d", iTeleCt++, pipeline.color));
-        telemetry.update();
+
+        telemetry.addLine(String.format("Detected Hue value: %f", pipeline.Hue));
+//        telemetry.update();
+        switch(pipeline.color)
+        {
+            case RED:
+                telemetry.addData("Color: ", "Red");
+                col = 1;
+                break;
+            case GREEN:
+                telemetry.addData("Color: ", "Green");
+                col = 2;
+                break;
+            case BLUE:
+                telemetry.addData("Color: ", "Blue");
+                col = 3;
+                break;
+            case NONE:
+                telemetry.addData("Color: ", "Not detected");
+                col = 0;
+                break;
+        }
 
         initMotorsAndServos(true);
-        buildParkTrajectories_position();
+        buildParkTrajectories_position(col);
 
         // 2. Move to dropoff pole
 
@@ -135,8 +226,8 @@ public class Ryk_Autonomous extends LinearOpMode {
         // 4. Drive to cone stack
 
         // 5. Pickup cone
-        Pose2d startPose = Ryk_Robot.Start;
-        //Mavryk.mecanumDrive.setPoseEstimate(startPose);
+        Pose2d startPose = Ryk_Robot.Red_Start;
+        Mavryk.mecanumDrive.setPoseEstimate(startPose);
 
         // 6. Drive back to pole
 
@@ -154,35 +245,32 @@ public class Ryk_Autonomous extends LinearOpMode {
     }
 
 
-    void buildParkTrajectories_position() {
+    void buildParkTrajectories_position(int col) {
 
         telemetry.addLine(String.format("%d. buildWarehouseTrajectories_position", iTeleCt++));
 
-        switch (pipeline.color) {
-            case RED:
-                Park = Position1;
-                Position1 = Mavryk.mecanumDrive.trajectorySequenceBuilder(Ryk_Robot.Start)
-                        .lineToLinearHeading(Ryk_Robot.Position1_Dodge)
-                        .lineToLinearHeading(Ryk_Robot.Park_Pos1)
+        switch (col) {
+            case 1:
+                Park = Mavryk.mecanumDrive.trajectorySequenceBuilder(Ryk_Robot.Red_Start)
+                        .lineToLinearHeading(Ryk_Robot.Red_Position1_Dodge)
+                        .lineToLinearHeading(Ryk_Robot.Red_Park_Pos1)
                         .build();
                 break;
-            case GREEN:
-                Park = Position2;
-                Position2 = Mavryk.mecanumDrive.trajectorySequenceBuilder(Ryk_Robot.Start)
-                        .lineToLinearHeading(Ryk_Robot.Park_Pos2)
+            case 2:
+                Park = Mavryk.mecanumDrive.trajectorySequenceBuilder(Ryk_Robot.Red_Start)
+                        .lineToLinearHeading(Ryk_Robot.Red_Position2_Dodge)
+                        .lineToLinearHeading(Ryk_Robot.Red_Park_Pos2)
                         .build();
                 break;
-            case BLUE:
-                Park = Position3;
-                Position3 = Mavryk.mecanumDrive.trajectorySequenceBuilder(Ryk_Robot.Start)
-                        .lineToLinearHeading(Ryk_Robot.Position3_Dodge)
-                        .lineToLinearHeading(Ryk_Robot.Park_Pos3)
+            case 3:
+                Park = Mavryk.mecanumDrive.trajectorySequenceBuilder(Ryk_Robot.Red_Start)
+                        .lineToLinearHeading(Ryk_Robot.Red_Position3_Dodge)
+                        .lineToLinearHeading(Ryk_Robot.Red_Park_Pos3)
                         .build();
                 break;
-            case NONE:
-                Park = Terminal;
-                Terminal = Mavryk.mecanumDrive.trajectorySequenceBuilder(Ryk_Robot.Start)
-                        .lineToLinearHeading(Ryk_Robot.Position1_Dodge)
+            case 0:
+                Park = Mavryk.mecanumDrive.trajectorySequenceBuilder(Ryk_Robot.Red_Start)
+                        .lineToLinearHeading(Ryk_Robot.Red_Position1_Dodge)
                         .build();
                 break;
         }
@@ -340,9 +428,11 @@ public class Ryk_Autonomous extends LinearOpMode {
 
             public void onError(int errorCode) {
 
+                return;
+
             }
 
-            // return;
+
 
         });
 
@@ -350,65 +440,6 @@ public class Ryk_Autonomous extends LinearOpMode {
         return;
     }
 
-    public static class examplePipeline extends OpenCvPipeline {
-
-        public enum Color
-        {
-            RED,
-            GREEN,
-            BLUE,
-            NONE
-        }
-
-        Mat HSV = new Mat();
-        Mat picCrop;
-        double Hue;
-        Mat outPut = new Mat();
-        Scalar rectColor = new Scalar(0.0,0.0,0.0);
-        int[] red = {160, 180, 0, 10};
-        int[] green = {40, 70};
-        int[] blue = {90, 120};
-
-        private volatile examplePipeline.Color color = examplePipeline.Color.NONE;
-
-
-        public Mat processFrame(Mat input) {
-
-            Imgproc.cvtColor(input, HSV, Imgproc.COLOR_RGB2HSV);
-
-
-            Rect mainRect = new Rect(120, 90, 79, 59);
-
-            input.copyTo(outPut);
-            Imgproc.rectangle(outPut, mainRect,rectColor,2);
-
-            picCrop = HSV.submat(mainRect);
-
-            Scalar Average = Core.mean(picCrop);
-
-            Core.extractChannel(picCrop, picCrop, 1);
-
-            Hue = Average.val[0];
-
-            if ( (red[0] < Hue && Hue < red[1]) || (red[2] < Hue && Hue < red[3])) {
-                color = Color.RED;
-            } else if ( green[0] < Hue && Hue < green[1]) {
-                color = Color.GREEN;
-            } else if ( blue[0] < Hue && Hue < blue[1]) {
-                color = Color.BLUE;
-            } else {
-                color = Color.NONE;
-            }
-
-
-
-            return(outPut);
-        }
-        public double getAnalysis()
-        {
-            return Hue;
-        }
-    }
 
 }
 
