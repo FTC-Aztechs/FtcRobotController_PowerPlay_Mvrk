@@ -155,6 +155,19 @@ public class Ryk_Autonomous_Red extends LinearOpMode {
         //init
         //acquireCamera();
 
+        // During Init:
+            // 1. Use Vuforia to Calculate initial pose estimate from viewables
+            // 2. Use OpenCV to prepare to recognize the signal
+        // Upon Play:
+            // 3. Determine coordinates for parking position based on signal
+            // 4. Move to drop off the pre-loaded cone on the middle tall pole
+            // 5. Turn to face the cone pick-up stack
+            // 6. Drive to the programmed cone pick-up position
+            // 7. Use Vuforia to re-calculate pose estimate
+            // 8. Spline to this position - from where we are
+            // 9. Cycle cone <- loop?
+            // 10. After last cone cycled, drive to park position.
+
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Sauron");
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         Sauron = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
@@ -180,13 +193,10 @@ public class Ryk_Autonomous_Red extends LinearOpMode {
         telemetry.addData("Status: ", "Ready");
         telemetry.update();
 
-
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-
         // 1. Calculate Parking Position
-
         telemetry.addLine(String.format("Detected Hue value: %f", pipeline.Hue));
 //        telemetry.update();
         switch(pipeline.color)
@@ -277,114 +287,6 @@ public class Ryk_Autonomous_Red extends LinearOpMode {
 
         telemetry.addLine(String.format("%d. Trjectory Duration after build: %.3f", iTeleCt++, Park.duration()));
         return;
-
-//        mrvBlue2 = Mavryk.mecanumDrive.trajectorySequenceBuilder(Mavryk.blue_2_pose_estimate)
-//
-//        // 2. Move to dropoff pole
-//
-//                .lineToLinearHeading(new Pose2d(12,60, Math.toRadians(-90)))
-//                .lineToLinearHeading(new Pose2d(12,12, Math.toRadians(-90)))
-//
-//
-//        // 3. Extend Slides + dropoff
-//                .addDisplacementMarker(()  -> {
-//
-//                    //raise slides
-//                    Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, Mavryk.dSlidePower);
-//                    while(opModeIsActive() && Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE) < SlideHigh) {
-//                        idle();
-//                    }
-//                    Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, 0);
-//
-//                    //open claw
-//                    Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Ryk_Robot.Claw_Open_Pos);
-//                })
-//
-//                .lineToLinearHeading(new Pose2d(16,8, Math.toRadians(-45)))
-//                .waitSeconds(0.2)
-//                //close claw
-//                .addDisplacementMarker(() -> {
-//                    Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Ryk_Robot.Claw_Close_Pos);
-//                })
-//                .lineToLinearHeading(new Pose2d(12,12, Math.toRadians(0)))
-//                .addDisplacementMarker(()  -> {
-//
-//                    //lower slides
-//                    Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, -Mavryk.dSlidePower);
-//                    while(opModeIsActive() && Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE) > SlideRest) {
-//                        idle();
-//                    }
-//                    Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, 0);
-//                })
-//
-//
-//
-//
-//
-//        // 4. Drive to cone stack
-//                .lineToLinearHeading(new Pose2d(60,12, Math.toRadians(0)))
-//
-//        // 5. Pickup cone
-//
-//                //raise to pickup and open claw
-//                .addDisplacementMarker(()  -> {
-//                    Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, Mavryk.dSlidePower);
-//                    while(opModeIsActive() && Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE) < SlidePickup) {
-//                        idle();
-//                    }
-//                    Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, 0);
-//
-//                    //open claw
-//                    Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Ryk_Robot.Claw_Open_Pos);
-//                })
-//
-//                //drive to cone
-//                .lineToLinearHeading(new Pose2d(60,12, Math.toRadians(0)))
-//
-//                //close claw
-//                .addDisplacementMarker(()  -> {
-//                    //close claw
-//                    Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Ryk_Robot.Claw_Close_Pos);
-//                })
-//
-//        // 6. Drive back to pole
-//                .lineToLinearHeading(new Pose2d(12,12, Math.toRadians(0)))
-//        // 7. repeat steps 3-6 for cycling
-//                .addDisplacementMarker(()  -> {
-//
-//                    //raise slides
-//                    Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, Mavryk.dSlidePower);
-//                    while(opModeIsActive() && Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE) < SlideHigh) {
-//                        idle();
-//                    }
-//                    Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, 0);
-//
-//                    //open claw
-//                    Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Ryk_Robot.Claw_Open_Pos);
-//                })
-//
-//                .lineToLinearHeading(new Pose2d(16,8, Math.toRadians(-45)))
-//                .waitSeconds(0.2)
-//                //close claw
-//                .addDisplacementMarker(() -> {
-//                    Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Ryk_Robot.Claw_Close_Pos);
-//                })
-//                .lineToLinearHeading(new Pose2d(12,12, Math.toRadians(0)))
-//                .addDisplacementMarker(()  -> {
-//
-//                    //lower slides
-//                    Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, -Mavryk.dSlidePower);
-//                    while(opModeIsActive() && Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE) > SlideRest) {
-//                        idle();
-//                    }
-//                    Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, 0);
-//                })
-//
-//                // 8. park in spot
-
-//                .build()
-//        ;
-
 
     }
 

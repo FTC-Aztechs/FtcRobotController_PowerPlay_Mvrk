@@ -208,18 +208,11 @@ public class Ryk_Robot
         lower_right = hwMap.get(DcMotor.class, "Lower_Right");
         Jerry = hwMap.get(DcMotor.class, "Jerry");
         Tom = hwMap.get(DcMotor.class, "Tom");
-//        duck_wheel = hwMap.get(DcMotor.class, "Duck_Wheel");
-//        another_duck_wheel = hwMap.get(DcMotor.class, "Duck_Wheel_2");
-//        Linac = hwMap.get(DcMotor.class, "Linac_2.0");
-//        Da_Winch = hwMap.get(DcMotor.class, "Da_Winch");
 
 
         //Servo
-        //  The_Claw = hwMap.get(Servo.class, "The_Clawww");
         Handsel = hwMap.get(Servo.class, "Handsel");
         Grabbel = hwMap.get(Servo.class, "Grabbel");
-//        Wristy = hwMap.get(Servo.class, "Wristy");
-//        Flappy_Bird = hwMap.get(Servo.class, "Flappy_Bird");
 
 
         // Acquire gyro
@@ -236,11 +229,6 @@ public class Ryk_Robot
         lower_right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Jerry.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Tom.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        duck_wheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        another_duck_wheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        Linac.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        Da_Winch.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
@@ -250,18 +238,12 @@ public class Ryk_Robot
         lower_right.setDirection(DcMotor.Direction.FORWARD); //+ used to be
         Jerry.setDirection(DcMotor.Direction.FORWARD); //- used to be
         Tom.setDirection(DcMotor.Direction.REVERSE); //+ used to be
-//        duck_wheel.setDirection(DcMotor.Direction.FORWARD);
-//        another_duck_wheel.setDirection(DcMotor.Direction.REVERSE);
-//        Linac.setDirection(DcMotor.Direction.REVERSE);
-//        Da_Winch.setDirection(DcMotor.Direction.FORWARD);
         Handsel.setDirection(Servo.Direction.REVERSE);
         Grabbel.setDirection(Servo.Direction.FORWARD);
 
 
         mecanumDrive = new SampleMecanumDrive(hwMap);
         eyeOfSauron = hwMap.get(WebcamName.class, "Sauron");
-
-
 
 //        Touche_Linac.setMode(DigitalChannel.Mode.INPUT);
 //        Touche_Winch.setMode(DigitalChannel.Mode.INPUT);
@@ -274,56 +256,6 @@ public class Ryk_Robot
     String formatDegrees(double degrees) {
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
     }
-
-//    public boolean killPowerIfStalled(RykServos eWhichServo)
-//    {
-//        switch( eWhichServo ) {
-//            case HANDSEL:
-//                if(Handsel.getPower() !=0f)
-//                    break;
-//                double currentPos = Handsel.getController().getServoPosition(0);
-//                if(HandselClawLastPos == 0f)
-//                    HandselClawLastPos = currentPos;
-//
-//                if(  HandselClawLastPos != 0f &&
-//                     ( (HandselClawLastPos -currentPos) != 0f ) &&
-//                     ( (HandselClawTimer.time() > stallDetectionThreshold ) ) )
-//                {
-//                    Handsel.setPower(0f);
-//                    HandselClawTimer.reset();
-//                }
-//                else {
-//                    HandselClawTimer.reset();
-//                    HandselClawTimer.startTime();
-//                    HandselClawLastPos = 0f;
-//                }
-//                break;
-//            case GRABBEL:
-//                if(Grabbel.getPower() !=0f)
-//                    break;
-//                double currentPos = Grabbel.getController().getServoPosition(0);
-//                if(GrabbelClawLastPos == 0f)
-//                    GrabbelClawLastPos = currentPos;
-//
-//                if(  GrabbelClawLastPos != 0f &&
-//                        ( (GrabbelClawLastPos -currentPos) != 0f ) &&
-//                        ( (GrabbelClawTimer.time() > stallDetectionThreshold ) ) )
-//                {
-//                    Grabbel.setPower(0f);
-//                    GrabbelClawTimer.reset();
-//                }
-//                else {
-//                    GrabbelClawTimer.reset();
-//                    GrabbelClawTimer.startTime();
-//                    GrabbelClawLastPos = 0f;
-//                }
-//                break;
-//            default:
-//                break;
-//        }
-//        return false;
-//    }
-
 
     public void setRunMode(RykMotors eWhichMotor, DcMotor.RunMode eMode )
     {
@@ -341,16 +273,6 @@ public class Ryk_Robot
             case LOWER_RIGHT:
                 lower_right.setMode(eMode);
                 break;
-//            case DUCK_WHEELS:
-//                duck_wheel.setMode(eMode);
-//                another_duck_wheel.setMode(eMode);
-//                break;
-//            case LIN_AC:
-//                Linac.setMode(eMode);
-//                break;
-//            case DA_WINCHI:
-//                Da_Winch.setMode(eMode);
-//                break;
             case CAT_MOUSE:
                 Jerry.setMode(eMode);
                 Tom.setMode(eMode);
@@ -362,10 +284,6 @@ public class Ryk_Robot
                 upper_left.setMode(eMode);
                 break;
             case ALL_ATTACHMENTS:
-//                Linac.setMode(eMode);
-//                duck_wheel.setMode(eMode);
-//                another_duck_wheel.setMode(eMode);
-//                Da_Winch.setMode(eMode);
                 break;
             case ALL:
                 lower_right.setMode(eMode);
@@ -374,10 +292,6 @@ public class Ryk_Robot
                 upper_left.setMode(eMode);
                 Jerry.setMode(eMode);
                 Tom.setMode(eMode);
-//                duck_wheel.setMode(eMode);
-//                another_duck_wheel.setMode(eMode);
-//                Da_Winch.setMode(eMode);
-//                Linac.setMode(eMode);
                 break;
         }
     }
@@ -398,16 +312,6 @@ public class Ryk_Robot
             case LOWER_RIGHT:
                 lower_right.setPower(dPower);
                 break;
-//            case DUCK_WHEELS:
-//                duck_wheel.setPower(dPower);
-//                another_duck_wheel.setPower(dPower);
-//                break;
-//            case LIN_AC:
-//                Linac.setPower(dPower);
-//                break;
-//            case DA_WINCHI:
-//                Da_Winch.setPower(dPower);
-//                break;
             case CAT_MOUSE:
                 Jerry.setPower(dPower);
                 Tom.setPower(dPower);
@@ -425,10 +329,6 @@ public class Ryk_Robot
                 upper_left.setPower(dPower);
                 Jerry.setPower(dPower);
                 Tom.setPower(dPower);
-//                duck_wheel.setPower(dPower);
-//                another_duck_wheel.setPower(dPower);
-//                Da_Winch.setPower(dPower);
-//                Linac.setPower(dPower);
                 break;
         }
     }
@@ -445,10 +345,8 @@ public class Ryk_Robot
                 return upper_right.getCurrentPosition();
             case LOWER_RIGHT:
                 return lower_right.getCurrentPosition();
-//            case LIN_AC:
-//                return Linac.getCurrentPosition();
-//            case DA_WINCHI:
-//                return Da_Winch.getCurrentPosition();
+            case CAT_MOUSE:
+                return Jerry.getCurrentPosition();
             default:
                 return 0;
         }
@@ -485,12 +383,6 @@ public class Ryk_Robot
                 return upper_right.isBusy();
             case LOWER_RIGHT: // lower right
                 return lower_right.isBusy();
-//            case DUCK_WHEELS:
-//                return duck_wheel.isBusy() && another_duck_wheel.isBusy();
-//            case LIN_AC:
-//                return Linac.isBusy();
-//            case DA_WINCHI:
-//                return Da_Winch.isBusy();
             case CAT_MOUSE:
                 return Jerry.isBusy() && Tom.isBusy();
             case ALL_DRIVES: // All Drives
@@ -523,12 +415,6 @@ public class Ryk_Robot
                 Jerry.setTargetPosition(iPos);
                 Tom.setTargetPosition(iPos);
                 break;
-//            case LIN_AC:
-//                Linac.setTargetPosition(iPos);
-//                break;
-//            case DA_WINCHI:
-//                Da_Winch.setTargetPosition(iPos);
-//                break;
             case ALL_DRIVES:
                 lower_right.setTargetPosition(iPos);
                 lower_left.setTargetPosition(iPos);
@@ -542,10 +428,6 @@ public class Ryk_Robot
                 upper_left.setTargetPosition(iPos);
                 Jerry.setTargetPosition(iPos);
                 Tom.setTargetPosition(iPos);
-//                duck_wheel.setTargetPosition(iPos);
-//                another_duck_wheel.setTargetPosition(iPos);
-//                Da_Winch.setTargetPosition(iPos);
-//                Linac.setTargetPosition(iPos);
             default:
                 break;
         }

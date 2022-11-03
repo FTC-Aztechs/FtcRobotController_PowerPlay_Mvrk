@@ -221,38 +221,6 @@ public class Ryk_Manual extends LinearOpMode {
         return;
     }
 
-//    public void mrvDuckWheel() {
-//
-//        if (gamepad2.left_bumper) {
-//            DuckOn = gamepad2.left_bumper;
-//            telemetry.addData("Duck Wheel toggle to:", DuckOn);
-//            if (DuckOn) {
-//                telemetry.addData("Duck Wheelsss:", "Spinning Clockwise");
-//                telemetry.update();
-//                DuckPowerDir = 1;
-//            }
-//            sleep(500);
-//        } else if (gamepad2.right_bumper) {
-//            DuckOn = gamepad2.right_bumper;
-//            telemetry.addData("Duck Wheel toggle to:", DuckOn);
-//            if (DuckOn) {
-//                telemetry.addData("Duck Wheelsss:", "Spinning Counterclockwise");
-//                telemetry.update();
-//                DuckPowerDir = -1;
-//            }
-//            sleep(500);
-//        } else {
-//            DuckOn = false;
-//        }
-//
-//        if (DuckOn) {
-//            powerslay.setPower(Pp_Robot.MrvMotors.DUCK_WHEELS, duck_power * DuckPowerDir);
-//        } else {
-//            powerslay.setPower(Pp_Robot.MrvMotors.DUCK_WHEELS, 0);
-//        }
-//        return;
-//    }
-//
     public void rykClaw() {
         ServoTurn = gamepad2.right_trigger == 1f;
 
