@@ -321,7 +321,7 @@ public class Ryk_Manual extends LinearOpMode {
 //        } else {
 //            assumingDropPosition = false;
 //        }
-//
+
 //
 //        powerslay.Wristy.setPosition(Wrist_Pos);
 //        return;

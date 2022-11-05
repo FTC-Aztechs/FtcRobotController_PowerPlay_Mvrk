@@ -33,11 +33,8 @@ package org.firstinspires.ftc.teamcode;
 //import com.acmerobotics.dashboard.config.Config;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
-import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_WITHOUT_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
 import static com.qualcomm.robotcore.util.ElapsedTime.Resolution.MILLISECONDS;
-
-import android.transition.Slide;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -75,8 +72,12 @@ public class Slide_Debugger extends LinearOpMode {
 //
     boolean ServoTurn = false;
     double Claw_Position; // Start at halfway position
-    public static int MotorPos = 0;
-    public static double SlidePower= 0.5;
+    public static int HighJunction = 1080;
+    public static int MidJunction = 800;
+    public static int LowJunction = 450;
+    public static int GroundJunction = 100;
+    public static int SlidesAtRest = 0;
+    public static double SlidePower= 1;
 
     public static int Mode = 0;
 
@@ -112,9 +113,9 @@ public class Slide_Debugger extends LinearOpMode {
 //    private static ElapsedTime timer_gp1_dpad_down;
     private static final ElapsedTime timer_gp1_dpad_left = new ElapsedTime(MILLISECONDS);
     private static final ElapsedTime timer_gp1_dpad_right = new ElapsedTime(MILLISECONDS);
-    //    private static ElapsedTime timer_gp2_buttonA = new ElapsedTime(MILLISECONDS);
+    //private static ElapsedTime timer_gp2_buttonA = new ElapsedTime(MILLISECONDS);
 //    private static ElapsedTime timer_gp2_buttonX = new ElapsedTime(MILLISECONDS);
-//    private static ElapsedTime timer_gp2_buttonY = new ElapsedTime(MILLISECONDS);
+    private static ElapsedTime timer_gp2_buttonY = new ElapsedTime(MILLISECONDS);
 //    private static ElapsedTime timer_gp2_buttonB = new ElapsedTime(MILLISECONDS);
 //    ;
 //    private static ElapsedTime timer_gp2_dpad_up = new ElapsedTime(MILLISECONDS);
@@ -128,6 +129,8 @@ public class Slide_Debugger extends LinearOpMode {
 
     //boolean DuckOn = false;
     FtcDashboard rykDashboard;
+    private boolean assumingHighPosition;
+
     @Override
     public void runOpMode() {
 
@@ -135,6 +138,7 @@ public class Slide_Debugger extends LinearOpMode {
         Mavryk.init(hardwareMap);
 
         initMavryk();
+        Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Mavryk.Claw_Close_Pos);
         waitForStart();
 
 
@@ -221,7 +225,31 @@ public class Slide_Debugger extends LinearOpMode {
             }
         }
 
-        Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, -gamepad2.left_stick_y * (UpAdjust / 10));
+        if (gamepad2.y) {
+            if (!assumingHighPosition) {
+                timer_gp2_buttonY.reset();
+                assumingHighPosition = true;
+            } else if (timer_gp2_buttonY.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+                telemetry.addLine("GP2_Y triggered. Will set Wrist to pickup position");
+                telemetry.update();
+
+                // Setting the target position to HighJunction
+                Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, HighJunction);
+                Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
+                Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower);
+
+                while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE)) {
+                    telemetry.addLine("In High position....");
+                    telemetry.update();
+                    idle();
+                }
+
+                assumingHighPosition = false;
+            }
+        }
+
+
+        //Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, -gamepad2.left_stick_y * (UpAdjust / 10));
 
         telemetry.addData("Encoder Ticks", Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE));
         telemetry.update();
@@ -229,20 +257,88 @@ public class Slide_Debugger extends LinearOpMode {
     }
 
     public void Tester (){
-        double SlideDir = 1;
+        
+        ElapsedTime timer = new ElapsedTime(MILLISECONDS);
+        timer.reset();
 
-        if (Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE) <= MotorPos){
-            SlideDir = 1;
-        } else{
-            SlideDir = -1;
+        // Setting the target position to HighJunction
+        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, HighJunction);
+        Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
+        Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower);
+
+        while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
+            telemetry.addLine("In High position....");
+            telemetry.update();
+            idle();
         }
+        timer.reset();
 
-        if ((MotorPos - 10) < Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE) && Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE)< (MotorPos+10)){
-            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, 0);
 
-        } else {
-            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlideDir* SlidePower);
+        // Setting the target position to MidJunction
+        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, MidJunction);
+        Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
+        Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower);
+
+        while(opModeIsActive() /*&& Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE)*/ && timer.milliseconds() < 5000 ) {
+            telemetry.addLine("In Middle position....");
+            telemetry.update();
+            idle();
         }
+        timer.reset();
+
+
+        // Setting the target position to LowJunction
+        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, LowJunction);
+        Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
+        Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower);
+
+        while(opModeIsActive() /*&& Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE)*/ && timer.milliseconds() < 5000 ) {
+            telemetry.addLine("In Low position....");
+            telemetry.update();
+            idle();
+        }
+        timer.reset();
+
+        // Setting the target position to GroundJunction
+        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, GroundJunction);
+        Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
+        Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower);
+
+        while(opModeIsActive() /*&& Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE)*/ && timer.milliseconds() < 5000 ) {
+            telemetry.addLine("In Ground position....");
+            telemetry.update();
+            idle();
+        }
+        timer.reset();
+
+        // Setting the target position to SlidesAtRest
+        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, SlidesAtRest);
+        Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
+        Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower);
+
+        while(opModeIsActive() /*&& Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE)*/ && timer.milliseconds() < 5000 ) {
+            telemetry.addLine("In Rest position....");
+            telemetry.update();
+            idle();
+        }
+        timer.reset();
+
+
+
+//        double SlideDir = 1;
+//
+//        if (Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE) <= MotorPos){
+//            SlideDir = 1;
+//        } else{
+//            SlideDir = -1;
+//        }
+//
+//        if ((MotorPos - 10) < Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE) && Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE)< (MotorPos+10)){
+//            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, 0);
+//
+//        } else {
+//            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlideDir* SlidePower);
+//        }
 
         telemetry.addData("Encoder Ticks", Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE));
         telemetry.update();
