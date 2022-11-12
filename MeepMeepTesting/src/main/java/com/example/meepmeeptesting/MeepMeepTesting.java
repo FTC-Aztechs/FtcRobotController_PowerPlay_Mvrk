@@ -13,19 +13,17 @@ public class MeepMeepTesting {
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(36, 64.5, Math.toRadians(-90)))
-
-                                //position 1
-                                .lineToLinearHeading(new Pose2d(60,64.5, Math.toRadians(-90)))
-                                .lineToLinearHeading(new Pose2d(60,24, Math.toRadians(-90)))
-                                //positon 2
-//                                .lineToLinearHeading(new Pose2d(36,24, Math.toRadians(-90)))
-                                //position 3
-//                                .lineToLinearHeading(new Pose2d(12,60, Math.toRadians(-90)))
-//                                .lineToLinearHeading(new Pose2d(12,24, Math.toRadians(-90)))
-
-
+                        drive.trajectorySequenceBuilder(new Pose2d(40.5, 64.5, Math.toRadians(-90))) //start
+                                .lineToLinearHeading(new Pose2d(12,64.5, Math.toRadians(-90))) //dropoff dodge
+                                .lineToLinearHeading(new Pose2d(12,12, Math.toRadians(-90)))  //dropoff tile
+                                .lineToLinearHeading(new Pose2d(-16,8, Math.toRadians(-135)))  // dropoff
+                                .waitSeconds(0.5)
+                                //.lineToLinearHeading(new Pose2d(-12,12, Math.toRadians(180)))  //turn to cones
+                                .lineToLinearHeading(new Pose2d(-12,12, Math.toRadians(180)))  // park 1
                                 .build()
+
+
+
                 );
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_POWERPLAY_OFFICIAL)

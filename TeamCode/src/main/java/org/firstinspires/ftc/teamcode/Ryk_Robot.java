@@ -37,6 +37,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
@@ -100,6 +101,17 @@ public class Ryk_Robot
     public static double HandselClawLastPos = 0.0f;
     public static double GrabbelClawLastPos = 0.0f;
 
+    public static double UpAdjust = 10;
+    public static int HighJunction = 1100;
+    public static int MidJunction = 800;
+    public static int LowJunction = 450;
+    public static int GroundJunction = 100;
+    public static int FloorPosition = 10;
+    public static double SlidePower_Up= 1;
+    public static double SlidePower_Down = 0.3;
+    public static int ticks_stepSize = 100;
+    public static int BUTTON_TRIGGER_TIMER_MS = 500;
+
 //
 //    // TFOD detection
 //    public static double FirstPosMax = 250;
@@ -113,25 +125,29 @@ public class Ryk_Robot
 
 
     public static Pose2d Red_Start = new Pose2d(40.5, 64.5, Math.toRadians(-90));
-
-    public static Pose2d Red_Position1_Dodge = new Pose2d(62,64.5, Math.toRadians(-90));
-    public static Pose2d Red_Position2_Dodge = new Pose2d(35, 64.5, Math.toRadians(-90));
-    public static Pose2d Red_Position3_Dodge = new Pose2d(11,64.5, Math.toRadians(-90));
-
-    public static Pose2d Red_Park_Pos1 = new Pose2d(62,26, Math.toRadians(-90));
-    public static Pose2d Red_Park_Pos2 = new Pose2d(35,26, Math.toRadians(-90));
-    public static Pose2d Red_Park_Pos3 = new Pose2d(11,26, Math.toRadians(-90));
+    public static Pose2d Red_Dropoff_Dodge = new Pose2d(10,64.5, Math.toRadians(-90));
+    public static Pose2d Red_DropOff_Tile = new Pose2d(10,12, Math.toRadians(-90));
+    public static Pose2d Red_DropOff = new Pose2d(17.5,6.5, Math.toRadians(-50));
+    public static Pose2d Red_TurnToCones = new Pose2d(10,12, Math.toRadians(0));
+    public static Pose2d Red_Pickup = new Pose2d(60,12, Math.toRadians(0));
 
 
     public static Pose2d Blue_Start = new Pose2d(-31.5, 64.5, Math.toRadians(-90));
+    public static Pose2d Blue_Dropoff_Dodge = new Pose2d(-10,64.5, Math.toRadians(-90));
+    public static Pose2d Blue_DropOff_Tile = new Pose2d(-10,12, Math.toRadians(-90));
+    public static Pose2d Blue_DropOff = new Pose2d(-18,7, Math.toRadians(-130));
+    public static Pose2d Blue_TurnToCones = new Pose2d(-10,12, Math.toRadians(180));
+    public static Pose2d Blue_Pickup = new Pose2d(-60,12, Math.toRadians(180));
 
-    public static Pose2d Blue_Position1_Dodge = new Pose2d(-11,64.5, Math.toRadians(-90));
-    public static Pose2d Blue_Position2_Dodge = new Pose2d(-35, 64.5, Math.toRadians(-90));
-    public static Pose2d Blue_Position3_Dodge = new Pose2d(-62,64.5, Math.toRadians(-90));
+    public static Pose2d Red_Park_Pos1 = new Pose2d(60,12, Math.toRadians(0));
+    public static Pose2d Red_Park_Pos2 = new Pose2d(36,12, Math.toRadians(0));
+    public static Pose2d Red_Park_Pos3 = new Pose2d(13,12, Math.toRadians(0));
 
-    public static Pose2d Blue_Park_Pos1 = new Pose2d(-11,26, Math.toRadians(-90));
-    public static Pose2d Blue_Park_Pos2 = new Pose2d(-35,26, Math.toRadians(-90));
-    public static Pose2d Blue_Park_Pos3 = new Pose2d(-62,26, Math.toRadians(-90));
+    public static Pose2d Blue_Park_Pos1 = new Pose2d(-13,12, Math.toRadians(180));
+    public static Pose2d Blue_Park_Pos2 = new Pose2d(-36,12, Math.toRadians(180));
+    public static Pose2d Blue_Park_Pos3 = new Pose2d(-60,12, Math.toRadians(180));
+
+
 
     //    public static int Dawinchi_Ticks_Per_Rev = 1060; // 295; // From REV Robotics HD HEX 40:1
     public static double Slide_Ticks_Per_Rev = 537.7; // From REV Robotics Core HEX
@@ -167,6 +183,9 @@ public class Ryk_Robot
 
     public static double Slide_Min_Pickup_Revs = 0.9;
     public static double Slide_increment_Pickup_Revs = 0.9;
+
+    public static double auto_drop_wait = 1;
+
 
 
 
@@ -209,7 +228,6 @@ public class Ryk_Robot
         Jerry = hwMap.get(DcMotor.class, "Jerry");
         Tom = hwMap.get(DcMotor.class, "Tom");
 
-
         //Servo
         Handsel = hwMap.get(Servo.class, "Handsel");
         Grabbel = hwMap.get(Servo.class, "Grabbel");
@@ -220,6 +238,7 @@ public class Ryk_Robot
         //get touch sensor
 //        Touche_Linac = hwMap.get(DigitalChannel.class, "Touche");
 //        Touche_Winch = hwMap.get(DigitalChannel.class, "Touche2");
+
 
 
         // Set all motors to zero power
@@ -241,7 +260,6 @@ public class Ryk_Robot
         Handsel.setDirection(Servo.Direction.REVERSE);
         Grabbel.setDirection(Servo.Direction.FORWARD);
 
-
         mecanumDrive = new SampleMecanumDrive(hwMap);
         eyeOfSauron = hwMap.get(WebcamName.class, "Sauron");
 
@@ -255,6 +273,17 @@ public class Ryk_Robot
 
     String formatDegrees(double degrees) {
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
+    }
+
+    public double getBatteryVoltage() {
+        double result = Double.POSITIVE_INFINITY;
+        for (VoltageSensor sensor : hwMap.voltageSensor) {
+            double voltage = sensor.getVoltage();
+            if (voltage > 0) {
+                result = Math.min(result, voltage);
+            }
+        }
+        return result;
     }
 
     public void setRunMode(RykMotors eWhichMotor, DcMotor.RunMode eMode )

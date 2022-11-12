@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode;
 
 //import com.acmerobotics.dashboard.FtcDashboard;
 //import com.acmerobotics.dashboard.config.Config;
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
 import static com.qualcomm.robotcore.util.ElapsedTime.Resolution.MILLISECONDS;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -47,6 +48,7 @@ import java.util.concurrent.TimeUnit;
 @TeleOp(name="Ryk_Manual", group="Manual mode")
 //@Disabled
 public class Ryk_Manual extends LinearOpMode {
+
     // Declare OpMode members.
     Ryk_Robot Mavryk = new Ryk_Robot();
 //
@@ -54,51 +56,35 @@ public class Ryk_Manual extends LinearOpMode {
 //    static final double[] RANGE_FULL = {0.0, 1.0};
 
     public static double speedAdjust = 5;
-    //    public static double linacAdjust = 10;
     public static double UpAdjust = 10;
-    //    public static double dawinchAdjust = 6;
-//    private boolean assumingPickPosition = false;
-//    private boolean assumingDropPosition = false;
     private boolean changingWheelSpeed = false;
     private boolean changingSlideSpeed = false;
-//    private boolean changingDaWinchiSpeed = false;
-//    private boolean changingWrist = false;
 
-//    public static double duck_power = 0.29;
-//
+    public static int HighJunction = 1080;
+    public static int MidJunction = 800;
+    public static int LowJunction = 500;
+    public static int GroundJunction = 100;
+    public static int FloorPosition = 10;
+    public static double SlidePower_Up= 1;
+    public static double SlidePower_Down = 0.5;
+    public static int ticks_stepSize = 100;
+    public static int Mode = 1;
+    public static int BUTTON_TRIGGER_TIMER_MS = 500;
+
     boolean ServoTurn = false;
     double Claw_Position; // Start at halfway position
 
-//    public static double Wrist_Parallel_to_Linac = 0.425; // Parallel to arm
-//    public static double Wrist_chute_dropoff = 0.26; // Perpendicular to Arm at top
-//    public static double Wrist_TSE_Pickup_Pos = 0.325;
-//    public static double Wrist_Pos = 0.3;
-//    public static double Wrist_Start_Pos = 0.39; // Perpendicular to Arm at bottom
-//    public static double Wrist_Pickup_Pos = 0.39;
-//    public static double Wrist_Dropoff_Pos = 0.355;
-//    public static double Wrist_Low_Pos = 0.39;
-//    public static double wrist_increment = 0.015;
-//    public static double door_open = 0.8;
-//    public static double door_close = 0.50;
 
-    //
-    //0.52 for picking up preset
-//    public static int Winch_Parallel_to_ground = 100;
-//    public static int Linac_Parallel_to_ground = 100;
-//    public static int Winch_Chute_Dropoff = 100;
-//    public static int Linac_Chute_Dropoff = 100;
-//
-    public static int BUTTON_TRIGGER_TIMER_MS = 500;
-    //    public static int Wristy_Button_Trigger_Timer_Ms = 85;
-//    public static int Linac_Grab_Position_Ticks = 288; // From REV Robotics Core HEX
-//    public static int Dawinchi_Grab_Position_Ticks = 1120; // From REV Robotics HD HEX 40:1
-//
-//    private static ElapsedTime timer_gp1_buttonA;
+    //    private static ElapsedTime timer_gp1_buttonA;
 //    private static ElapsedTime timer_gp1_buttonX;
 //    private static ElapsedTime timer_gp1_buttonY;
 //    private static ElapsedTime timer_gp1_buttonB;
 //    private static ElapsedTime timer_gp1_dpad_up;
 //    private static ElapsedTime timer_gp1_dpad_down;
+    private static ElapsedTime timer_gp2_buttonA = new ElapsedTime(MILLISECONDS);
+    private static ElapsedTime timer_gp2_buttonX = new ElapsedTime(MILLISECONDS);
+    private static ElapsedTime timer_gp2_buttonY = new ElapsedTime(MILLISECONDS);
+    private static ElapsedTime timer_gp2_buttonB = new ElapsedTime(MILLISECONDS);
     private static ElapsedTime timer_gp1_dpad_left = new ElapsedTime(MILLISECONDS);
     private static ElapsedTime timer_gp1_dpad_right = new ElapsedTime(MILLISECONDS);
 //    private static ElapsedTime timer_gp2_buttonA = new ElapsedTime(MILLISECONDS);
@@ -110,6 +96,12 @@ public class Ryk_Manual extends LinearOpMode {
 //    private static ElapsedTime timer_gp2_dpad_down = new ElapsedTime(MILLISECONDS);
     private static ElapsedTime timer_gp2_dpad_left = new ElapsedTime(MILLISECONDS);
     private static ElapsedTime timer_gp2_dpad_right = new ElapsedTime(MILLISECONDS);
+
+    private boolean assumingHighPosition = false;
+    private boolean assumingMidPosition = false;
+    private boolean assumingLowPosition = false;
+    private boolean assumingFloorPosition = false;
+    private int currPos = FloorPosition;
 
 
 //    int DuckPowerDir = 1;
@@ -129,33 +121,11 @@ public class Ryk_Manual extends LinearOpMode {
 
         while (opModeIsActive()) {
             PpManualDrive();
-//            mrvDuckWheel();
             rykUpSlide();
             rykClaw();
 
-//            mrvLinAc();
-//            mrvDaWinchi();
-//            mrvWrist();
-//            mrvIntakeClaw();
-//            mrvFlappy();
         }
     }
-
-//    public void mrvIntakeClaw() {
-//        boolean bIntake = gamepad2.right_trigger == 1f;
-//        boolean bOuttake = gamepad2.left_trigger == 1f;
-//
-//        if (bIntake) {
-//            marvyn.Claw_Left.setPower(0.5);
-//            marvyn.Claw_Right.setPower(0.5);
-//        } else if (bOuttake) {
-//            marvyn.Claw_Left.setPower(-0.5);
-//            marvyn.Claw_Right.setPower(-0.5);
-//        } else {
-//            marvyn.Claw_Left.setPower(0);
-//            marvyn.Claw_Right.setPower(0);
-//        }
-//    }
 
     public void initMavryk() {
         msStuckDetectStop = 2500;
@@ -234,116 +204,127 @@ public class Ryk_Manual extends LinearOpMode {
         Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Position);
 
     }
-//
-//    public void mrvWrist() {
-//        // if (gamepad2.left_trigger == 1f) {
-//        //  Wrist_Pos = Wrist_chute_dropoff;
-//        //} else
-//        if (gamepad2.dpad_down) {
-//            if (!changingWrist) {
-//                timer_gp2_dpad_down.reset();
-//                changingWrist = true;
-//            } else if (timer_gp2_dpad_down.time(TimeUnit.MILLISECONDS) > Wristy_Button_Trigger_Timer_Ms) {
-//                if (Wrist_Pos >= Wrist_Low_Pos) {
-//                    Wrist_Pos = Wrist_Low_Pos;
-//                } else {
-//                    Wrist_Pos += wrist_increment;
-//                }
-//                telemetry.addData("Wrist Pos: ", "%f", Wrist_Pos);
-//                telemetry.update();
-//                changingWrist = false;
-//            }
-//        } else if (gamepad2.dpad_up) {
-//            if (!changingWrist) {
-//                timer_gp2_dpad_up.reset();
-//                changingWrist = true;
-//            } else if (timer_gp2_dpad_up.time(TimeUnit.MILLISECONDS) > Wristy_Button_Trigger_Timer_Ms) {
-//                if (Wrist_Pos <= Wrist_chute_dropoff) {
-//                    Wrist_Pos = Wrist_chute_dropoff;
-//                } else {
-//                    Wrist_Pos -= wrist_increment;
-//                }
-//                telemetry.addData("Wrist Pos: ", "%f", Wrist_Pos);
-//                telemetry.update();
-//                changingWrist = false;
-//            }
-//        }
-//
-//        if (gamepad2.a) {
-//            if (!assumingPickPosition) {
-//                timer_gp2_buttonA.reset();
-//                assumingPickPosition = true;
-//            } else if (timer_gp2_buttonA.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-//                telemetry.addLine("GP2_A triggered. Will set Wrist to pickup position");
-//                telemetry.update();
-//                Wrist_Pos = Wrist_Pickup_Pos;
-//                //   marvyn.The_Claw.setPosition(0);
-//                assumingPickPosition = false;
-//            }
-//        }
-//
-//        if (gamepad2.y) {
-//            if (!assumingPickPosition) {
-//                timer_gp2_buttonY.reset();
-//                assumingPickPosition = true;
-//            } else if (timer_gp2_buttonY.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-//                telemetry.addLine("GP2_Y triggered. Will set Wrist to chute dropoff position");
-//                telemetry.update();
-//                Wrist_Pos = Wrist_chute_dropoff;
-//                //   marvyn.The_Claw.setPosition(0);
-//                assumingPickPosition = false;
-//            }
-//        }
-//
-//        if (gamepad2.x) {
-//            if (!assumingPickPosition) {
-//                timer_gp2_buttonX.reset();
-//                assumingPickPosition = true;
-//            } else if (timer_gp2_buttonX.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-//                telemetry.addLine("GP2_X triggered. Will set Wrist to TSE pickup position");
-//                telemetry.update();
-//                Wrist_Pos = Wrist_TSE_Pickup_Pos;
-//                //   marvyn.The_Claw.setPosition(0);
-//                assumingPickPosition = false;
-//            }
-//        }
-//
-//        if (gamepad2.b) {
-//            if (!assumingDropPosition) {
-//                timer_gp2_buttonB.reset();
-//                assumingDropPosition = true;
-//            } else if (timer_gp2_buttonA.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-//                telemetry.addLine("GP2_B triggered. Will set Wrist to dropoff position");
-//                telemetry.update();
-//                Wrist_Pos = Wrist_Dropoff_Pos;
-//                assumingDropPosition = false;
-//            }
-//        } else {
-//            assumingDropPosition = false;
-//        }
 
-//
-//        powerslay.Wristy.setPosition(Wrist_Pos);
-//        return;
-//    }
-//
-//
-//    public void mrvFlappy() {
-//        powerslay.Flappy_Bird.setPosition(((door_open - door_close) * gamepad1.right_trigger)+ door_close);
-//    }
-//
-//    public void mrvLinAc() {
-//        if (!powerslay.Touche_Linac.getState()) {
-//            if (-gamepad2.left_stick_y < 0) {
-//                powerslay.setPower(Pp_Robot.MrvMotors.LIN_AC, 0);
-//            } else {
-//                powerslay.setPower(Pp_Robot.MrvMotors.LIN_AC, -gamepad2.left_stick_y * (linacAdjust / 10));
-//            }
-//        } else {
-//            powerslay.setPower(Pp_Robot.MrvMotors.LIN_AC, -gamepad2.left_stick_y * (linacAdjust / 10));
-//        }
-//    }
+    public void rykUpSlide_rue() {
+        //Gamepad2 left -> Decrease Speed
+        if (gamepad2.dpad_left) {
+            if (!changingSlideSpeed) {
+                timer_gp2_dpad_left.reset();
+                changingSlideSpeed = true;
+            } else if (timer_gp2_dpad_left.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+                if (UpAdjust <= 1) {
+                    UpAdjust = 1;
+                } else {
+                    UpAdjust -= 1;
+                }
+                telemetry.addData("Current Slide Speed: ", "%f", UpAdjust);
+                telemetry.update();
+                changingSlideSpeed = false;
+            }
+        }
 
+        //Gamepad 2right -> Increase Speed
+        if (gamepad2.dpad_right) {
+            if (!changingSlideSpeed) {
+                timer_gp2_dpad_right.reset();
+                changingSlideSpeed = true;
+            } else if (timer_gp2_dpad_right.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+                if (UpAdjust >= 10) {
+                    UpAdjust = 10;
+                } else {
+                    UpAdjust += 1;
+                }
+                telemetry.addData("Current Slide Speed: ", "%f", UpAdjust);
+                telemetry.update();
+                changingSlideSpeed = false;
+            }
+        }
+
+        int newPos = currPos + (int) ( -gamepad2.left_stick_y * ticks_stepSize);
+        if( newPos >= HighJunction)
+            newPos = HighJunction;
+        else if (newPos <= FloorPosition)
+            newPos = FloorPosition;
+        telemetry.addData("newPos calc from gamePad2.left_stick_y: ", newPos);
+        telemetry.update();
+
+        if (gamepad2.y) {
+            if (!assumingHighPosition) {
+                timer_gp2_buttonY.reset();
+                assumingHighPosition = true;
+            } else if (timer_gp2_buttonY.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+                telemetry.addLine("GP2_Y triggered. Set Tom&Jerry to High position");
+                telemetry.update();
+
+                newPos = HighJunction;
+                assumingHighPosition = false;
+            }
+        }
+
+        if (gamepad2.x) {
+            if (!assumingMidPosition) {
+                timer_gp2_buttonX.reset();
+                assumingMidPosition = true;
+            } else if (timer_gp2_buttonX.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+                telemetry.addLine("GP2_X triggered. Set Tom&Jerry to Mid position");
+                telemetry.update();
+                newPos = MidJunction;
+                assumingMidPosition = false;
+            }
+        }
+
+        if(gamepad2.a) {
+            if (!assumingLowPosition) {
+                timer_gp2_buttonY.reset();
+                assumingLowPosition = true;
+            } else if (timer_gp2_buttonA.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+                telemetry.addLine("GP2_A triggered. Set Tom&Jerry to Low position");
+                telemetry.update();
+
+                newPos = LowJunction;
+                assumingLowPosition = false;
+            }
+        }
+
+        if (gamepad2.b) {
+            if (!assumingFloorPosition) {
+                timer_gp2_buttonB.reset();
+                assumingFloorPosition = true;
+            } else if (timer_gp2_buttonB.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+                telemetry.addLine("GP2_B triggered. Set Tom&Jerry to Floor position");
+                telemetry.update();
+
+                newPos = FloorPosition;
+                assumingFloorPosition = false;
+            }
+        }
+
+        telemetry.addData("newPos from Any button triggers: ", newPos);
+        telemetry.update();
+
+        if( newPos != currPos && newPos >=FloorPosition && newPos <= HighJunction ) {
+            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, newPos);
+            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
+            if (newPos > currPos) {
+                Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
+                while (opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE)) {
+                    idle();
+                }
+            }
+            else if (newPos < currPos) {
+                Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
+                while (opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE)) {
+                    idle();
+                }
+            }
+            currPos = newPos;
+            telemetry.addData("currPos updated to: ", currPos);
+            telemetry.update();
+        }
+
+        telemetry.addData("rykUpSlide_rue: Current Slide Position: ", Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE));
+        telemetry.update();
+    }
 
     public void rykUpSlide() {
 
@@ -382,22 +363,6 @@ public class Ryk_Manual extends LinearOpMode {
         }
 
         Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, -gamepad2.left_stick_y * (UpAdjust / 10));
-
-//
-//
-//
-//    public void mrvDaWinchi() {
-//        if (!powerslay.Touche_Winch.getState()) {
-//            if (-gamepad2.right_stick_y < 0) {
-//                powerslay.setPower(Pp_Robot.MrvMotors.DA_WINCHI, 0);
-//            } else {
-//                powerslay.setPower(Pp_Robot.MrvMotors.DA_WINCHI, gamepad2.right_stick_y * (dawinchAdjust / 10));
-//            }
-//        }
-//        else {
-//            powerslay.setPower(Pp_Robot.MrvMotors.DA_WINCHI, gamepad2.right_stick_y * (dawinchAdjust / 10));
-//        }
-//    }
     }
 }
 
