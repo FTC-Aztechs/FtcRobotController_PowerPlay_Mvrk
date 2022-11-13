@@ -103,9 +103,6 @@ public class Ryk_Autonomous_Blue extends LinearOpMode {
         double Hue;
         Mat outPut = new Mat();
         Scalar rectColor = new Scalar(0.0,0.0,0.0);
-        int[] red = {135, 180, 0, 10};
-        int[] green = {70, 90};
-        int[] blue = {100, 120};
 
         private volatile Color color = Color.NONE;
 
@@ -123,14 +120,14 @@ public class Ryk_Autonomous_Blue extends LinearOpMode {
             Core.extractChannel(picCrop, picCrop, 1);
             Hue = Average.val[0];
 
-            if ( (red[0] < Hue && Hue < red[1]) || (red[2] < Hue && Hue < red[3])) {
-                color = Color.RED;
-            } else if ( green[0] < Hue && Hue < green[1]) {
-                color = Color.GREEN;
-            } else if ( blue[0] < Hue && Hue < blue[1]) {
-                color = Color.BLUE;
+            if ( (Ryk_Robot.red[0] < Hue && Hue < Ryk_Robot.red[1]) || (Ryk_Robot.red[2] < Hue && Hue < Ryk_Robot.red[3])) {
+                color = Ryk_Autonomous_Blue.examplePipeline.Color.RED;
+            } else if ( Ryk_Robot.green[0] < Hue && Hue < Ryk_Robot.green[1]) {
+                color = Ryk_Autonomous_Blue.examplePipeline.Color.GREEN;
+            } else if ( Ryk_Robot.blue[0] < Hue && Hue < Ryk_Robot.blue[1]) {
+                color = Ryk_Autonomous_Blue.examplePipeline.Color.BLUE;
             } else {
-                color = Color.NONE;
+                color = Ryk_Autonomous_Blue.examplePipeline.Color.NONE;
             }
 
             return(outPut);

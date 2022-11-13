@@ -70,7 +70,6 @@ public class Ryk_Robot
     }
 
 
-
     /* Public OpMode members. */
     public DcMotor upper_right = null;
     public DcMotor upper_left = null;
@@ -126,15 +125,15 @@ public class Ryk_Robot
 
     public static Pose2d Red_Start = new Pose2d(40.5, 64.5, Math.toRadians(-90));
     public static Pose2d Red_Dropoff_Dodge = new Pose2d(10,64.5, Math.toRadians(-90));
-    public static Pose2d Red_DropOff_Tile = new Pose2d(10,12, Math.toRadians(-90));
-    public static Pose2d Red_DropOff = new Pose2d(17.5,6.5, Math.toRadians(-50));
+    public static Pose2d Red_DropOff_Tile = new Pose2d(10,16, Math.toRadians(-90));
+    public static Pose2d Red_DropOff = new Pose2d(19,7, Math.toRadians(-50));
     public static Pose2d Red_TurnToCones = new Pose2d(10,12, Math.toRadians(0));
     public static Pose2d Red_Pickup = new Pose2d(60,12, Math.toRadians(0));
 
 
     public static Pose2d Blue_Start = new Pose2d(-31.5, 64.5, Math.toRadians(-90));
     public static Pose2d Blue_Dropoff_Dodge = new Pose2d(-10,64.5, Math.toRadians(-90));
-    public static Pose2d Blue_DropOff_Tile = new Pose2d(-10,12, Math.toRadians(-90));
+    public static Pose2d Blue_DropOff_Tile = new Pose2d(-10,16, Math.toRadians(-90));
     public static Pose2d Blue_DropOff = new Pose2d(-18,7, Math.toRadians(-130));
     public static Pose2d Blue_TurnToCones = new Pose2d(-10,12, Math.toRadians(180));
     public static Pose2d Blue_Pickup = new Pose2d(-60,12, Math.toRadians(180));
@@ -146,6 +145,8 @@ public class Ryk_Robot
     public static Pose2d Blue_Park_Pos1 = new Pose2d(-13,12, Math.toRadians(180));
     public static Pose2d Blue_Park_Pos2 = new Pose2d(-36,12, Math.toRadians(180));
     public static Pose2d Blue_Park_Pos3 = new Pose2d(-60,12, Math.toRadians(180));
+
+
 
 
 
@@ -186,6 +187,9 @@ public class Ryk_Robot
 
     public static double auto_drop_wait = 1;
 
+    static int[] red = {135, 180, 0, 10};
+    static int[] green = {70, 90};
+    static int[] blue = {100, 120};
 
 
 

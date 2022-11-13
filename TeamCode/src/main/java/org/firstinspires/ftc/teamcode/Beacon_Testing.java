@@ -20,7 +20,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 
-@Disabled
+//@Disabled
 @Autonomous
 
 public class Beacon_Testing extends OpMode {
