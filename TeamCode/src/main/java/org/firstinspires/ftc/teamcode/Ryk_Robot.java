@@ -33,6 +33,7 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -41,7 +42,10 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.openftc.easyopencv.OpenCvWebcam;
 
@@ -67,6 +71,8 @@ public class Ryk_Robot
         HANDSEL,
         GRABBEL,
         TWIN_TOWERS,
+        IntakeLeft,
+        IntakeRight
     }
 
 
@@ -86,6 +92,8 @@ public class Ryk_Robot
 //    //public Servo The_Claw = null;
     public Servo Handsel = null;
     public Servo Grabbel = null;
+    public CRServo intakeLeft = null;
+    public CRServo intakeRight = null;
     public WebcamName eyeOfSauron = null;
     OpenCvWebcam Sauron = null;
 
@@ -110,6 +118,26 @@ public class Ryk_Robot
     public static double SlidePower_Down = 0.3;
     public static int ticks_stepSize = 100;
     public static int BUTTON_TRIGGER_TIMER_MS = 500;
+
+    public static final String VUFORIA_KEY =
+            "AZRnab7/////AAABmTUhzFGJLEyEnSXEYWthkjhGRzu8klNOmOa9WEHaryl9AZCo2bZwq/rtvx83YRIgV60/Jy/2aivoXaHNzwi7dEMGoaglSVmdmzPF/zOPyiz27dDJgLVvIROD8ww7lYzL8eweJ+5PqLAavvX3wgrahkOxxOCNeKG9Tl0LkbS5R11ATXL7LLWeUv5FP1aDNgMZvb8P/u96OdOvD6D40Nf01Xf+KnkF5EXwNQKk1r7qd/hiv9h80gvBXMFqMkVgUyogwEnlK2BfmeUhGVm/99BiwwW65LpKSaLVPpW/6xqz9SyPgZ/L/vshbWgSkTB/KoERiV8MsW79RPUuQS6NTOLY32I/kukmsis3MFst5LP/d3gx";
+
+    // Since ImageTarget trackables use mm to specifiy their dimensions, we must use mm for all the physical dimension.
+    // We will define some constants and conversions here
+    public static final float mmPerInch        = 25.4f;
+    public static final float mmTargetHeight   = 6 * mmPerInch;          // the height of the center of the target image above the floor
+    public static final float halfField        = 72 * mmPerInch;
+    public static final float halfTile         = 12 * mmPerInch;
+    public static final float oneAndHalfTile   = 36 * mmPerInch;
+
+    // Class Members
+    public static OpenGLMatrix lastLocation   = null;
+    public static VuforiaLocalizer vuforia    = null;
+    public static VuforiaTrackables targets   = null ;
+    public static WebcamName webcamName       = null;
+
+    public static boolean targetVisible       = false;
+
 
 //
 //    // TFOD detection
@@ -229,13 +257,15 @@ public class Ryk_Robot
         upper_left = hwMap.get(DcMotor.class, "Upper_Left");
         lower_left = hwMap.get(DcMotor.class, "Lower_Left");
         lower_right = hwMap.get(DcMotor.class, "Lower_Right");
+
         Jerry = hwMap.get(DcMotor.class, "Jerry");
         Tom = hwMap.get(DcMotor.class, "Tom");
 
         //Servo
         Handsel = hwMap.get(Servo.class, "Handsel");
         Grabbel = hwMap.get(Servo.class, "Grabbel");
-
+        intakeLeft = hwMap.get(CRServo.class, "SweeperLeft");
+        intakeRight = hwMap.get(CRServo.class, "SweeperRight");
 
         // Acquire gyro
 

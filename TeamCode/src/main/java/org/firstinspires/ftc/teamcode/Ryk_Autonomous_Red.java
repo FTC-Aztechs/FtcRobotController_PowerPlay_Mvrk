@@ -9,8 +9,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -158,6 +160,14 @@ public class Ryk_Autonomous_Red extends LinearOpMode {
 
         Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Mavryk.Claw_Close_Pos);
         sleep(3000);
+
+        VuforiaLocalizer.Parameters vuParams = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
+        vuParams.vuforiaLicenseKey = VUFORIA_LICENSE_KEY;
+        vuParams.cameraName = Mavryk.eyeOfSauron;
+        vuParams.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+        vuParams.cameraMonitorFeedback = VuforiaLocalizer.Parameters.CameraMonitorFeedback.AXES;
+        vuParams.useExtendedTracking = false;
+        Ryk_Robot.vuforia = ClassFactory.getInstance().createVuforia(vuParams);
 
         telemetry.addData("Status: ", "Initializing camera......");
         telemetry.update();

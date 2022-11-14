@@ -123,7 +123,7 @@ public class Ryk_Manual extends LinearOpMode {
             PpManualDrive();
             rykUpSlide();
             rykClaw();
-
+            rykIntake();
         }
     }
 
@@ -138,6 +138,21 @@ public class Ryk_Manual extends LinearOpMode {
         telemetry.update();
 
         return;
+    }
+
+    public void rykIntake() {
+        boolean bIntake = gamepad1.left_trigger == 1f;
+
+        if (bIntake) {
+            Mavryk.intakeLeft.setPower(-0.5);
+            Mavryk.intakeRight.setPower(0.5);
+        }
+        else {
+            Mavryk.intakeRight.setPower(0);
+            Mavryk.intakeLeft.setPower(0);
+        }
+
+
     }
 
     public void PpManualDrive() {
