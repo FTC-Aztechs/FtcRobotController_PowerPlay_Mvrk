@@ -52,10 +52,10 @@ public class VuforiaTesting extends LinearOpMode {
 
         target = visionTargets.get(0);
         target.setName("Wheels Target");
-        target.setLocation(createMatrix());
+//        target.setLocation(createMatrix());
     }
 
-    public OpenGLMatrix createMatrix(float x, float y, float z, float u, float v, float w) {
-        return OpenGLMatrix.translation(x, y, z).multiplied(Orientation.getRotationMatrix(AxesReference.EXTRINSIC));
-    }
+//    public OpenGLMatrix createMatrix(float x, float y, float z, float u, float v, float w) {
+//        return OpenGLMatrix.translation(x, y, z).multiplied(Orientation.getRotationMatrix(AxesReference.EXTRINSIC));
+//    }
 }

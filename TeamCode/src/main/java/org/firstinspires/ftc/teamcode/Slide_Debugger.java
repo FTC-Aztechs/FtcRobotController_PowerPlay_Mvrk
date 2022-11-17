@@ -37,6 +37,14 @@ import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_WITHOUT_ENCODE
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
 import static com.qualcomm.robotcore.util.ElapsedTime.Resolution.MILLISECONDS;
 
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.Claw_Close_Pos;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.Claw_Open_Pos;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.Cone1;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.Cone2;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.Cone3;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.Cone4;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.Cone5;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -70,6 +78,11 @@ public class Slide_Debugger extends LinearOpMode {
     public static int LowJunction = 450;
     public static int GroundJunction = 100;
     public static int FloorPosition = 10;
+    public static int Cone1 = 20;
+    public static int Cone2 = 70;
+    public static int Cone3 = 110;
+    public static int Cone4 = 150;
+    public static int Cone5 = 190;
     public static double SlidePower_Up= 1;
     public static double SlidePower_Down = 0.5;
     public static int ticks_stepSize = 100;
@@ -136,7 +149,7 @@ public class Slide_Debugger extends LinearOpMode {
         Mavryk.init(hardwareMap);
 
         initMavryk();
-        Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Mavryk.Claw_Close_Pos);
+        Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Mavryk.Claw_Open_Pos);
         waitForStart();
 
         if( Mode == 1 || Mode == 2) {
@@ -159,14 +172,14 @@ public class Slide_Debugger extends LinearOpMode {
             } else if(Mode == 3) {
                 rykSlideTester_pid();
             }
-            rykClaw();
+            //rykClaw();
         }
     }
 
     public void initMavryk() {
         msStuckDetectStop = 2500;
         FtcDashboard Dash = rykDashboard;
-        Claw_Position = Ryk_Robot.Claw_Close_Pos;
+        Claw_Position = Ryk_Robot.Claw_Open_Pos;
         currPos = 0;
         Mavryk.Tom.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Mavryk.Jerry.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -364,67 +377,159 @@ public class Slide_Debugger extends LinearOpMode {
         ElapsedTime timer = new ElapsedTime(MILLISECONDS);
         timer.reset();
 
-        // Setting the target position to HighJunction
-        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, HighJunction);
+        Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Open_Pos);
+
+        // Setting the target position to Cone5
+        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Cone5);
         Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
         Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
 
         while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-            telemetry.addLine("In High position....");
+            telemetry.addLine("In Cone5 position....");
             telemetry.update();
             idle();
         }
         timer.reset();
 
+        Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Close_Pos);
 
-        // Setting the target position to MidJunction
-        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, MidJunction);
+        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Ryk_Robot.LowJunction);
         Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
         Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
 
-        while(opModeIsActive() /*&& Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE)*/ && timer.milliseconds() < 5000 ) {
-            telemetry.addLine("In Middle position....");
+        while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
+            telemetry.addLine("In Cone5 position....");
             telemetry.update();
             idle();
         }
         timer.reset();
 
+        Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Open_Pos);
 
-        // Setting the target position to LowJunction
-        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, LowJunction);
+
+        // Setting the target position to Cone4
+        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Cone4);
+        Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
+        Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
+
+        while(opModeIsActive() /*&& Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE)*/ && timer.milliseconds() < 5000 ) {
+            telemetry.addLine("In Cone4 position....");
+            telemetry.update();
+            idle();
+        }
+        timer.reset();
+        Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Close_Pos);
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Ryk_Robot.LowJunction);
         Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
         Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
 
-        while(opModeIsActive() /*&& Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE)*/ && timer.milliseconds() < 5000 ) {
-            telemetry.addLine("In Low position....");
+        while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
+            telemetry.addLine("In Cone5 position....");
             telemetry.update();
             idle();
         }
         timer.reset();
 
-        // Setting the target position to GroundJunction
-        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, GroundJunction);
+        Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Open_Pos);
+
+
+        // Setting the target position to Cone3
+        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Cone3);
+        Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
+        Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
+
+        while(opModeIsActive() /*&& Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE)*/ && timer.milliseconds() < 5000 ) {
+            telemetry.addLine("In Cone3 position....");
+            telemetry.update();
+            idle();
+        }
+        timer.reset();
+        Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Close_Pos);
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Ryk_Robot.LowJunction);
         Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
         Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
 
-        while(opModeIsActive() /*&& Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE)*/ && timer.milliseconds() < 5000 ) {
-            telemetry.addLine("In Ground position....");
+        while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
+            telemetry.addLine("In Cone5 position....");
             telemetry.update();
             idle();
         }
         timer.reset();
 
-        // Setting the target position to SlidesAtRest
-        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, FloorPosition);
+        Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Open_Pos);
+
+
+        // Setting the target position to Cone2
+        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Cone2);
+        Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
+        Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
+
+        while(opModeIsActive() /*&& Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE)*/ && timer.milliseconds() < 5000 ) {
+            telemetry.addLine("In Cone2 position....");
+            telemetry.update();
+            idle();
+        }
+        timer.reset();
+        Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Close_Pos);
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Ryk_Robot.LowJunction);
         Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
         Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
 
-        while(opModeIsActive() /*&& Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE)*/ && timer.milliseconds() < 5000 ) {
-            telemetry.addLine("In Rest position....");
+        while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
+            telemetry.addLine("In Cone5 position....");
             telemetry.update();
             idle();
         }
         timer.reset();
+
+        Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Open_Pos);
+
+
+        // Setting the target position to Cone1
+        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Cone1);
+        Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
+        Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
+
+        while(opModeIsActive() /*&& Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE)*/ && timer.milliseconds() < 5000 ) {
+            telemetry.addLine("In Cone1 position....");
+            telemetry.update();
+            idle();
+        }
+        timer.reset();
+        Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Close_Pos);
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Ryk_Robot.LowJunction);
+        Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
+        Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
+
+        while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
+            telemetry.addLine("In Cone5 position....");
+            telemetry.update();
+            idle();
+        }
+        timer.reset();
+
+        Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Open_Pos);
+
 
 //        double SlideDir = 1;
 //

@@ -114,6 +114,11 @@ public class Ryk_Robot
     public static int LowJunction = 450;
     public static int GroundJunction = 100;
     public static int FloorPosition = 10;
+    public static int Cone1 = 20;
+    public static int Cone2 = 70;
+    public static int Cone3 = 110;
+    public static int Cone4 = 150;
+    public static int Cone5 = 190;
     public static double SlidePower_Up= 1;
     public static double SlidePower_Down = 0.3;
     public static int ticks_stepSize = 100;
