@@ -9,10 +9,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -32,10 +30,9 @@ import static com.qualcomm.robotcore.util.ElapsedTime.Resolution.MILLISECONDS;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.GroundJunction;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.HighJunction;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.LowJunction;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.MidJunction;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.SlidePower_Down;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.SlidePower_Up;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.auto_drop_wait;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.auto_move_wait;
 
 /*
  * This is an example of a more complex path to really test the tuning.
@@ -161,13 +158,13 @@ public class Ryk_Autonomous_Red extends LinearOpMode {
         Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Mavryk.Claw_Close_Pos);
         sleep(3000);
 
-        VuforiaLocalizer.Parameters vuParams = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
-        vuParams.vuforiaLicenseKey = VUFORIA_LICENSE_KEY;
-        vuParams.cameraName = Mavryk.eyeOfSauron;
-        vuParams.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-        vuParams.cameraMonitorFeedback = VuforiaLocalizer.Parameters.CameraMonitorFeedback.AXES;
-        vuParams.useExtendedTracking = false;
-        Ryk_Robot.vuforia = ClassFactory.getInstance().createVuforia(vuParams);
+//        VuforiaLocalizer.Parameters vuParams = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
+//        vuParams.vuforiaLicenseKey = VUFORIA_LICENSE_KEY;
+//        vuParams.cameraName = Mavryk.eyeOfSauron;
+//        vuParams.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+//        vuParams.cameraMonitorFeedback = VuforiaLocalizer.Parameters.CameraMonitorFeedback.AXES;
+//        vuParams.useExtendedTracking = false;
+//        Ryk_Robot.vuforia = ClassFactory.getInstance().createVuforia(vuParams);
 
         telemetry.addData("Status: ", "Initializing camera......");
         telemetry.update();
@@ -218,7 +215,7 @@ public class Ryk_Autonomous_Red extends LinearOpMode {
 
         // 1. Calculate Parking Position
         telemetry.addLine(String.format("Detected Hue value: %f", pipeline.Hue));
-//        telemetry.update();
+        telemetry.update();
         switch(pipeline.color)
         {
             case RED:
@@ -285,7 +282,7 @@ public class Ryk_Autonomous_Red extends LinearOpMode {
             case 1:
                 Park = Mavryk.mecanumDrive.trajectorySequenceBuilder(Ryk_Robot.Red_Start)
                         .lineToLinearHeading(Ryk_Robot.Red_Dropoff_Dodge)
-                        .lineToLinearHeading(Ryk_Robot.Red_DropOff_Tile)
+                        .lineToLinearHeading(Ryk_Robot.Red_Preload_Tile)
                         .addTemporalMarker(() -> {
                             Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, HighJunction);
                             Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
@@ -295,7 +292,7 @@ public class Ryk_Autonomous_Red extends LinearOpMode {
                             }
                         })
                         .waitSeconds(2)
-                        .lineToLinearHeading(Ryk_Robot.Red_DropOff)
+                        .lineToLinearHeading(Ryk_Robot.Red_Preload_DropOff)
                         .addTemporalMarker(() -> {
                             Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, LowJunction);
                             Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
@@ -305,8 +302,8 @@ public class Ryk_Autonomous_Red extends LinearOpMode {
                             }
                             Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Ryk_Robot.Claw_Open_Pos);
                         })
-                        .waitSeconds(auto_drop_wait)
-                        .lineToLinearHeading(Ryk_Robot.Red_DropOff_Tile)
+                        .waitSeconds(auto_move_wait)
+                        .lineToLinearHeading(Ryk_Robot.Red_Preload_Tile)
                         .addTemporalMarker(() -> {
                             Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, GroundJunction);
                             Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
@@ -321,7 +318,7 @@ public class Ryk_Autonomous_Red extends LinearOpMode {
             case 2:
                 Park = Mavryk.mecanumDrive.trajectorySequenceBuilder(Ryk_Robot.Red_Start)
                         .lineToLinearHeading(Ryk_Robot.Red_Dropoff_Dodge)
-                        .lineToLinearHeading(Ryk_Robot.Red_DropOff_Tile)
+                        .lineToLinearHeading(Ryk_Robot.Red_Preload_Tile)
                         .addTemporalMarker(() -> {
                             Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, HighJunction);
                             Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
@@ -331,7 +328,7 @@ public class Ryk_Autonomous_Red extends LinearOpMode {
                             }
                         })
                         .waitSeconds(2)
-                        .lineToLinearHeading(Ryk_Robot.Red_DropOff)
+                        .lineToLinearHeading(Ryk_Robot.Red_Preload_DropOff)
                         .addTemporalMarker(() -> {
                             Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, LowJunction);
                             Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
@@ -341,8 +338,8 @@ public class Ryk_Autonomous_Red extends LinearOpMode {
                             }
                             Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Ryk_Robot.Claw_Open_Pos);
                         })
-                        .waitSeconds(auto_drop_wait)
-                        .lineToLinearHeading(Ryk_Robot.Red_DropOff_Tile)
+                        .waitSeconds(auto_move_wait)
+                        .lineToLinearHeading(Ryk_Robot.Red_Preload_Tile)
                         .addTemporalMarker(() -> {
                             Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, GroundJunction);
                             Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
@@ -357,7 +354,7 @@ public class Ryk_Autonomous_Red extends LinearOpMode {
             case 3:
                 Park = Mavryk.mecanumDrive.trajectorySequenceBuilder(Ryk_Robot.Red_Start)
                         .lineToLinearHeading(Ryk_Robot.Red_Dropoff_Dodge)
-                        .lineToLinearHeading(Ryk_Robot.Red_DropOff_Tile)
+                        .lineToLinearHeading(Ryk_Robot.Red_Preload_Tile)
                         .addTemporalMarker(() -> {
                             Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, HighJunction);
                             Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
@@ -367,7 +364,7 @@ public class Ryk_Autonomous_Red extends LinearOpMode {
                             }
                         })
                         .waitSeconds(2)
-                        .lineToLinearHeading(Ryk_Robot.Red_DropOff)
+                        .lineToLinearHeading(Ryk_Robot.Red_Preload_DropOff)
                         .addTemporalMarker(() -> {
                             Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, LowJunction);
                             Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
@@ -377,8 +374,8 @@ public class Ryk_Autonomous_Red extends LinearOpMode {
                             }
                             Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Ryk_Robot.Claw_Open_Pos);
                         })
-                        .waitSeconds(auto_drop_wait)
-                        .lineToLinearHeading(Ryk_Robot.Red_DropOff_Tile)
+                        .waitSeconds(auto_move_wait)
+                        .lineToLinearHeading(Ryk_Robot.Red_Preload_Tile)
                         .addTemporalMarker(() -> {
                             Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, GroundJunction);
                             Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);

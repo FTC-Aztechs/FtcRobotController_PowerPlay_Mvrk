@@ -39,11 +39,6 @@ import static com.qualcomm.robotcore.util.ElapsedTime.Resolution.MILLISECONDS;
 
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.Claw_Close_Pos;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.Claw_Open_Pos;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.Cone1;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.Cone2;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.Cone3;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.Cone4;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.Cone5;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -52,8 +47,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.apache.commons.math3.analysis.function.Floor;
 
 import java.util.concurrent.TimeUnit;
 

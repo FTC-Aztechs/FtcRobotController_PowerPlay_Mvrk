@@ -2,17 +2,15 @@ package org.firstinspires.ftc.teamcode;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
-import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_WITHOUT_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
 import static com.qualcomm.robotcore.util.ElapsedTime.Resolution.MILLISECONDS;
 
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.GroundJunction;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.HighJunction;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.LowJunction;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.MidJunction;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.SlidePower_Down;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.SlidePower_Up;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.auto_drop_wait;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.auto_move_wait;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -263,7 +261,7 @@ public class Ryk_Autonomous_Blue extends LinearOpMode {
                             }
                             Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Ryk_Robot.Claw_Open_Pos);
                         })
-                        .waitSeconds(auto_drop_wait)
+                        .waitSeconds(auto_move_wait)
                         .lineToLinearHeading(Ryk_Robot.Blue_DropOff_Tile)
                         .addTemporalMarker(() -> {
                             Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, GroundJunction);
@@ -299,7 +297,7 @@ public class Ryk_Autonomous_Blue extends LinearOpMode {
                             }
                             Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Ryk_Robot.Claw_Open_Pos);
                         })
-                        .waitSeconds(auto_drop_wait)
+                        .waitSeconds(auto_move_wait)
                         .lineToLinearHeading(Ryk_Robot.Blue_DropOff_Tile)
                         .addTemporalMarker(() -> {
                             Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, GroundJunction);
@@ -335,7 +333,7 @@ public class Ryk_Autonomous_Blue extends LinearOpMode {
                             }
                             Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Ryk_Robot.Claw_Open_Pos);
                         })
-                        .waitSeconds(auto_drop_wait)
+                        .waitSeconds(auto_move_wait)
                         .lineToLinearHeading(Ryk_Robot.Blue_DropOff_Tile)
                         .addTemporalMarker(() -> {
                             Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, GroundJunction);

@@ -109,16 +109,16 @@ public class Ryk_Robot
     public static double GrabbelClawLastPos = 0.0f;
 
     public static double UpAdjust = 10;
-    public static int HighJunction = 1100;
+    public static int HighJunction = 1145;
     public static int MidJunction = 800;
     public static int LowJunction = 450;
     public static int GroundJunction = 100;
     public static int FloorPosition = 10;
-    public static int Cone1 = 20;
-    public static int Cone2 = 70;
-    public static int Cone3 = 110;
-    public static int Cone4 = 150;
-    public static int Cone5 = 190;
+    public static int BottomCone = 20;
+    public static int BottomMiddleCone = 135;
+    public static int MiddleCone = 170;
+    public static int TopMiddleCone = 205;
+    public static int TopCone = 230;
     public static double SlidePower_Up= 1;
     public static double SlidePower_Down = 0.3;
     public static int ticks_stepSize = 100;
@@ -156,12 +156,14 @@ public class Ryk_Robot
 
 
 
-    public static Pose2d Red_Start = new Pose2d(40.5, 64.5, Math.toRadians(-90));
-    public static Pose2d Red_Dropoff_Dodge = new Pose2d(10,64.5, Math.toRadians(-90));
-    public static Pose2d Red_DropOff_Tile = new Pose2d(10,16, Math.toRadians(-90));
-    public static Pose2d Red_DropOff = new Pose2d(19,7, Math.toRadians(-50));
+    public static Pose2d Red_Start = new Pose2d(39.5, 64.5, Math.toRadians(-90));
+    public static Pose2d Red_Dropoff_Dodge = new Pose2d(12,64.5, Math.toRadians(-90));
+    public static Pose2d Red_Preload_Tile = new Pose2d(12,14, Math.toRadians(-90));
+    public static Pose2d Red_Preload_DropOff = new Pose2d(19,4, Math.toRadians(-50));
+    public static Pose2d Red_Cycle_Tile = new Pose2d(36,12, Math.toRadians(-90));
+    public static Pose2d Red_Cycle_DropOff = new Pose2d(27.5,4, Math.toRadians(-130));
     public static Pose2d Red_TurnToCones = new Pose2d(10,12, Math.toRadians(0));
-    public static Pose2d Red_Pickup = new Pose2d(60,12, Math.toRadians(0));
+    public static Pose2d Red_Pickup = new Pose2d(65,12, Math.toRadians(0));
 
 
     public static Pose2d Blue_Start = new Pose2d(-31.5, 64.5, Math.toRadians(-90));
@@ -169,7 +171,7 @@ public class Ryk_Robot
     public static Pose2d Blue_DropOff_Tile = new Pose2d(-10,16, Math.toRadians(-90));
     public static Pose2d Blue_DropOff = new Pose2d(-18,7, Math.toRadians(-130));
     public static Pose2d Blue_TurnToCones = new Pose2d(-10,12, Math.toRadians(180));
-    public static Pose2d Blue_Pickup = new Pose2d(-60,12, Math.toRadians(180));
+    public static Pose2d Blue_Pickup = new Pose2d(-64,12, Math.toRadians(180));
 
     public static Pose2d Red_Park_Pos1 = new Pose2d(60,12, Math.toRadians(0));
     public static Pose2d Red_Park_Pos2 = new Pose2d(36,12, Math.toRadians(0));
@@ -218,7 +220,9 @@ public class Ryk_Robot
     public static double Slide_Min_Pickup_Revs = 0.9;
     public static double Slide_increment_Pickup_Revs = 0.9;
 
-    public static double auto_drop_wait = 1;
+    public static double auto_move_wait = 0.5;
+    public static double auto_drop_wait = 0.75;
+
 
     static int[] red = {135, 180, 0, 10};
     static int[] green = {70, 90};
