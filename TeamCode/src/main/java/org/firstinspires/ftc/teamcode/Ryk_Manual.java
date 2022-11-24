@@ -34,6 +34,9 @@ package org.firstinspires.ftc.teamcode;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
 import static com.qualcomm.robotcore.util.ElapsedTime.Resolution.MILLISECONDS;
 
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.IntakeDrivePos;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.IntakePos;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -73,6 +76,8 @@ public class Ryk_Manual extends LinearOpMode {
 
     boolean ServoTurn = false;
     double Claw_Position; // Start at halfway position
+    double Intake_Position;
+    double Sweeper_Power;
 
 
     //    private static ElapsedTime timer_gp1_buttonA;
@@ -133,6 +138,10 @@ public class Ryk_Manual extends LinearOpMode {
 
         Claw_Position = Mavryk.Claw_Close_Pos;
 
+        Intake_Position = IntakeDrivePos;
+
+        Mavryk.setPosition(Ryk_Robot.RykServos.FUNKY_MONKEY, Intake_Position);
+
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.addData("Status:", "Robot is ready to roll!");
         telemetry.update();
@@ -140,18 +149,21 @@ public class Ryk_Manual extends LinearOpMode {
         return;
     }
 
+
     public void rykIntake() {
-        boolean bIntake = gamepad1.left_trigger == 1f;
+        boolean bIntake = gamepad1.right_trigger == 1f;
 
         if (bIntake) {
-            Mavryk.intakeLeft.setPower(-0.5);
-            Mavryk.intakeRight.setPower(0.5);
+            Sweeper_Power = 0.5;
+            Intake_Position = IntakePos;
         }
         else {
-            Mavryk.intakeRight.setPower(0);
-            Mavryk.intakeLeft.setPower(0);
+            Sweeper_Power = 0;
+            Intake_Position = IntakeDrivePos;
         }
 
+        Mavryk.setCRPower(Ryk_Robot.RykServos.CAR_WASH, Sweeper_Power);
+        Mavryk.setPosition(Ryk_Robot.RykServos.FUNKY_MONKEY, Intake_Position);
 
     }
 
@@ -188,6 +200,7 @@ public class Ryk_Manual extends LinearOpMode {
                 changingWheelSpeed = false;
             }
         }
+
 
         float turnDir = gamepad1.right_stick_x;
         float moveDir = gamepad1.left_stick_y;
@@ -313,6 +326,7 @@ public class Ryk_Manual extends LinearOpMode {
                 assumingFloorPosition = false;
             }
         }
+
 
         telemetry.addData("newPos from Any button triggers: ", newPos);
         telemetry.update();

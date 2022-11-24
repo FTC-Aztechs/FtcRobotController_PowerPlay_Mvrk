@@ -138,7 +138,7 @@ public class Slide_Debugger extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        // Initialize the drive system vriables
+        // Initialize the drive system variables
         Mavryk.init(hardwareMap);
 
         initMavryk();
@@ -146,7 +146,7 @@ public class Slide_Debugger extends LinearOpMode {
         waitForStart();
 
         if( Mode == 1 || Mode == 2) {
-            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_USING_ENCODER);
+//            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_USING_ENCODER);
             Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, STOP_AND_RESET_ENCODER);
         }
         else
@@ -168,6 +168,8 @@ public class Slide_Debugger extends LinearOpMode {
             //rykClaw();
         }
     }
+
+    // Initialization
 
     public void initMavryk() {
         msStuckDetectStop = 2500;
@@ -199,6 +201,7 @@ public class Slide_Debugger extends LinearOpMode {
 
     }
 
+    //Slider speed control
 
     public void rykUpSlide() {
 

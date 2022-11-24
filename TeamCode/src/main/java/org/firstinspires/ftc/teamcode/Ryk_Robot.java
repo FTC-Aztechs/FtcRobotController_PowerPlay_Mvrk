@@ -30,12 +30,10 @@
 package org.firstinspires.ftc.teamcode;
 
 //import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -51,7 +49,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.Locale;
 
-
+@Config
 public class Ryk_Robot
 {
     enum RykMotors
@@ -71,8 +69,12 @@ public class Ryk_Robot
         HANDSEL,
         GRABBEL,
         TWIN_TOWERS,
-        IntakeLeft,
-        IntakeRight
+        LEFT_MONKEY,
+        RIGHT_FUNKY,
+        FUNKY_MONKEY,
+        SWEEPER_LEFT,
+        SWEEPER_RIGHT,
+        CAR_WASH
     }
 
 
@@ -92,8 +94,10 @@ public class Ryk_Robot
 //    //public Servo The_Claw = null;
     public Servo Handsel = null;
     public Servo Grabbel = null;
-    public CRServo intakeLeft = null;
-    public CRServo intakeRight = null;
+    public CRServo Sweeper_Left = null;
+    public CRServo Sweeper_Right = null;
+    public Servo LeftMonkey = null;
+    public Servo RightFunky = null;
     public WebcamName eyeOfSauron = null;
     OpenCvWebcam Sauron = null;
 
@@ -123,6 +127,7 @@ public class Ryk_Robot
     public static double SlidePower_Down = 0.3;
     public static int ticks_stepSize = 100;
     public static int BUTTON_TRIGGER_TIMER_MS = 500;
+
 
     public static final String VUFORIA_KEY =
             "AZRnab7/////AAABmTUhzFGJLEyEnSXEYWthkjhGRzu8klNOmOa9WEHaryl9AZCo2bZwq/rtvx83YRIgV60/Jy/2aivoXaHNzwi7dEMGoaglSVmdmzPF/zOPyiz27dDJgLVvIROD8ww7lYzL8eweJ+5PqLAavvX3wgrahkOxxOCNeKG9Tl0LkbS5R11ATXL7LLWeUv5FP1aDNgMZvb8P/u96OdOvD6D40Nf01Xf+KnkF5EXwNQKk1r7qd/hiv9h80gvBXMFqMkVgUyogwEnlK2BfmeUhGVm/99BiwwW65LpKSaLVPpW/6xqz9SyPgZ/L/vshbWgSkTB/KoERiV8MsW79RPUuQS6NTOLY32I/kukmsis3MFst5LP/d3gx";
@@ -184,7 +189,6 @@ public class Ryk_Robot
 
 
 
-
     //    public static int Dawinchi_Ticks_Per_Rev = 1060; // 295; // From REV Robotics HD HEX 40:1
     public static double Slide_Ticks_Per_Rev = 537.7; // From REV Robotics Core HEX
 //
@@ -195,6 +199,9 @@ public class Ryk_Robot
 
     public static double Claw_Open_Pos = 0.5;
     public static double Claw_Close_Pos = 0.35;
+
+    public static double IntakeDrivePos = 0.5;
+    public static double IntakePos = 0.65;
 //
 //    // Speed control variables
 //    public static double slower_speed = 40;
@@ -273,8 +280,10 @@ public class Ryk_Robot
         //Servo
         Handsel = hwMap.get(Servo.class, "Handsel");
         Grabbel = hwMap.get(Servo.class, "Grabbel");
-        intakeLeft = hwMap.get(CRServo.class, "SweeperLeft");
-        intakeRight = hwMap.get(CRServo.class, "SweeperRight");
+        LeftMonkey = hwMap.get(Servo.class, "LeftMonkey");
+        RightFunky = hwMap.get(Servo.class, "RightFunky");
+        Sweeper_Left = hwMap.get(CRServo.class, "SweeperLeft");
+        Sweeper_Right = hwMap.get(CRServo.class, "SweeperRight");
 
         // Acquire gyro
 
@@ -298,10 +307,20 @@ public class Ryk_Robot
         upper_right.setDirection(DcMotor.Direction.FORWARD); //+
         lower_left.setDirection(DcMotor.Direction.REVERSE); //- used to be
         lower_right.setDirection(DcMotor.Direction.FORWARD); //+ used to be
+
         Jerry.setDirection(DcMotor.Direction.FORWARD); //- used to be
         Tom.setDirection(DcMotor.Direction.REVERSE); //+ used to be
+
         Handsel.setDirection(Servo.Direction.REVERSE);
         Grabbel.setDirection(Servo.Direction.FORWARD);
+
+        LeftMonkey.setDirection(Servo.Direction.REVERSE);
+        RightFunky.setDirection(Servo.Direction.FORWARD);
+
+        Sweeper_Left.setDirection(CRServo.Direction.REVERSE);
+        Sweeper_Right.setDirection(CRServo.Direction.FORWARD);
+
+
 
         mecanumDrive = new SampleMecanumDrive(hwMap);
         eyeOfSauron = hwMap.get(WebcamName.class, "Sauron");
@@ -434,14 +453,40 @@ public class Ryk_Robot
             case GRABBEL:
                 Grabbel.setPosition(iPos);
                 break;
+            case LEFT_MONKEY:
+                LeftMonkey.setPosition(iPos);
+            case RIGHT_FUNKY:
+                RightFunky.setPosition(iPos);
             case TWIN_TOWERS:
                 Handsel.setPosition(iPos);
                 Grabbel.setPosition(iPos);
                 break;
+            case FUNKY_MONKEY:
+                LeftMonkey.setPosition(iPos);
+                RightFunky.setPosition(iPos);
             default :
                 break;
         }
     }
+
+    public void setCRPower( RykServos eWhichServo, double dPower )
+    {
+        switch( eWhichServo)
+        {
+            case SWEEPER_LEFT:
+                Sweeper_Left.setPower(dPower);
+                break;
+            case SWEEPER_RIGHT:
+                Sweeper_Right.setPower(dPower);
+                break;
+            case CAR_WASH:
+                Sweeper_Left.setPower(dPower);
+                Sweeper_Right.setPower(dPower);
+            default :
+                break;
+        }
+    }
+
 
     public boolean areMotorsBusy(RykMotors eWhichMotor) {
 

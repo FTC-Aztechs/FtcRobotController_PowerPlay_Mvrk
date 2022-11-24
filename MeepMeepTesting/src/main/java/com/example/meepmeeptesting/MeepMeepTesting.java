@@ -13,14 +13,84 @@ public class MeepMeepTesting {
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(40.5, 64.5, Math.toRadians(-90))) //start
-                                .lineToLinearHeading(new Pose2d(12,64.5, Math.toRadians(-90))) //dropoff dodge
-                                .lineToLinearHeading(new Pose2d(12,12, Math.toRadians(-90)))  //dropoff tile
-                                .lineToLinearHeading(new Pose2d(-16,8, Math.toRadians(-135)))  // dropoff
-                                .waitSeconds(0.5)
-                                //.lineToLinearHeading(new Pose2d(-12,12, Math.toRadians(180)))  //turn to cones
-                                .lineToLinearHeading(new Pose2d(-12,12, Math.toRadians(180)))  // park 1
-                                .build()
+                        drive.trajectorySequenceBuilder(new Pose2d(39.5, 64.5, Math.toRadians(-90)))
+                //preload
+                .lineToLinearHeading(new Pose2d(12,64.5, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(12,14, Math.toRadians(-90)))
+                .waitSeconds(1.5)
+                .lineToLinearHeading(new Pose2d(19,4, Math.toRadians(-50)))
+
+                .waitSeconds(1.5)
+                .lineToLinearHeading(new Pose2d(12,14, Math.toRadians(-90)))
+                //pickup cone 5
+
+                .lineToLinearHeading(new Pose2d(65,12, Math.toRadians(0)))
+
+                .waitSeconds(1.5)
+
+                .lineToLinearHeading(new Pose2d(36,12, Math.toRadians(-90)))
+
+                .waitSeconds(1.5)
+                .lineToLinearHeading(new Pose2d(27.5,4, Math.toRadians(-130)))
+
+                .waitSeconds(1.5)
+                .lineToLinearHeading(new Pose2d(36,12, Math.toRadians(-90)))
+                //cone 4
+
+                .lineToLinearHeading(new Pose2d(65,12, Math.toRadians(0)))
+
+                .waitSeconds(1.5)
+
+                .lineToLinearHeading(new Pose2d(36,12, Math.toRadians(-90)))
+
+                .waitSeconds(1.5)
+                .lineToLinearHeading(new Pose2d(27.5,4, Math.toRadians(-130)))
+
+                .waitSeconds(1.5)
+                .lineToLinearHeading(new Pose2d(36,12, Math.toRadians(-90)))
+                //cone 3
+
+                .lineToLinearHeading(new Pose2d(65,12, Math.toRadians(0)))
+
+                .waitSeconds(1.5)
+
+                .lineToLinearHeading(new Pose2d(36,12, Math.toRadians(-90)))
+
+                .waitSeconds(1.5)
+                .lineToLinearHeading(new Pose2d(27.5,4, Math.toRadians(-130)))
+
+                .waitSeconds(1.5)
+                .lineToLinearHeading(new Pose2d(36,12, Math.toRadians(-90)))
+                //cone 2
+
+                .lineToLinearHeading(new Pose2d(65,12, Math.toRadians(0)))
+
+                .waitSeconds(1.5)
+
+                .lineToLinearHeading(new Pose2d(36,12, Math.toRadians(-90)))
+
+                .waitSeconds(1.5)
+                .lineToLinearHeading(new Pose2d(27.5,4, Math.toRadians(-130)))
+
+                .waitSeconds(1.5)
+                .lineToLinearHeading(new Pose2d(36,12, Math.toRadians(-90)))
+                //cone 1
+
+                .lineToLinearHeading(new Pose2d(65,12, Math.toRadians(0)))
+
+                .waitSeconds(1.5)
+
+                .lineToLinearHeading(new Pose2d(36,12, Math.toRadians(-90)))
+
+                .waitSeconds(1.5)
+                .lineToLinearHeading(new Pose2d(27.5,4, Math.toRadians(-130)))
+
+                .waitSeconds(1.5)
+                .lineToLinearHeading(new Pose2d(36,12, Math.toRadians(-90)))
+                //park
+
+                .lineToLinearHeading(new Pose2d(60,12, Math.toRadians(0)))
+                .build()
 
 
 

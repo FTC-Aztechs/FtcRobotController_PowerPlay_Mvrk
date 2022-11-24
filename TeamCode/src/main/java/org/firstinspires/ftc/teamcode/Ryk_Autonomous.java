@@ -30,16 +30,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
-import org.opencv.imgproc.Imgproc;
+import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
+
+import java.util.ArrayList;
 
 /*
  * This is an example of a more complex path to really test the tuning.
@@ -59,7 +56,7 @@ public class Ryk_Autonomous extends LinearOpMode {
 
     private static FtcDashboard rykRobot;
     OpenCvWebcam Sauron = null;
-    examplePipeline pipeline;
+    AprilTagDetectionPipeline pipeline;
 
     private static int iTeleCt = 1;
 
@@ -81,69 +78,38 @@ public class Ryk_Autonomous extends LinearOpMode {
     public TrajectorySequence Position3;
     public TrajectorySequence Terminal;
 
+    static final double FEET_PER_METER = 3.28084;
+
+    // Lens intrinsics
+    // UNITS ARE PIXELS
+    // NOTE: this calibration is for the C920 webcam at 800x448.
+    // You will need to do your own calibration for other configurations!
+    double fx = 578.272;
+    double fy = 578.272;
+    double cx = 402.145;
+    double cy = 221.506;
+
+    // UNITS ARE METERS
+    double tagsize = 0.04;
+
+    // Tag ID 2,9,16 from 36h11 family
+    int LEFT = 2;
+    int MIDDLE = 9;
+    int RIGHT = 20;
+
+    public AprilTagDetection tagOfInterest = null;
+
     ElapsedTime timer = new ElapsedTime(MILLISECONDS);
 
 
 
     public TrajectorySequence Park;
 
-    public static int col = 1;
+    public static int pos = 1;
 
     double SlideHigh = (Mavryk.Slide_High_Revs * Mavryk.Slide_Ticks_Per_Rev);
     double SlidePickup = (Mavryk.Slide_Min_Pickup_Revs * Mavryk.Slide_Ticks_Per_Rev);
     double SlideRest = (Mavryk.Slide_rest * Mavryk.Slide_Ticks_Per_Rev);
-
-
-    public static class examplePipeline extends OpenCvPipeline {
-
-        public enum Color
-        {
-            RED,
-            GREEN,
-            BLUE,
-            NONE
-        }
-
-        Mat HSV = new Mat();
-        Mat picCrop;
-        double Hue;
-        Mat outPut = new Mat();
-        Scalar rectColor = new Scalar(0.0,0.0,0.0);
-
-
-        private volatile Color color = Color.NONE;
-
-        public Mat processFrame(Mat input) {
-
-            Imgproc.cvtColor(input, HSV, Imgproc.COLOR_RGB2HSV);
-            Rect mainRect = new Rect(850, 620, 100, 200);
-
-            input.copyTo(outPut);
-            Imgproc.rectangle(outPut, mainRect,rectColor,2);
-
-            picCrop = HSV.submat(mainRect);
-            Scalar Average = Core.mean(picCrop);
-
-            Core.extractChannel(picCrop, picCrop, 1);
-            Hue = Average.val[0];
-
-            if ( (Ryk_Robot.red[0] < Hue && Hue < Ryk_Robot.red[1]) || (Ryk_Robot.red[2] < Hue && Hue < Ryk_Robot.red[3])) {
-                color = Color.RED;
-            } else if ( Ryk_Robot.green[0] < Hue && Hue < Ryk_Robot.green[1]) {
-                color = Color.GREEN;
-            } else if ( Ryk_Robot.blue[0] < Hue && Hue < Ryk_Robot.blue[1]) {
-                color = Color.BLUE;
-            } else {
-                color = Color.NONE;
-            }
-
-            return(outPut);
-        }
-        public double getAnalysis()
-        {
-            return Hue;
-        }
-    }
 
 
     @Override
@@ -195,7 +161,7 @@ public class Ryk_Autonomous extends LinearOpMode {
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Sauron");
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         Sauron = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
-        examplePipeline pipeline = new examplePipeline();
+        pipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
         Sauron.setPipeline(pipeline);
         telemetry.addData("Status: ", "Pipeline set ...");
 
@@ -204,7 +170,7 @@ public class Ryk_Autonomous extends LinearOpMode {
         // landscape orientation, though.
         Sauron.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             public void onOpened() {
-                Sauron.startStreaming(1920, 1080, OpenCvCameraRotation.UPRIGHT);
+                Sauron.startStreaming(800, 448, OpenCvCameraRotation.UPRIGHT);
                 telemetry.addData("Status: ", "Sauron Streaming ...");
                 rykRobot.startCameraStream(Sauron, 0);
             }
@@ -213,40 +179,100 @@ public class Ryk_Autonomous extends LinearOpMode {
             }
          });
 
-        sleep(3000);
-        telemetry.addData("Status: ", "Ready");
+        telemetry.addData("Status: ", "Starting April Tag detection");
         telemetry.update();
 
-        // Wait for the game to start (driver presses PLAY)
-        waitForStart();
+        // while waiting for the game to start, search for april tags
+        while (!isStarted() && !isStopRequested())
+        {
+            ArrayList<AprilTagDetection> currentDetections = pipeline.getLatestDetections();
+
+            if(currentDetections.size() != 0)
+            {
+                boolean tagFound = false;
+
+                for(AprilTagDetection tag : currentDetections)
+                {
+                    if(tag.id == LEFT ||  tag.id == MIDDLE || tag.id == RIGHT)
+                    {
+                        tagOfInterest = tag;
+                        tagFound = true;
+                        break;
+                    }
+                }
+
+                if(tagFound)
+                {
+                    telemetry.addLine("Tag of interest is in sight!\n\nLocation data:");
+                    tagToTelemetry(tagOfInterest);
+                }
+                else
+                {
+                    telemetry.addLine("Don't see tag of interest :(");
+
+                    if(tagOfInterest == null)
+                    {
+                        telemetry.addLine("(The tag has never been seen)");
+                    }
+                    else
+                    {
+                        telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
+                        tagToTelemetry(tagOfInterest);
+                    }
+                }
+
+            }
+            else
+            {
+                telemetry.addLine("Don't see tag of interest :(");
+
+                if(tagOfInterest == null)
+                {
+                    telemetry.addLine("(The tag has never been seen)");
+                }
+                else
+                {
+                    telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
+                    tagToTelemetry(tagOfInterest);
+                }
+
+            }
+
+            telemetry.update();
+            sleep(20);
+        }
+
+        //once program starts
+        if(tagOfInterest != null)
+        {
+            telemetry.addLine("Tag snapshot:\n");
+            tagToTelemetry(tagOfInterest);
+            telemetry.update();
+        }
+        else
+        {
+            telemetry.addLine("No tag snapshot available, it was never sighted during the init loop :(");
+            telemetry.update();
+        }
+
 
         // 1. Calculate Parking Position
-        telemetry.addLine(String.format("Detected Hue value: %f", pipeline.Hue));
-//        telemetry.update();
-        switch(pipeline.color)
-        {
-            case RED:
-                telemetry.addData("Color: ", "Red");
-                col = 1;
-                break;
-            case GREEN:
-                telemetry.addData("Color: ", "Green");
-                col = 2;
-                break;
-            case BLUE:
-                telemetry.addData("Color: ", "Blue");
-                col = 3;
-                break;
-            case NONE:
-                telemetry.addData("Color: ", "Not detected");
-                col = 1;
-                break;
+
+        if(tagOfInterest == null || tagOfInterest.id == LEFT) {
+            telemetry.addLine("Going to Position 1");
+            pos = 1;
+        } else if(tagOfInterest.id == MIDDLE){
+            telemetry.addLine("Going to Position 2");
+            pos = 2;
+        }else{
+            telemetry.addLine("Going to Position 3");
+            pos = 3;
         }
 
         telemetry.update();
 
         initMotorsAndServos(true);
-        buildParkTrajectories_position(col);
+        buildParkTrajectories_position(pos);
 
         // 2. Move to dropoff pole
 
@@ -1215,7 +1241,7 @@ public class Ryk_Autonomous extends LinearOpMode {
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Sauron");
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         Sauron = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
-        examplePipeline pipeline = new examplePipeline();
+         pipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
         Sauron.setPipeline(pipeline);
 
         // We set the viewport policy to optimized view so the preview doesn't appear 90 deg
@@ -1240,6 +1266,82 @@ public class Ryk_Autonomous extends LinearOpMode {
 
 
         return;
+    }
+
+    public void getTag(AprilTagDetectionPipeline pipeline){
+
+        ArrayList<AprilTagDetection> currentDetections = pipeline.getLatestDetections();
+
+        if(currentDetections.size() != 0)
+        {
+            boolean tagFound = false;
+
+            for(AprilTagDetection tag : currentDetections)
+            {
+                if(tag.id == LEFT ||  tag.id == MIDDLE || tag.id == RIGHT)
+                {
+                    tagOfInterest = tag;
+                    tagFound = true;
+                    break;
+                }
+            }
+
+            if(tagFound)
+            {
+                telemetry.addLine("Tag of interest is in sight!\n\nLocation data:");
+                tagToTelemetry(tagOfInterest);
+            }
+            else
+            {
+                telemetry.addLine("Don't see tag of interest :(");
+
+                if(tagOfInterest == null)
+                {
+                    telemetry.addLine("(The tag has never been seen)");
+                }
+                else
+                {
+                    telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
+                    tagToTelemetry(tagOfInterest);
+                }
+            }
+
+        }
+        else
+        {
+            telemetry.addLine("Don't see tag of interest :(");
+
+            if(tagOfInterest == null)
+            {
+                telemetry.addLine("(The tag has never been seen)");
+            }
+            else
+            {
+                telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
+                tagToTelemetry(tagOfInterest);
+            }
+
+        }
+
+        telemetry.update();
+        sleep(20);
+    }
+
+
+
+
+
+
+
+    void tagToTelemetry(AprilTagDetection detection)
+    {
+        telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
+        telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x*FEET_PER_METER));
+        telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y*FEET_PER_METER));
+        telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z*FEET_PER_METER));
+        telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", Math.toDegrees(detection.pose.yaw)));
+        telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", Math.toDegrees(detection.pose.pitch)));
+        telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
     }
 
 

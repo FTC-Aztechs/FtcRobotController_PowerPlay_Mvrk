@@ -37,3 +37,7 @@ dependencies {
 
     implementation 'com.acmerobotics.roadrunner:core:0.5.5'
 }
+
+dependencies {
+    implementation 'org.openftc:apriltag:1.1.0'
+}
