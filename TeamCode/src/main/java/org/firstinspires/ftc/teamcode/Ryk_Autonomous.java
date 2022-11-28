@@ -6,9 +6,9 @@ import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENC
 import static com.qualcomm.robotcore.util.ElapsedTime.Resolution.MILLISECONDS;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.Claw_Close_Pos;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.BottomCone;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.BottomMiddleCone;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.BottomMidCone;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.MiddleCone;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.TopMiddleCone;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.TopMidCone;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.TopCone;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.GroundJunction;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.HighJunction;
@@ -106,11 +106,6 @@ public class Ryk_Autonomous extends LinearOpMode {
     public TrajectorySequence Park;
 
     public static int pos = 1;
-
-    double SlideHigh = (Mavryk.Slide_High_Revs * Mavryk.Slide_Ticks_Per_Rev);
-    double SlidePickup = (Mavryk.Slide_Min_Pickup_Revs * Mavryk.Slide_Ticks_Per_Rev);
-    double SlideRest = (Mavryk.Slide_rest * Mavryk.Slide_Ticks_Per_Rev);
-
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -391,7 +386,7 @@ public class Ryk_Autonomous extends LinearOpMode {
                         .lineToLinearHeading(Ryk_Robot.Red_Cycle_Tile)
                         //cone 4
                         .addTemporalMarker(() -> {
-                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, TopMiddleCone);
+                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, TopMidCone);
                             Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
                             Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
 
@@ -493,7 +488,7 @@ public class Ryk_Autonomous extends LinearOpMode {
                         .lineToLinearHeading(Ryk_Robot.Red_Cycle_Tile)
                         //cone 2
                         .addTemporalMarker(() -> {
-                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, BottomMiddleCone);
+                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, BottomMidCone);
                             Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
                             Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
 //
@@ -688,7 +683,7 @@ public class Ryk_Autonomous extends LinearOpMode {
                         .lineToLinearHeading(Ryk_Robot.Red_Cycle_Tile)
                         //cone 4
                         .addTemporalMarker(() -> {
-                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, TopMiddleCone);
+                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, TopMidCone);
                             Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
                             Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
 
@@ -790,7 +785,7 @@ public class Ryk_Autonomous extends LinearOpMode {
                         .lineToLinearHeading(Ryk_Robot.Red_Cycle_Tile)
                         //cone 2
                         .addTemporalMarker(() -> {
-                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, BottomMiddleCone);
+                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, BottomMidCone);
                             Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
                             Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
 //
@@ -992,7 +987,7 @@ public class Ryk_Autonomous extends LinearOpMode {
                         .lineToLinearHeading(Ryk_Robot.Red_Cycle_Tile)
                         //cone 4
                         .addTemporalMarker(() -> {
-                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, TopMiddleCone);
+                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, TopMidCone);
                             Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
                             Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
 
@@ -1094,7 +1089,7 @@ public class Ryk_Autonomous extends LinearOpMode {
                         .lineToLinearHeading(Ryk_Robot.Red_Cycle_Tile)
                         //cone 2
                         .addTemporalMarker(() -> {
-                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, BottomMiddleCone);
+                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, BottomMidCone);
                             Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
                             Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
 //

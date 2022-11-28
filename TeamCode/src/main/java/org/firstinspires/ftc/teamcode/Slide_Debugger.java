@@ -37,8 +37,21 @@ import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_WITHOUT_ENCODE
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
 import static com.qualcomm.robotcore.util.ElapsedTime.Resolution.MILLISECONDS;
 
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.BUTTON_TRIGGER_TIMER_MS;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.BottomCone;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.BottomMidCone;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.Claw_Close_Pos;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.Claw_Open_Pos;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.FloorPosition;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.HighJunction;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.LowJunction;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.MidJunction;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.MiddleCone;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.SlidePower_Down;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.SlidePower_Up;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.TopCone;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.TopMidCone;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.ticks_stepSize;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -65,22 +78,22 @@ public class Slide_Debugger extends LinearOpMode {
     double Claw_Position; // Start at halfway position
 
     // Dashboard exposed control variables
-    public static double UpAdjust = 10;
-    public static int HighJunction = 1000;
-    public static int MidJunction = 800;
-    public static int LowJunction = 450;
-    public static int GroundJunction = 100;
-    public static int FloorPosition = 10;
-    public static int Cone1 = 20;
-    public static int Cone2 = 70;
-    public static int Cone3 = 110;
-    public static int Cone4 = 150;
-    public static int Cone5 = 190;
-    public static double SlidePower_Up= 1;
-    public static double SlidePower_Down = 0.5;
-    public static int ticks_stepSize = 100;
-    public static int Mode = 1;
-    public static int BUTTON_TRIGGER_TIMER_MS = 500;
+//    public static double UpAdjust = 10;
+//    public static int HighJunction = 1000;
+//    public static int MidJunction = 800;
+//    public static int LowJunction = 450;
+//    public static int GroundJunction = 100;
+//    public static int FloorPosition = 10;
+//    public static int Cone1 = 20;
+//    public static int Cone2 = 70;
+//    public static int Cone3 = 110;
+//    public static int Cone4 = 150;
+//    public static int Cone5 = 190;
+//    public static double SlidePower_Up= 1;
+//    public static double SlidePower_Down = 0.5;
+//    public static int ticks_stepSize = 100;
+    public static int Mode = 4;
+//    public static int BUTTON_TRIGGER_TIMER_MS = 500;
 
 
 //    private static ElapsedTime timer_gp1_buttonA;
@@ -146,11 +159,11 @@ public class Slide_Debugger extends LinearOpMode {
         waitForStart();
 
         if( Mode == 1 || Mode == 2) {
-//            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_USING_ENCODER);
-            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, STOP_AND_RESET_ENCODER);
+            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_USING_ENCODER);
         }
         else
             Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_WITHOUT_ENCODER);
+        Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, STOP_AND_RESET_ENCODER);
 
         telemetry.addData("Slide Debugger Running in mode: ", Mode);
         telemetry.update();
@@ -165,6 +178,10 @@ public class Slide_Debugger extends LinearOpMode {
             } else if(Mode == 3) {
                 rykSlideTester_pid();
             }
+            else if(Mode == 4) {
+                rykUpSlide_rtp();
+            }
+
             //rykClaw();
         }
     }
@@ -211,12 +228,12 @@ public class Slide_Debugger extends LinearOpMode {
                 timer_gp2_dpad_left.reset();
                 changingSlideSpeed = true;
             } else if (timer_gp2_dpad_left.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-                if (UpAdjust <= 1) {
-                    UpAdjust = 1;
+                if (Ryk_Robot.UpAdjust <= 1) {
+                    Ryk_Robot.UpAdjust = 1;
                 } else {
-                    UpAdjust -= 1;
+                    Ryk_Robot.UpAdjust -= 1;
                 }
-                telemetry.addData("Current Slide Speed: ", "%f", UpAdjust);
+                telemetry.addData("Current Slide Speed: ", "%f", Ryk_Robot.UpAdjust);
                 telemetry.update();
                 changingSlideSpeed = false;
             }
@@ -228,18 +245,18 @@ public class Slide_Debugger extends LinearOpMode {
                 timer_gp2_dpad_right.reset();
                 changingSlideSpeed = true;
             } else if (timer_gp2_dpad_right.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-                if (UpAdjust >= 10) {
-                    UpAdjust = 10;
+                if (Ryk_Robot.UpAdjust >= 10) {
+                    Ryk_Robot.UpAdjust = 10;
                 } else {
-                    UpAdjust += 1;
+                    Ryk_Robot.UpAdjust += 1;
                 }
-                telemetry.addData("Current Slide Speed: ", "%f", UpAdjust);
+                telemetry.addData("Current Slide Speed: ", "%f", Ryk_Robot.UpAdjust);
                 telemetry.update();
                 changingSlideSpeed = false;
             }
         }
 
-        Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, -gamepad2.left_stick_y * (UpAdjust / 10));
+        Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, -gamepad2.left_stick_y * (Ryk_Robot.UpAdjust / 10));
 
         telemetry.addData("rykUpSlide: Current Slide Position: ", Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE));
         telemetry.update();
@@ -253,12 +270,12 @@ public class Slide_Debugger extends LinearOpMode {
                 timer_gp2_dpad_left.reset();
                 changingSlideSpeed = true;
             } else if (timer_gp2_dpad_left.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-                if (UpAdjust <= 1) {
-                    UpAdjust = 1;
+                if (Ryk_Robot.UpAdjust <= 1) {
+                    Ryk_Robot.UpAdjust = 1;
                 } else {
-                    UpAdjust -= 1;
+                    Ryk_Robot.UpAdjust -= 1;
                 }
-                telemetry.addData("Current Slide Speed: ", "%f", UpAdjust);
+                telemetry.addData("Current Slide Speed: ", "%f", Ryk_Robot.UpAdjust);
                 telemetry.update();
                 changingSlideSpeed = false;
             }
@@ -270,12 +287,12 @@ public class Slide_Debugger extends LinearOpMode {
                 timer_gp2_dpad_right.reset();
                 changingSlideSpeed = true;
             } else if (timer_gp2_dpad_right.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-                if (UpAdjust >= 10) {
-                    UpAdjust = 10;
+                if (Ryk_Robot.UpAdjust >= 10) {
+                    Ryk_Robot.UpAdjust = 10;
                 } else {
-                    UpAdjust += 1;
+                    Ryk_Robot.UpAdjust += 1;
                 }
-                telemetry.addData("Current Slide Speed: ", "%f", UpAdjust);
+                telemetry.addData("Current Slide Speed: ", "%f", Ryk_Robot.UpAdjust);
                 telemetry.update();
                 changingSlideSpeed = false;
             }
@@ -368,6 +385,122 @@ public class Slide_Debugger extends LinearOpMode {
     }
 
 
+    public void rykUpSlide_rtp() {
+        //Gamepad2 left -> Decrease Speed
+        if (gamepad2.dpad_left) {
+            if (!changingSlideSpeed) {
+                timer_gp2_dpad_left.reset();
+                changingSlideSpeed = true;
+            } else if (timer_gp2_dpad_left.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+                if (Ryk_Robot.UpAdjust <= 1) {
+                    Ryk_Robot.UpAdjust = 1;
+                } else {
+                    Ryk_Robot.UpAdjust -= 1;
+                }
+                telemetry.addData("Current Slide Speed: ", "%f", Ryk_Robot.UpAdjust);
+                telemetry.update();
+                changingSlideSpeed = false;
+            }
+        }
+
+        //Gamepad 2right -> Increase Speed
+        if (gamepad2.dpad_right) {
+            if (!changingSlideSpeed) {
+                timer_gp2_dpad_right.reset();
+                changingSlideSpeed = true;
+            } else if (timer_gp2_dpad_right.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+                if (Ryk_Robot.UpAdjust >= 10) {
+                    Ryk_Robot.UpAdjust = 10;
+                } else {
+                    Ryk_Robot.UpAdjust += 1;
+                }
+                telemetry.addData("Current Slide Speed: ", "%f", Ryk_Robot.UpAdjust);
+                telemetry.update();
+                changingSlideSpeed = false;
+            }
+        }
+
+        int newPos = currPos + (int) ( -gamepad2.left_stick_y * ticks_stepSize);
+        if( newPos >= HighJunction)
+            newPos = HighJunction;
+        else if (newPos <= FloorPosition)
+            newPos = FloorPosition;
+        telemetry.addData("newPos calc from gamePad2.left_stick_y: ", newPos);
+        telemetry.update();
+
+        if (gamepad2.y) {
+            if (!assumingHighPosition) {
+                timer_gp2_buttonY.reset();
+                assumingHighPosition = true;
+            } else if (timer_gp2_buttonY.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+                telemetry.addLine("GP2_Y triggered. Set Tom&Jerry to High position");
+                telemetry.update();
+
+                newPos = HighJunction;
+                assumingHighPosition = false;
+            }
+        }
+
+        if (gamepad2.x) {
+            if (!assumingMidPosition) {
+                timer_gp2_buttonX.reset();
+                assumingMidPosition = true;
+            } else if (timer_gp2_buttonX.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+                telemetry.addLine("GP2_X triggered. Set Tom&Jerry to Mid position");
+                telemetry.update();
+                newPos = MidJunction;
+                assumingMidPosition = false;
+            }
+        }
+
+        if(gamepad2.a) {
+            if (!assumingLowPosition) {
+                timer_gp2_buttonY.reset();
+                assumingLowPosition = true;
+            } else if (timer_gp2_buttonA.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+                telemetry.addLine("GP2_A triggered. Set Tom&Jerry to Low position");
+                telemetry.update();
+
+                newPos = LowJunction;
+                assumingLowPosition = false;
+            }
+        }
+
+        if (gamepad2.b) {
+            if (!assumingFloorPosition) {
+                timer_gp2_buttonB.reset();
+                assumingFloorPosition = true;
+            } else if (timer_gp2_buttonB.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+                telemetry.addLine("GP2_B triggered. Set Tom&Jerry to Floor position");
+                telemetry.update();
+
+                newPos = FloorPosition;
+                assumingFloorPosition = false;
+            }
+        }
+
+        telemetry.addData("newPos from Any button triggers: ", newPos);
+        telemetry.update();
+
+        if( newPos != currPos && newPos >=FloorPosition && newPos <= HighJunction ) {
+            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, newPos);
+            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
+            if (newPos > currPos) {
+                Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
+            }
+            else if (newPos < currPos) {
+                Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
+            }
+            currPos = newPos;
+            telemetry.addData("currPos updated to: ", currPos);
+            telemetry.update();
+        }
+
+        telemetry.addData("rykUpSlide_rue: Current Slide Position: ", Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE));
+        telemetry.update();
+    }
+
+
     public void rykSlideTester_rue(){
         
         ElapsedTime timer = new ElapsedTime(MILLISECONDS);
@@ -376,7 +509,7 @@ public class Slide_Debugger extends LinearOpMode {
         Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Open_Pos);
 
         // Setting the target position to Cone5
-        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Cone5);
+        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, TopCone);
         Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
         Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
 
@@ -389,7 +522,7 @@ public class Slide_Debugger extends LinearOpMode {
 
         Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Close_Pos);
 
-        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Ryk_Robot.LowJunction);
+        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, LowJunction);
         Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
         Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
 
@@ -404,7 +537,7 @@ public class Slide_Debugger extends LinearOpMode {
 
 
         // Setting the target position to Cone4
-        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Cone4);
+        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, TopMidCone);
         Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
         Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
 
@@ -420,7 +553,7 @@ public class Slide_Debugger extends LinearOpMode {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Ryk_Robot.LowJunction);
+        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, LowJunction);
         Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
         Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
 
@@ -435,7 +568,7 @@ public class Slide_Debugger extends LinearOpMode {
 
 
         // Setting the target position to Cone3
-        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Cone3);
+        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, MiddleCone);
         Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
         Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
 
@@ -451,7 +584,7 @@ public class Slide_Debugger extends LinearOpMode {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Ryk_Robot.LowJunction);
+        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, LowJunction);
         Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
         Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
 
@@ -466,7 +599,7 @@ public class Slide_Debugger extends LinearOpMode {
 
 
         // Setting the target position to Cone2
-        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Cone2);
+        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, BottomMidCone);
         Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
         Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
 
@@ -482,7 +615,7 @@ public class Slide_Debugger extends LinearOpMode {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Ryk_Robot.LowJunction);
+        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, LowJunction);
         Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
         Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
 
@@ -497,7 +630,7 @@ public class Slide_Debugger extends LinearOpMode {
 
 
         // Setting the target position to Cone1
-        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Cone1);
+        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, BottomCone);
         Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
         Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
 
@@ -513,7 +646,7 @@ public class Slide_Debugger extends LinearOpMode {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Ryk_Robot.LowJunction);
+        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, LowJunction);
         Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
         Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
 
@@ -526,162 +659,120 @@ public class Slide_Debugger extends LinearOpMode {
 
         Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Open_Pos);
 
-
-//        double SlideDir = 1;
-//
-//        if (Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE) <= MotorPos){
-//            SlideDir = 1;
-//        } else{
-//            SlideDir = -1;
-//        }
-//
-//        if ((MotorPos - 10) < Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE) && Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE)< (MotorPos+10)){
-//            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, 0);
-//
-//        } else {
-//            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlideDir* SlidePower);
-//        }
-
         telemetry.addData("Tester_rue: Current Slide Position: ", Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE));
         telemetry.update();
 
     }
 
-    public void rykSlideTester_pid(){
+    public void rykSlideTester_pid() {
 
-        ElapsedTime timer = new ElapsedTime(MILLISECONDS);
-        timer.reset();
+        //Gamepad2 left -> Decrease Speed
+        if (gamepad2.dpad_left) {
+            if (!changingSlideSpeed) {
+                timer_gp2_dpad_left.reset();
+                changingSlideSpeed = true;
+            } else if (timer_gp2_dpad_left.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+                if (Ryk_Robot.UpAdjust <= 1) {
+                    Ryk_Robot.UpAdjust = 1;
+                } else {
+                    Ryk_Robot.UpAdjust -= 1;
+                }
+                telemetry.addData("Current Slide Speed: ", "%f", Ryk_Robot.UpAdjust);
+                telemetry.update();
+                changingSlideSpeed = false;
+            }
+        }
 
-        // Setting the target position to HighJunction
-//        Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower);
-//        while(opModeIsActive() && Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE) <= HighJunction ) {
-//            telemetry.addLine("Achieving High position....");
-//            telemetry.update();
-//            idle();
-//        }
-//        timer.reset();
-//        Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, 0);
-//        while(timer.time()<5000) {
-//            telemetry.addLine("In High position....");
-//            telemetry.update();
-//            idle();
-//        }
-//        timer.reset();
+        //Gamepad 2right -> Increase Speed
+        if (gamepad2.dpad_right) {
+            if (!changingSlideSpeed) {
+                timer_gp2_dpad_right.reset();
+                changingSlideSpeed = true;
+            } else if (timer_gp2_dpad_right.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+                if (Ryk_Robot.UpAdjust >= 10) {
+                    Ryk_Robot.UpAdjust = 10;
+                } else {
+                    Ryk_Robot.UpAdjust += 1;
+                }
+                telemetry.addData("Current Slide Speed: ", "%f", Ryk_Robot.UpAdjust);
+                telemetry.update();
+                changingSlideSpeed = false;
+            }
+        }
 
-
-        int currPos = Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE);
-        telemetry.addData("Current Position: ", currPos);
+        int newPos = currPos + (int) ( -gamepad2.left_stick_y * ticks_stepSize);
+        if( newPos >= HighJunction)
+            newPos = HighJunction;
+        else if (newPos <= FloorPosition)
+            newPos = FloorPosition;
+        telemetry.addData("newPos calc from gamePad2.left_stick_y: ", newPos);
         telemetry.update();
-        if( currPos >= HighJunction ) {
-//            telemetry.addLine("In High position....");
-//            telemetry.addData("killing power .. I think: ", 0);
-//            telemetry.update();
-            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, 0);
+
+        if (gamepad2.y) {
+            if (!assumingHighPosition) {
+                timer_gp2_buttonY.reset();
+                assumingHighPosition = true;
+            } else if (timer_gp2_buttonY.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+                telemetry.addLine("GP2_Y triggered. Set Tom&Jerry to High position");
+                telemetry.update();
+
+                newPos = HighJunction;
+                assumingHighPosition = false;
+            }
         }
-        else {
-//            telemetry.addLine("Reaching High position....");
-//            telemetry.update();
-            double command = control.output(HighJunction, Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE));
+
+        if (gamepad2.x) {
+            if (!assumingMidPosition) {
+                timer_gp2_buttonX.reset();
+                assumingMidPosition = true;
+            } else if (timer_gp2_buttonX.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+                telemetry.addLine("GP2_X triggered. Set Tom&Jerry to Mid position");
+                telemetry.update();
+                newPos = MidJunction;
+                assumingMidPosition = false;
+            }
+        }
+
+        if(gamepad2.a) {
+            if (!assumingLowPosition) {
+                timer_gp2_buttonY.reset();
+                assumingLowPosition = true;
+            } else if (timer_gp2_buttonA.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+                telemetry.addLine("GP2_A triggered. Set Tom&Jerry to Low position");
+                telemetry.update();
+
+                newPos = LowJunction;
+                assumingLowPosition = false;
+            }
+        }
+
+        if (gamepad2.b) {
+            if (!assumingFloorPosition) {
+                timer_gp2_buttonB.reset();
+                assumingFloorPosition = true;
+            } else if (timer_gp2_buttonB.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+                telemetry.addLine("GP2_B triggered. Set Tom&Jerry to Floor position");
+                telemetry.update();
+
+                newPos = FloorPosition;
+                assumingFloorPosition = false;
+            }
+        }
+
+        telemetry.addData("newPos from Any button triggers: ", newPos);
+        telemetry.update();
+
+        if( newPos != currPos && newPos >=FloorPosition && newPos <= HighJunction ) {
+            double command = control.output(newPos, Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE));
             Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, command);
-//            telemetry.addData("setting power: ", command);
-//            telemetry.update();
+
+            currPos = newPos;
+            telemetry.addData("currPos updated to: ", currPos);
+            telemetry.update();
         }
 
-        //
-//        int currPos = Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE);
-//        while (currPos < HighJunction ) {
-//            currPos = Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE);
-//            double command = control.output(HighJunction, currPos);
-//            telemetry.addData("setting power: ", command);
-//            telemetry.update();
-//            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, command);
-//        }
-//        while(timer.time()<5000) {
-//            telemetry.addData("Current Position: ", currPos);
-//            telemetry.addLine("In High position....");
-//            telemetry.update();
-//            idle();
-//        }
-//        Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, 0 );
-//        timer.reset();
-
-//        while(timer.time()<5000) {
-//            telemetry.addLine("In High position....");
-//            telemetry.update();
-//            idle();
-//        }
-//        timer.reset();
-
-//
-//        // Setting the target position to MidJunction
-//        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, MidJunction);
-//        Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//        Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower);
-//
-//        while(opModeIsActive() /*&& Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE)*/ && timer.milliseconds() < 5000 ) {
-//            telemetry.addLine("In Middle position....");
-//            telemetry.update();
-//            idle();
-//        }
-//        timer.reset();
-//
-//
-//        // Setting the target position to LowJunction
-//        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, LowJunction);
-//        Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//        Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower);
-//
-//        while(opModeIsActive() /*&& Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE)*/ && timer.milliseconds() < 5000 ) {
-//            telemetry.addLine("In Low position....");
-//            telemetry.update();
-//            idle();
-//        }
-//        timer.reset();
-//
-//        // Setting the target position to GroundJunction
-//        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, GroundJunction);
-//        Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//        Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower);
-//
-//        while(opModeIsActive() /*&& Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE)*/ && timer.milliseconds() < 5000 ) {
-//            telemetry.addLine("In Ground position....");
-//            telemetry.update();
-//            idle();
-//        }
-//        timer.reset();
-//
-//        // Setting the target position to SlidesAtRest
-//        Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, SlidesAtRest);
-//        Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//        Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower);
-//
-//        while(opModeIsActive() /*&& Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE)*/ && timer.milliseconds() < 5000 ) {
-//            telemetry.addLine("In Rest position....");
-//            telemetry.update();
-//            idle();
-//        }
-//        timer.reset();
-//
-//
-//
-////        double SlideDir = 1;
-////
-////        if (Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE) <= MotorPos){
-////            SlideDir = 1;
-////        } else{
-////            SlideDir = -1;
-////        }
-////
-////        if ((MotorPos - 10) < Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE) && Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE)< (MotorPos+10)){
-////            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, 0);
-////
-////        } else {
-////            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlideDir* SlidePower);
-////        }
-
-//        telemetry.addData("Current Slide Position: ", Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE));
-//        telemetry.update();
-
+        telemetry.addData("rykUpSlide_rue: Current Slide Position: ", Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE));
+        telemetry.update();
     }
 
 }

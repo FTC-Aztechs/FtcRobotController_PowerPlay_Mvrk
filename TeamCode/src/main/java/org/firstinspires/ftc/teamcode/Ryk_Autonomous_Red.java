@@ -82,10 +82,6 @@ public class Ryk_Autonomous_Red extends LinearOpMode {
 
     public static int col = 1;
 
-    double SlideHigh = (Mavryk.Slide_High_Revs * Mavryk.Slide_Ticks_Per_Rev);
-    double SlidePickup = (Mavryk.Slide_Min_Pickup_Revs * Mavryk.Slide_Ticks_Per_Rev);
-    double SlideRest = (Mavryk.Slide_rest * Mavryk.Slide_Ticks_Per_Rev);
-
 
     public static class examplePipeline extends OpenCvPipeline {
 

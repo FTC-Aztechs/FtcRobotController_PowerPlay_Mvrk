@@ -113,19 +113,19 @@ public class Ryk_Robot
     public static double GrabbelClawLastPos = 0.0f;
 
     public static double UpAdjust = 10;
-    public static int HighJunction = 1145;
+    public static int HighJunction = 1080;
     public static int MidJunction = 800;
-    public static int LowJunction = 450;
+    public static int LowJunction = 500;
     public static int GroundJunction = 100;
     public static int FloorPosition = 10;
     public static int BottomCone = 20;
-    public static int BottomMiddleCone = 135;
+    public static int BottomMidCone = 135;
     public static int MiddleCone = 170;
-    public static int TopMiddleCone = 205;
+    public static int TopMidCone = 205;
     public static int TopCone = 230;
     public static double SlidePower_Up= 1;
-    public static double SlidePower_Down = 0.3;
-    public static int ticks_stepSize = 100;
+    public static double SlidePower_Down = 0.5;
+    public static int ticks_stepSize = 40;
     public static int BUTTON_TRIGGER_TIMER_MS = 500;
 
 
@@ -218,14 +218,6 @@ public class Ryk_Robot
 //
 //    public static double DaWinchi_Power = 0.5;
 //
-    public static double Slide_Ground_Revs = 0.7;
-    public static double Slide_Low_Revs = 0.7;
-    public static double Slide_Mid_Revs = 0.7;
-    public static double Slide_High_Revs = 0.7;
-    public static double Slide_rest = 0;
-
-    public static double Slide_Min_Pickup_Revs = 0.9;
-    public static double Slide_increment_Pickup_Revs = 0.9;
 
     public static double auto_move_wait = 0.5;
     public static double auto_drop_wait = 0.75;
