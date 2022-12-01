@@ -120,12 +120,12 @@ public class Ryk_Robot
     public static int FloorPosition = 10;
     public static int BottomCone = 20;
     public static int BottomMidCone = 135;
-    public static int MiddleCone = 170;
-    public static int TopMidCone = 205;
+    public static int MiddleCone = 145;
+    public static int TopMidCone = 180;
     public static int TopCone = 230;
     public static double SlidePower_Up= 1;
     public static double SlidePower_Down = 0.5;
-    public static int ticks_stepSize = 40;
+    public static int ticks_stepSize = 13;
     public static int BUTTON_TRIGGER_TIMER_MS = 500;
 
 
@@ -161,10 +161,11 @@ public class Ryk_Robot
 
 
 
-    public static Pose2d Red_Start = new Pose2d(39.5, 64.5, Math.toRadians(-90));
-    public static Pose2d Red_Dropoff_Dodge = new Pose2d(12,64.5, Math.toRadians(-90));
-    public static Pose2d Red_Preload_Tile = new Pose2d(12,14, Math.toRadians(-90));
-    public static Pose2d Red_Preload_DropOff = new Pose2d(19,4, Math.toRadians(-50));
+    public static Pose2d Red_Start = new Pose2d(39.5, 63.75, Math.toRadians(-90));
+    public static Pose2d Red_Offset = new Pose2d(39.5, 62.75, Math.toRadians(-90));
+    public static Pose2d Red_Dropoff_Dodge = new Pose2d(11.75,62.75, Math.toRadians(-90));
+    public static Pose2d Red_Preload_Tile = new Pose2d(11.75,11.75, Math.toRadians(-90));
+    public static Pose2d Red_Preload_DropOff = new Pose2d(20,4, Math.toRadians(-53));
     public static Pose2d Red_Cycle_Tile = new Pose2d(36,12, Math.toRadians(-90));
     public static Pose2d Red_Cycle_DropOff = new Pose2d(27.5,4, Math.toRadians(-130));
     public static Pose2d Red_TurnToCones = new Pose2d(10,12, Math.toRadians(0));

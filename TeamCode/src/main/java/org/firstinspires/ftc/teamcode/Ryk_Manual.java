@@ -41,8 +41,10 @@ import static org.firstinspires.ftc.teamcode.Ryk_Robot.IntakeDrivePos;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.IntakePos;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.LowJunction;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.MidJunction;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.MiddleCone;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.SlidePower_Down;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.SlidePower_Up;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.TopMidCone;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.ticks_stepSize;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -100,7 +102,9 @@ public class Ryk_Manual extends LinearOpMode {
     private static ElapsedTime timer_gp2_buttonB = new ElapsedTime(MILLISECONDS);
     private static ElapsedTime timer_gp1_dpad_left = new ElapsedTime(MILLISECONDS);
     private static ElapsedTime timer_gp1_dpad_right = new ElapsedTime(MILLISECONDS);
-//    private static ElapsedTime timer_gp2_buttonA = new ElapsedTime(MILLISECONDS);
+    private static ElapsedTime timer_gp2_dpad_up = new ElapsedTime(MILLISECONDS);
+    private static ElapsedTime timer_gp2_dpad_down = new ElapsedTime(MILLISECONDS);
+    //    private static ElapsedTime timer_gp2_buttonA = new ElapsedTime(MILLISECONDS);
 //    private static ElapsedTime timer_gp2_buttonX = new ElapsedTime(MILLISECONDS);
 //    private static ElapsedTime timer_gp2_buttonY = new ElapsedTime(MILLISECONDS);
 //    private static ElapsedTime timer_gp2_buttonB = new ElapsedTime(MILLISECONDS);
@@ -114,6 +118,8 @@ public class Ryk_Manual extends LinearOpMode {
     private boolean assumingMidPosition = false;
     private boolean assumingLowPosition = false;
     private boolean assumingFloorPosition = false;
+    private boolean assumingTopMidCone = false;
+    private boolean assumingMiddleCone = false;
     private int currPos = FloorPosition;
 
 
@@ -454,6 +460,32 @@ public class Ryk_Manual extends LinearOpMode {
 
                 newPos = FloorPosition;
                 assumingFloorPosition = false;
+            }
+        }
+
+        if(gamepad2.dpad_up) {
+            if (!assumingTopMidCone) {
+                timer_gp2_dpad_up.reset();
+                assumingTopMidCone = true;
+            } else if (timer_gp2_dpad_up.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+                telemetry.addLine("GP2_dpad_up triggered. Set Tom&Jerry to TopMidCone");
+                telemetry.update();
+
+                newPos = TopMidCone;
+                assumingTopMidCone = false;
+            }
+        }
+
+        if(gamepad2.dpad_down) {
+            if (!assumingMiddleCone) {
+                timer_gp2_dpad_down.reset();
+                assumingMiddleCone = true;
+            } else if (timer_gp2_dpad_down.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+                telemetry.addLine("GP2_dpad_up triggered. Set Tom&Jerry to MiddleCone");
+                telemetry.update();
+
+                newPos = MiddleCone;
+                assumingMiddleCone = false;
             }
         }
 
