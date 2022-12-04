@@ -82,7 +82,7 @@ import static org.firstinspires.ftc.teamcode.Ryk_Robot.targets;
  * is explained below.
  */
 
-//@Disabled
+@Disabled
 @TeleOp(name="Vuforia Field Nav Webcam")
 public class Vuforia101 extends LinearOpMode {
 

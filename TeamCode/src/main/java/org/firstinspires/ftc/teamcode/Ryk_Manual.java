@@ -128,6 +128,9 @@ public class Ryk_Manual extends LinearOpMode {
 
     //boolean DuckOn = false;
     FtcDashboard rykDashboard;
+    private double bumperSpeedAdjust = 7;
+    private double dPadSpeedAdjust = 5;
+
     @Override
     public void runOpMode() {
 
@@ -187,12 +190,12 @@ public class Ryk_Manual extends LinearOpMode {
                 timer_gp1_dpad_left.reset();
                 changingWheelSpeed = true;
             } else if (timer_gp1_dpad_left.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-                if (speedAdjust <= 1) {
-                    speedAdjust = 1;
+                if (dPadSpeedAdjust <= 1) {
+                    dPadSpeedAdjust = 1;
                 } else {
-                    speedAdjust -= 1;
+                    dPadSpeedAdjust -= 1;
                 }
-                telemetry.addData("Current speed: ", "%f", speedAdjust);
+                telemetry.addData("Current speed: ", "%f", dPadSpeedAdjust);
                 telemetry.update();
                 changingWheelSpeed = false;
             }
@@ -204,17 +207,23 @@ public class Ryk_Manual extends LinearOpMode {
                 timer_gp1_dpad_right.reset();
                 changingWheelSpeed = true;
             } else if (timer_gp1_dpad_right.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-                if (speedAdjust >= 10) {
-                    speedAdjust = 10;
+                if (dPadSpeedAdjust >= 10) {
+                    dPadSpeedAdjust = 10;
                 } else {
-                    speedAdjust += 1;
+                    dPadSpeedAdjust += 1;
                 }
-                telemetry.addData("Current speed: ", "%f", speedAdjust);
+                telemetry.addData("Current speed: ", "%f", dPadSpeedAdjust);
                 telemetry.update();
                 changingWheelSpeed = false;
             }
         }
 
+        if(gamepad1.right_bumper) {
+            speedAdjust = bumperSpeedAdjust;
+        }
+        else {
+            speedAdjust = dPadSpeedAdjust;
+        }
 
         float turnDir = gamepad1.right_stick_x;
         float moveDir = gamepad1.left_stick_y;

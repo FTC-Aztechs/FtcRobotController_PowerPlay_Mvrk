@@ -161,31 +161,43 @@ public class Ryk_Robot
 
 
 
+//    public static Pose2d Red_Start = new Pose2d(39.5, 63.75, Math.toRadians(-90));
+//    public static Pose2d Red_Offset = new Pose2d(39.5, 62.75, Math.toRadians(-90));
+//    public static Pose2d Red_Dropoff_Dodge = new Pose2d(11.75,62.75, Math.toRadians(-90));
+//    public static Pose2d Red_Preload_Tile = new Pose2d(11.75,11.75, Math.toRadians(-90));
+//    public static Pose2d Red_Preload_DropOff = new Pose2d(20,4, Math.toRadians(-53));
+//    public static Pose2d Red_Cycle_Tile = new Pose2d(36,12, Math.toRadians(-90));
+//    public static Pose2d Red_Cycle_DropOff = new Pose2d(27.5,4, Math.toRadians(-130));
+//    public static Pose2d Red_TurnToCones = new Pose2d(10,12, Math.toRadians(0));
+//    public static Pose2d Red_Pickup = new Pose2d(65,12, Math.toRadians(0));
+
     public static Pose2d Red_Start = new Pose2d(39.5, 63.75, Math.toRadians(-90));
-    public static Pose2d Red_Offset = new Pose2d(39.5, 62.75, Math.toRadians(-90));
-    public static Pose2d Red_Dropoff_Dodge = new Pose2d(11.75,62.75, Math.toRadians(-90));
-    public static Pose2d Red_Preload_Tile = new Pose2d(11.75,11.75, Math.toRadians(-90));
-    public static Pose2d Red_Preload_DropOff = new Pose2d(20,4, Math.toRadians(-53));
-    public static Pose2d Red_Cycle_Tile = new Pose2d(36,12, Math.toRadians(-90));
-    public static Pose2d Red_Cycle_DropOff = new Pose2d(27.5,4, Math.toRadians(-130));
+    public static Pose2d Red_Offset = new Pose2d(36.5, 62.75, Math.toRadians(-90));
+    public static Pose2d Red_Dropoff_Dodge = new Pose2d(36.5,0, Math.toRadians(-90));
+    public static Pose2d Red_Preload_Tile = new Pose2d(36.5,11.75, Math.toRadians(-90));
+    public static Pose2d Red_Preload_DropOff = new Pose2d(29,6, Math.toRadians(-130));
+    public static Pose2d Red_Cycle_Tile = new Pose2d(36,12, Math.toRadians(0));
+    public static Pose2d Red_Cycle_DropOff = new Pose2d(28,4.4, Math.toRadians(-130));
     public static Pose2d Red_TurnToCones = new Pose2d(10,12, Math.toRadians(0));
     public static Pose2d Red_Pickup = new Pose2d(65,12, Math.toRadians(0));
 
+    public static Pose2d Blue_Start = new Pose2d(-31.5, 63.75, Math.toRadians(-90));
+    public static Pose2d Blue_Offset = new Pose2d(-36.5, 62.75, Math.toRadians(-90));
+    public static Pose2d Blue_Dropoff_Dodge = new Pose2d(-36.5,0, Math.toRadians(-90));
+    public static Pose2d Blue_Preload_Tile = new Pose2d(-36.5,11.75, Math.toRadians(-90));
+    public static Pose2d Blue_Preload_DropOff = new Pose2d(-28.5,6, Math.toRadians(-50));
+    public static Pose2d Blue_Cycle_Tile = new Pose2d(-36,12, Math.toRadians(-180));
+    public static Pose2d Blue_Cycle_DropOff = new Pose2d(-28,4.4, Math.toRadians(-130));
+    public static Pose2d Blue_TurnToCones = new Pose2d(-10,12, Math.toRadians(-180));
+    public static Pose2d Blue_Pickup = new Pose2d(-65,14, Math.toRadians(-180));
 
-    public static Pose2d Blue_Start = new Pose2d(-31.5, 64.5, Math.toRadians(-90));
-    public static Pose2d Blue_Dropoff_Dodge = new Pose2d(-10,64.5, Math.toRadians(-90));
-    public static Pose2d Blue_DropOff_Tile = new Pose2d(-10,16, Math.toRadians(-90));
-    public static Pose2d Blue_DropOff = new Pose2d(-18,7, Math.toRadians(-130));
-    public static Pose2d Blue_TurnToCones = new Pose2d(-10,12, Math.toRadians(180));
-    public static Pose2d Blue_Pickup = new Pose2d(-64,12, Math.toRadians(180));
-
-    public static Pose2d Red_Park_Pos1 = new Pose2d(60,12, Math.toRadians(0));
+    public static Pose2d Red_Park_Pos1 = new Pose2d(57,12, Math.toRadians(0));
     public static Pose2d Red_Park_Pos2 = new Pose2d(36,12, Math.toRadians(0));
     public static Pose2d Red_Park_Pos3 = new Pose2d(13,12, Math.toRadians(0));
 
     public static Pose2d Blue_Park_Pos1 = new Pose2d(-13,12, Math.toRadians(180));
     public static Pose2d Blue_Park_Pos2 = new Pose2d(-36,12, Math.toRadians(180));
-    public static Pose2d Blue_Park_Pos3 = new Pose2d(-60,12, Math.toRadians(180));
+    public static Pose2d Blue_Park_Pos3 = new Pose2d(-57,12, Math.toRadians(180));
 
 
 
