@@ -86,6 +86,7 @@ public class Ryk_Manual extends LinearOpMode {
 
     boolean ServoTurn = false;
     double Claw_Position; // Start at halfway position
+    double xSlide_Position;
     double Intake_Position;
     double Sweeper_Power;
 
@@ -146,6 +147,7 @@ public class Ryk_Manual extends LinearOpMode {
             rykUpSlide_rtp();
             rykClaw();
             rykIntake();
+            RykXSlide();
         }
     }
 
@@ -241,7 +243,17 @@ public class Ryk_Manual extends LinearOpMode {
 
         return;
     }
+    public void RykXSlide() {
+        if(gamepad1.dpad_up) {
+            xSlide_Position = Mavryk.xSlideOutPos;
 
+        }
+        else if(gamepad1.dpad_down)
+        {
+            xSlide_Position = Mavryk.xSlideInPos;
+        }
+        Mavryk.setPosition(Ryk_Robot.RykServos.FLAMETHROWER, xSlide_Position);
+    }
     public void rykClaw() {
         ServoTurn = gamepad2.right_trigger == 1f;
 

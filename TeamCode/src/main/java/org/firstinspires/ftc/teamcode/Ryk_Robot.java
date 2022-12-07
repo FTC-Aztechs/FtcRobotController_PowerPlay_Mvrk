@@ -66,6 +66,7 @@ public class Ryk_Robot
 
     enum RykServos
     {
+        FLAMETHROWER,
         HANDSEL,
         GRABBEL,
         TWIN_TOWERS,
@@ -92,6 +93,7 @@ public class Ryk_Robot
 //    public DcMotor Linac = null;
 //    public DcMotor Da_Winch = null;
 //    //public Servo The_Claw = null;
+    public Servo FlameThrower = null;
     public Servo Handsel = null;
     public Servo Grabbel = null;
     public CRServo Sweeper_Left = null;
@@ -118,6 +120,7 @@ public class Ryk_Robot
     public static int LowJunction = 500;
     public static int GroundJunction = 100;
     public static int FloorPosition = 10;
+    public static int DropoffPos = 900;
     public static int BottomCone = 20;
     public static int BottomMidCone = 135;
     public static int MiddleCone = 145;
@@ -148,29 +151,6 @@ public class Ryk_Robot
 
     public static boolean targetVisible       = false;
 
-
-//
-//    // TFOD detection
-//    public static double FirstPosMax = 250;
-//    public static double FirstPosMin = 50;
-//    public static double SecPosMax = 600;
-//    public static double SecPosMin = 400;
-
-    // Trajectory sequencing
-
-
-
-
-//    public static Pose2d Red_Start = new Pose2d(39.5, 63.75, Math.toRadians(-90));
-//    public static Pose2d Red_Offset = new Pose2d(39.5, 62.75, Math.toRadians(-90));
-//    public static Pose2d Red_Dropoff_Dodge = new Pose2d(11.75,62.75, Math.toRadians(-90));
-//    public static Pose2d Red_Preload_Tile = new Pose2d(11.75,11.75, Math.toRadians(-90));
-//    public static Pose2d Red_Preload_DropOff = new Pose2d(20,4, Math.toRadians(-53));
-//    public static Pose2d Red_Cycle_Tile = new Pose2d(36,12, Math.toRadians(-90));
-//    public static Pose2d Red_Cycle_DropOff = new Pose2d(27.5,4, Math.toRadians(-130));
-//    public static Pose2d Red_TurnToCones = new Pose2d(10,12, Math.toRadians(0));
-//    public static Pose2d Red_Pickup = new Pose2d(65,12, Math.toRadians(0));
-
     public static Pose2d Red_Start = new Pose2d(39.5, 63.75, Math.toRadians(-90));
     public static Pose2d Red_Offset = new Pose2d(36.5, 62.75, Math.toRadians(-90));
     public static Pose2d Red_Dropoff_Dodge = new Pose2d(36.5,0, Math.toRadians(-90));
@@ -179,7 +159,11 @@ public class Ryk_Robot
     public static Pose2d Red_Cycle_Tile = new Pose2d(36,12, Math.toRadians(0));
     public static Pose2d Red_Cycle_DropOff = new Pose2d(28,4.4, Math.toRadians(-130));
     public static Pose2d Red_TurnToCones = new Pose2d(10,12, Math.toRadians(0));
-    public static Pose2d Red_Pickup = new Pose2d(65,12, Math.toRadians(0));
+    public static Pose2d Red_Pickup = new Pose2d(57.5,12, Math.toRadians(0));
+
+    // New Positions - Coach
+    public static Pose2d Red_Dropoff = new Pose2d(57.5,12, Math.toRadians(0));
+    public static Pose2d Red_Push_Signal = new Pose2d(57.5,12, Math.toRadians(0));
 
     public static Pose2d Blue_Start = new Pose2d(-31.5, 63.75, Math.toRadians(-90));
     public static Pose2d Blue_Offset = new Pose2d(-36.5, 62.75, Math.toRadians(-90));
@@ -189,7 +173,7 @@ public class Ryk_Robot
     public static Pose2d Blue_Cycle_Tile = new Pose2d(-36,12, Math.toRadians(-180));
     public static Pose2d Blue_Cycle_DropOff = new Pose2d(-28,4.4, Math.toRadians(-130));
     public static Pose2d Blue_TurnToCones = new Pose2d(-10,12, Math.toRadians(-180));
-    public static Pose2d Blue_Pickup = new Pose2d(-65,14, Math.toRadians(-180));
+    public static Pose2d Blue_Pickup = new Pose2d(-57.5,12, Math.toRadians(-180));
 
     public static Pose2d Red_Park_Pos1 = new Pose2d(57,12, Math.toRadians(0));
     public static Pose2d Red_Park_Pos2 = new Pose2d(36,12, Math.toRadians(0));
@@ -198,65 +182,30 @@ public class Ryk_Robot
     public static Pose2d Blue_Park_Pos1 = new Pose2d(-13,12, Math.toRadians(180));
     public static Pose2d Blue_Park_Pos2 = new Pose2d(-36,12, Math.toRadians(180));
     public static Pose2d Blue_Park_Pos3 = new Pose2d(-57,12, Math.toRadians(180));
-
-
-
-
-    //    public static int Dawinchi_Ticks_Per_Rev = 1060; // 295; // From REV Robotics HD HEX 40:1
     public static double Slide_Ticks_Per_Rev = 537.7; // From REV Robotics Core HEX
 //
     double dSlidePower = 1;
-
-//    public static double Wrist_Pickup_Pos = 0.39;
-//    public static double Wrist_Dropoff_Pos = 0.355;
 
     public static double Claw_Open_Pos = 0.5;
     public static double Claw_Close_Pos = 0.35;
 
     public static double IntakeDrivePos = 0.5;
     public static double IntakePos = 0.65;
-//
-//    // Speed control variables
-//    public static double slower_speed = 40;
-//    public static double slower_accel = 40;
-//
-//    public static int overrideWarehouseDropoffLevel = 2;
-//    public static double DaWinchi_Level0_Dropoff_pos = 0;
-//    public static double DaWinchi_Level1_Dropoff_pos = 0.37;
-//    public static double DaWinchi_Level2_Dropoff_Pos = 0.8;
-//    public static double DaWinchi_pickup_pos = 0.295;
-//    public static int Dawinchi_initial_dropoff_ticks = 0;
-//    public static int Dawinchi_Level2_dropoff_ticks = 0;
-//    public static int    Dawinchi_pickup_ticks = 0;
-//
-//    public static double DaWinchi_Power = 0.5;
-//
+
+    public static double xSlideOutPos = 0.75;
+    public static double xSlideDropPos = 0.5;
+    public static double xSlideInPos = 0;
 
     public static double auto_move_wait = 0.5;
     public static double auto_drop_wait = 0.75;
+    public static double auto_pickup_wait = 0.75;
+    public static double auto_raise_wait = 0.75;
+
 
 
     static int[] red = {135, 180, 0, 10};
     static int[] green = {70, 90};
     static int[] blue = {100, 120};
-
-
-
-//    public static double dFromLevel0ToPickup = 0.2;    // 1. Time to lower from level 0 -> Pickup
-//    public static double dFromLevel1ToPickup = 0.3;    // 2. Time to lower from level 1 -> Pickup
-//    public static double dFromLevel2ToPickup = 0.36;    // 3. Time to lower from level 2 -> Pickup
-//    public static double dRaiseToLevel2      = 0.81;    // 4. Time to raise from Pickup -> level2
-//    public static double dEjectFreight       = 1;    // 5. Time to drop off freight element
-//    public static double dIntakeFreight      = 0.4;    // 6. Time to pick up freight element
-//    public static double offsetEjectFreight  = -0.1;    // 7. Offset to eject freight after reaching shipping hub pos
-//    public static double offsetIntakeFreight = -0.2;    // 8. Offset to pickup freight before reaching warehouse pos
-//    public static double offsetLowerToPickup = -0.3;    // 9. Offset to lower to pickup position (Start to do this after retracting from drop-off position)
-//    public static double offsetRaiseToDropOff = -0.2;   // 10. Offset to raise to drop-off position (Start to do this after retracting from pickup position)
-//
-//    //Ryk_autonomous debugging variables
-//    public static boolean runProfiling = false;
-//    public static boolean profileUsingRunToPosition = true;
-//    public static boolean runPositionTrajectories = true;
 
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
@@ -283,6 +232,7 @@ public class Ryk_Robot
         Tom = hwMap.get(DcMotor.class, "Tom");
 
         //Servo
+        FlameThrower = hwMap.get(Servo.class, "Flamethrower");
         Handsel = hwMap.get(Servo.class, "Handsel");
         Grabbel = hwMap.get(Servo.class, "Grabbel");
         LeftMonkey = hwMap.get(Servo.class, "LeftMonkey");
@@ -452,6 +402,9 @@ public class Ryk_Robot
     {
         switch( eWhichServo)
         {
+            case FLAMETHROWER:
+                FlameThrower.setPosition(iPos);
+                break;
             case HANDSEL:
                 Handsel.setPosition(iPos);
                 break;
