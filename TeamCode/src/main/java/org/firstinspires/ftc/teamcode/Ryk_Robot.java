@@ -151,7 +151,7 @@ public class Ryk_Robot
 
     public static boolean targetVisible       = false;
 
-    public static Pose2d Red_Start = new Pose2d(39.5, 63.75, Math.toRadians(-90));
+    public static Pose2d Red_Start = new Pose2d(35.5, 63.75, Math.toRadians(-90));
     public static Pose2d Red_Offset = new Pose2d(36.5, 62.75, Math.toRadians(-90));
     public static Pose2d Red_Dropoff_Dodge = new Pose2d(36.5,0, Math.toRadians(-90));
     public static Pose2d Red_Preload_Tile = new Pose2d(36.5,11.75, Math.toRadians(-90));
@@ -159,11 +159,11 @@ public class Ryk_Robot
     public static Pose2d Red_Cycle_Tile = new Pose2d(36,12, Math.toRadians(0));
     public static Pose2d Red_Cycle_DropOff = new Pose2d(28,4.4, Math.toRadians(-130));
     public static Pose2d Red_TurnToCones = new Pose2d(10,12, Math.toRadians(0));
-    public static Pose2d Red_Pickup = new Pose2d(57.5,12, Math.toRadians(0));
+    public static Pose2d Red_Pickup = new Pose2d(54.5,12, Math.toRadians(0));
 
     // New Positions - Coach
-    public static Pose2d Red_Dropoff = new Pose2d(57.5,12, Math.toRadians(0));
-    public static Pose2d Red_Push_Signal = new Pose2d(57.5,12, Math.toRadians(0));
+    public static Pose2d Red_Dropoff = new Pose2d(35.5,12, Math.toRadians(-135));
+    public static Pose2d Red_Push_Signal = new Pose2d(35.5,0, Math.toRadians(-90));
 
     public static Pose2d Blue_Start = new Pose2d(-31.5, 63.75, Math.toRadians(-90));
     public static Pose2d Blue_Offset = new Pose2d(-36.5, 62.75, Math.toRadians(-90));
@@ -189,8 +189,8 @@ public class Ryk_Robot
     public static double Claw_Open_Pos = 0.5;
     public static double Claw_Close_Pos = 0.35;
 
-    public static double IntakeDrivePos = 0.5;
-    public static double IntakePos = 0.65;
+    public static double IntakeInsidePos = 0.9;
+    public static double IntakeOutsidePos = 0.5;
 
     public static double xSlideOutPos = 0.75;
     public static double xSlideDropPos = 0.5;
@@ -200,6 +200,9 @@ public class Ryk_Robot
     public static double auto_drop_wait = 0.75;
     public static double auto_pickup_wait = 0.75;
     public static double auto_raise_wait = 0.75;
+    public static double auto_extend_wait = 0.8;
+    public static double auto_retract_wait = 0.5;
+
 
 
 

@@ -37,8 +37,8 @@ import static com.qualcomm.robotcore.util.ElapsedTime.Resolution.MILLISECONDS;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.BUTTON_TRIGGER_TIMER_MS;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.FloorPosition;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.HighJunction;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.IntakeDrivePos;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.IntakePos;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.IntakeInsidePos;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.IntakeOutsidePos;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.LowJunction;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.MidJunction;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.MiddleCone;
@@ -73,21 +73,14 @@ public class Ryk_Manual extends LinearOpMode {
     private boolean changingWheelSpeed = false;
     private boolean changingSlideSpeed = false;
 
-//    public static int HighJunction = 1080;
-//    public static int MidJunction = 800;
-//    public static int LowJunction = 500;
-//    public static int GroundJunction = 100;
-//    public static int FloorPosition = 10;
-//    public static double SlidePower_Up= 1;
-//    public static double SlidePower_Down = 0.5;
-//    public static int ticks_stepSize = 100;
+
     public static int Mode = 1;
 //    public static int BUTTON_TRIGGER_TIMER_MS = 500;
 
     boolean ServoTurn = false;
     double Claw_Position; // Start at halfway position
     double xSlide_Position;
-    double Intake_Position;
+    double Current_Intake_Position;
     double Sweeper_Power;
 
 
@@ -121,13 +114,9 @@ public class Ryk_Manual extends LinearOpMode {
     private boolean assumingFloorPosition = false;
     private boolean assumingTopMidCone = false;
     private boolean assumingMiddleCone = false;
-    private int currPos = FloorPosition;
+    private int currentSlidePos = FloorPosition;
 
 
-//    int DuckPowerDir = 1;
-//    public static final String VUFORIA_LICENSE_KEY = "AZRnab7/////AAABmTUhzFGJLEyEnSXEYWthkjhGRzu8klNOmOa9WEHaryl9AZCo2bZwq/rtvx83YRIgV60/Jy/2aivoXaHNzwi7dEMGoaglSVmdmzPF/zOPyiz27dDJgLVvIROD8ww7lYzL8eweJ+5PqLAavvX3wgrahkOxxOCNeKG9Tl0LkbS5R11ATXL7LLWeUv5FP1aDNgMZvb8P/u96OdOvD6D40Nf01Xf+KnkF5EXwNQKk1r7qd/hiv9h80gvBXMFqMkVgUyogwEnlK2BfmeUhGVm/99BiwwW65LpKSaLVPpW/6xqz9SyPgZ/L/vshbWgSkTB/KoERiV8MsW79RPUuQS6NTOLY32I/kukmsis3MFst5LP/d3gx";
-
-    //boolean DuckOn = false;
     FtcDashboard rykDashboard;
     private double bumperSpeedAdjust = 7;
     private double dPadSpeedAdjust = 5;
@@ -143,10 +132,10 @@ public class Ryk_Manual extends LinearOpMode {
 
 
         while (opModeIsActive()) {
-            PpManualDrive();
-            rykUpSlide_rtp();
-            rykClaw();
-            rykIntake();
+            RykManualDrive();
+            RykUpSlide_rtp();
+            RykClaw();
+            RykIntake();
             RykXSlide();
         }
     }
@@ -157,9 +146,9 @@ public class Ryk_Manual extends LinearOpMode {
 
         Claw_Position = Mavryk.Claw_Close_Pos;
 
-        Intake_Position = IntakeDrivePos;
+        Current_Intake_Position = IntakeInsidePos;
 
-        Mavryk.setPosition(Ryk_Robot.RykServos.FUNKY_MONKEY, Intake_Position);
+        Mavryk.setPosition(Ryk_Robot.RykServos.FUNKY_MONKEY, Current_Intake_Position);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.addData("Status:", "Robot is ready to roll!");
@@ -169,24 +158,59 @@ public class Ryk_Manual extends LinearOpMode {
     }
 
 
-    public void rykIntake() {
+    public void RykIntake() {
         boolean bIntake = gamepad1.right_trigger == 1f;
 
-        if (bIntake) {
-            Sweeper_Power = 0.5;
-            Intake_Position = IntakePos;
+        if (bIntake && Current_Intake_Position == IntakeInsidePos) {
+            boolean bHaveIRaisedTheClaw = false;
+            if (currentSlidePos < MiddleCone) {
+
+                Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, MiddleCone);
+                Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
+                Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
+                currentSlidePos = MiddleCone;
+                bHaveIRaisedTheClaw = true;
+            }
+            Current_Intake_Position = IntakeOutsidePos;
+            Mavryk.setPosition(Ryk_Robot.RykServos.FUNKY_MONKEY, Current_Intake_Position);
+            if (bHaveIRaisedTheClaw) {
+                Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, FloorPosition);
+                Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
+            }
+
         }
-        else {
-            Sweeper_Power = 0;
-            Intake_Position = IntakeDrivePos;
+        if (!bIntake && Current_Intake_Position == IntakeOutsidePos) {
+            boolean bHaveIRaisedTheClaw = false;
+            if (currentSlidePos < MiddleCone) {
+
+                Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, MiddleCone);
+                Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
+                Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
+                currentSlidePos = MiddleCone;
+                bHaveIRaisedTheClaw = true;
+            }
+            Current_Intake_Position = IntakeInsidePos;
+            Mavryk.setPosition(Ryk_Robot.RykServos.FUNKY_MONKEY, Current_Intake_Position);
+            if (bHaveIRaisedTheClaw) {
+                Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, FloorPosition);
+                Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
+            }
         }
 
-        Mavryk.setCRPower(Ryk_Robot.RykServos.CAR_WASH, Sweeper_Power);
-        Mavryk.setPosition(Ryk_Robot.RykServos.FUNKY_MONKEY, Intake_Position);
+        if(bIntake) {
+            Sweeper_Power = 0.5;
+            Mavryk.setCRPower(Ryk_Robot.RykServos.CAR_WASH, Sweeper_Power);
+
+        }
+        else {
+            //TODO: When Retracting from Intake - need to make sure claw is raised to provide clearance.
+            Sweeper_Power = 0;
+            Mavryk.setCRPower(Ryk_Robot.RykServos.CAR_WASH, Sweeper_Power);
+        }
 
     }
 
-    public void PpManualDrive() {
+    public void RykManualDrive() {
         if (gamepad1.dpad_left) {
             if (!changingWheelSpeed) {
                 timer_gp1_dpad_left.reset();
@@ -254,7 +278,7 @@ public class Ryk_Manual extends LinearOpMode {
         }
         Mavryk.setPosition(Ryk_Robot.RykServos.FLAMETHROWER, xSlide_Position);
     }
-    public void rykClaw() {
+    public void RykClaw() {
         ServoTurn = gamepad2.right_trigger == 1f;
 
 
@@ -303,7 +327,7 @@ public class Ryk_Manual extends LinearOpMode {
             }
         }
 
-        int newPos = currPos + (int) ( -gamepad2.left_stick_y * ticks_stepSize);
+        int newPos = currentSlidePos + (int) ( -gamepad2.left_stick_y * ticks_stepSize);
         if( newPos >= HighJunction)
             newPos = HighJunction;
         else if (newPos <= FloorPosition)
@@ -366,23 +390,23 @@ public class Ryk_Manual extends LinearOpMode {
         telemetry.addData("newPos from Any button triggers: ", newPos);
         telemetry.update();
 
-        if( newPos != currPos && newPos >=FloorPosition && newPos <= HighJunction ) {
+        if( newPos != currentSlidePos && newPos >=FloorPosition && newPos <= HighJunction ) {
             Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, newPos);
             Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-            if (newPos > currPos) {
+            if (newPos > currentSlidePos) {
                 Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
                 while (opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE)) {
                     idle();
                 }
             }
-            else if (newPos < currPos) {
+            else if (newPos < currentSlidePos) {
                 Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
                 while (opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE)) {
                     idle();
                 }
             }
-            currPos = newPos;
-            telemetry.addData("currPos updated to: ", currPos);
+            currentSlidePos = newPos;
+            telemetry.addData("currPos updated to: ", currentSlidePos);
             telemetry.update();
         }
 
@@ -390,7 +414,7 @@ public class Ryk_Manual extends LinearOpMode {
         telemetry.update();
     }
 
-    public void rykUpSlide_rtp() {
+    public void RykUpSlide_rtp() {
         //Gamepad2 left -> Decrease Speed
         if (gamepad2.dpad_left) {
             if (!changingSlideSpeed) {
@@ -425,7 +449,7 @@ public class Ryk_Manual extends LinearOpMode {
             }
         }
 
-        int newPos = currPos + (int) ( -gamepad2.left_stick_y * ticks_stepSize);
+        int newPos = currentSlidePos + (int) ( -gamepad2.left_stick_y * ticks_stepSize);
         if( newPos >= HighJunction)
             newPos = HighJunction;
         else if (newPos <= FloorPosition)
@@ -513,17 +537,17 @@ public class Ryk_Manual extends LinearOpMode {
         telemetry.addData("newPos from Any button triggers: ", newPos);
         telemetry.update();
 
-        if( newPos != currPos && newPos >=FloorPosition && newPos <= HighJunction ) {
+        if( newPos != currentSlidePos && newPos >=FloorPosition && newPos <= HighJunction ) {
             Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, newPos);
             Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-            if (newPos > currPos) {
+            if (newPos > currentSlidePos) {
                 Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
             }
-            else if (newPos < currPos) {
+            else if (newPos < currentSlidePos) {
                 Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
             }
-            currPos = newPos;
-            telemetry.addData("currPos updated to: ", currPos);
+            currentSlidePos = newPos;
+            telemetry.addData("currPos updated to: ", currentSlidePos);
             telemetry.update();
         }
 
