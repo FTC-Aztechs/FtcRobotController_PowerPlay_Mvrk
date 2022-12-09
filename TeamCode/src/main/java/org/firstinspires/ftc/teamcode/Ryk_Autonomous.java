@@ -32,6 +32,7 @@ import static org.firstinspires.ftc.teamcode.Ryk_Robot.SlidePower_Down;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.SlidePower_Up;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.auto_drop_wait;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.auto_extend_wait;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.auto_half_raise_wait;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.auto_move_wait;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.auto_pickup_wait;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.auto_raise_wait;
@@ -85,7 +86,7 @@ public class Ryk_Autonomous extends LinearOpMode {
     AprilTagDetectionPipeline pipeline;
 
     private static int iTeleCt = 1;
-    public static int cyclesToRun = 0;
+    public static int cyclesToRun = 1;
 
     // VUFORIA Key
     public static final String VUFORIA_LICENSE_KEY = "AZRnab7/////AAABmTUhzFGJLEyEnSXEYWthkjhGRzu8klNOmOa9WEHaryl9AZCo2bZwq/rtvx83YRIgV60/Jy/2aivoXaHNzwi7dEMGoaglSVmdmzPF/zOPyiz27dDJgLVvIROD8ww7lYzL8eweJ+5PqLAavvX3wgrahkOxxOCNeKG9Tl0LkbS5R11ATXL7LLWeUv5FP1aDNgMZvb8P/u96OdOvD6D40Nf01Xf+KnkF5EXwNQKk1r7qd/hiv9h80gvBXMFqMkVgUyogwEnlK2BfmeUhGVm/99BiwwW65LpKSaLVPpW/6xqz9SyPgZ/L/vshbWgSkTB/KoERiV8MsW79RPUuQS6NTOLY32I/kukmsis3MFst5LP/d3gx";
@@ -390,7 +391,6 @@ public class Ryk_Autonomous extends LinearOpMode {
                 //preload
                 .lineToLinearHeading(Red_Push_Signal)
                 .lineToLinearHeading(Red_Dropoff)
-                .waitSeconds(auto_move_wait)
                 .addTemporalMarker(() -> {
                     // Raise Tom&Jerry
                     Mavryk.setTargetPosition(CAT_MOUSE, HighJunction);
@@ -412,18 +412,21 @@ public class Ryk_Autonomous extends LinearOpMode {
                 })
                 .waitSeconds(auto_drop_wait)
                 .addTemporalMarker(()->{
+                    // Retract FlameThrower
+                    Mavryk.setPosition(FLAMETHROWER, xSlideInPos);
+                })
+                .waitSeconds(auto_retract_wait)
+                .addTemporalMarker(()->{
                     // Lower Tom&Jerry to Top Cone
                     Mavryk.setTargetPosition(CAT_MOUSE, TopCone);
                     Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
                     Mavryk.setPower(CAT_MOUSE, SlidePower_Down);
-                    // Retract FlameThrower
-                    Mavryk.setPosition(FLAMETHROWER, xSlideInPos);
                 })
-                .waitSeconds(auto_extend_wait)
-                .lineToLinearHeading(Red_Pickup)
+                .waitSeconds(auto_drop_wait)
                 .build();
 
-        trajCycleDropOff = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Pickup)
+        trajCycleDropOff = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Dropoff)
+                .lineToLinearHeading(Red_Pickup)
                 .waitSeconds(auto_move_wait)
                 .addTemporalMarker(() -> {
                     // Extend Flamethrower & Grab Cone
@@ -440,7 +443,7 @@ public class Ryk_Autonomous extends LinearOpMode {
                     Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
                     Mavryk.setPower(CAT_MOUSE, SlidePower_Up);
                 })
-                .waitSeconds(auto_raise_wait)
+                .waitSeconds(auto_half_raise_wait)
                 .addTemporalMarker(()->{
                     // Retract Flamethrower
                     Mavryk.setPosition(FLAMETHROWER, xSlideInPos);
@@ -478,23 +481,22 @@ public class Ryk_Autonomous extends LinearOpMode {
                     Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
                     Mavryk.setPower(CAT_MOUSE, SlidePower_Down);
                 })
-                .lineToLinearHeading(Red_Pickup)
                 .build();
 
         switch(col) {
             case 1:
             default:
-                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Pickup)
+                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Dropoff)
                         .lineToLinearHeading(Red_Park_Pos1)
                         .build();
                 break;
             case 2:
-                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Pickup)
+                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Dropoff)
                         .lineToLinearHeading(Red_Park_Pos2)
                         .build();
                 break;
             case 3:
-                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Pickup)
+                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Dropoff)
                         .lineToLinearHeading(Red_Park_Pos3)
                         .build();
                 break;

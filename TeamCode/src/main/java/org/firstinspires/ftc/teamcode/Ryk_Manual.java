@@ -38,10 +38,10 @@ import static org.firstinspires.ftc.teamcode.Ryk_Robot.BUTTON_TRIGGER_TIMER_MS;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.FloorPosition;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.HighJunction;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.IntakeInsidePos;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.IntakeOutsidePos;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.LowJunction;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.MidJunction;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.MiddleCone;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.RightFunkyOutsidePos;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.SlidePower_Down;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.SlidePower_Up;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.TopMidCone;
@@ -171,7 +171,7 @@ public class Ryk_Manual extends LinearOpMode {
                 currentSlidePos = MiddleCone;
                 bHaveIRaisedTheClaw = true;
             }
-            Current_Intake_Position = IntakeOutsidePos;
+            Current_Intake_Position = RightFunkyOutsidePos;
             Mavryk.setPosition(Ryk_Robot.RykServos.FUNKY_MONKEY, Current_Intake_Position);
             if (bHaveIRaisedTheClaw) {
                 Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, FloorPosition);
@@ -179,7 +179,7 @@ public class Ryk_Manual extends LinearOpMode {
             }
 
         }
-        if (!bIntake && Current_Intake_Position == IntakeOutsidePos) {
+        if (!bIntake && Current_Intake_Position == RightFunkyOutsidePos) {
             boolean bHaveIRaisedTheClaw = false;
             if (currentSlidePos < MiddleCone) {
 

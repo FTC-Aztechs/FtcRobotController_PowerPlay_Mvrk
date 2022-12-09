@@ -189,21 +189,22 @@ public class Ryk_Robot
     public static double Claw_Open_Pos = 0.5;
     public static double Claw_Close_Pos = 0.35;
 
-    public static double IntakeInsidePos = 0.9;
-    public static double IntakeOutsidePos = 0.5;
+    public static double IntakeInsidePos = 1;
+    public static double RightFunkyOutsidePos = 0.5;
+    public static double LeftMonkeyOutsidePos = 0.4;
+
 
     public static double xSlideOutPos = 0.75;
     public static double xSlideDropPos = 0.5;
     public static double xSlideInPos = 0;
 
     public static double auto_move_wait = 0.5;
-    public static double auto_drop_wait = 0.75;
-    public static double auto_pickup_wait = 0.75;
-    public static double auto_raise_wait = 0.75;
+    public static double auto_drop_wait = 0.5;
+    public static double auto_pickup_wait = 0.5;
+    public static double auto_half_raise_wait = 0.5;
+    public static double auto_raise_wait = 2;
     public static double auto_extend_wait = 0.8;
-    public static double auto_retract_wait = 0.5;
-
-
+    public static double auto_retract_wait = 0.25;
 
 
     static int[] red = {135, 180, 0, 10};
