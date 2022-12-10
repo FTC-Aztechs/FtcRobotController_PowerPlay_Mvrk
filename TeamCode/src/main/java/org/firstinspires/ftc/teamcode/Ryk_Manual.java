@@ -21,7 +21,7 @@
  * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * SERVICES; LOSS OF USE, Line, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
@@ -38,6 +38,7 @@ import static org.firstinspires.ftc.teamcode.Ryk_Robot.BUTTON_TRIGGER_TIMER_MS;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.FloorPosition;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.HighJunction;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.IntakeInsidePos;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.LeftMonkeyOutsidePos;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.LowJunction;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.MidJunction;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.MiddleCone;
@@ -118,7 +119,7 @@ public class Ryk_Manual extends LinearOpMode {
 
 
     FtcDashboard rykDashboard;
-    private double bumperSpeedAdjust = 7;
+    private double bumperSpeedAdjust = 8;
     private double dPadSpeedAdjust = 5;
 
     @Override
@@ -151,7 +152,7 @@ public class Ryk_Manual extends LinearOpMode {
         Mavryk.setPosition(Ryk_Robot.RykServos.FUNKY_MONKEY, Current_Intake_Position);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        telemetry.addData("Status:", "Robot is ready to roll!");
+        telemetry.addLine("Status: Robot is ready to roll!");
         telemetry.update();
 
         return;
@@ -163,8 +164,8 @@ public class Ryk_Manual extends LinearOpMode {
 
         if (bIntake && Current_Intake_Position == IntakeInsidePos) {
             boolean bHaveIRaisedTheClaw = false;
-            if (currentSlidePos < MiddleCone) {
-
+            if (currentSlidePos < MiddleCone)
+            {
                 Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, MiddleCone);
                 Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
                 Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
@@ -173,11 +174,14 @@ public class Ryk_Manual extends LinearOpMode {
             }
             Current_Intake_Position = RightFunkyOutsidePos;
             Mavryk.setPosition(Ryk_Robot.RykServos.FUNKY_MONKEY, Current_Intake_Position);
+            Mavryk.setPosition(Ryk_Robot.RykServos.RIGHT_FUNKY, RightFunkyOutsidePos);
+            Mavryk.setPosition(Ryk_Robot.RykServos.LEFT_MONKEY, LeftMonkeyOutsidePos);
             if (bHaveIRaisedTheClaw) {
                 Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, FloorPosition);
                 Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
             }
-
+            telemetry.addLine("Intake out!");
+            telemetry.update();
         }
         if (!bIntake && Current_Intake_Position == RightFunkyOutsidePos) {
             boolean bHaveIRaisedTheClaw = false;
@@ -195,17 +199,22 @@ public class Ryk_Manual extends LinearOpMode {
                 Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, FloorPosition);
                 Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
             }
+            telemetry.addLine("Intake in!");
+            telemetry.update();
         }
 
         if(bIntake) {
             Sweeper_Power = 0.5;
             Mavryk.setCRPower(Ryk_Robot.RykServos.CAR_WASH, Sweeper_Power);
-
+            telemetry.addLine("Intake on!");
+            telemetry.update();
         }
         else {
             //TODO: When Retracting from Intake - need to make sure claw is raised to provide clearance.
             Sweeper_Power = 0;
             Mavryk.setCRPower(Ryk_Robot.RykServos.CAR_WASH, Sweeper_Power);
+            telemetry.addLine("Intake off!");
+            telemetry.update();
         }
 
     }
@@ -221,7 +230,7 @@ public class Ryk_Manual extends LinearOpMode {
                 } else {
                     dPadSpeedAdjust -= 1;
                 }
-                telemetry.addData("Current speed: ", "%f", dPadSpeedAdjust);
+                telemetry.addLine("Current speed: " + dPadSpeedAdjust);
                 telemetry.update();
                 changingWheelSpeed = false;
             }
@@ -238,7 +247,7 @@ public class Ryk_Manual extends LinearOpMode {
                 } else {
                     dPadSpeedAdjust += 1;
                 }
-                telemetry.addData("Current speed: ", "%f", dPadSpeedAdjust);
+                telemetry.addLine("Current speed: " + dPadSpeedAdjust);
                 telemetry.update();
                 changingWheelSpeed = false;
             }
@@ -304,7 +313,7 @@ public class Ryk_Manual extends LinearOpMode {
                 } else {
                     UpAdjust -= 1;
                 }
-                telemetry.addData("Current Slide Speed: ", "%f", UpAdjust);
+                telemetry.addLine("Current slide speed: " + UpAdjust);
                 telemetry.update();
                 changingSlideSpeed = false;
             }
@@ -321,7 +330,7 @@ public class Ryk_Manual extends LinearOpMode {
                 } else {
                     UpAdjust += 1;
                 }
-                telemetry.addData("Current Slide Speed: ", "%f", UpAdjust);
+                telemetry.addLine("Current slide speed: " + UpAdjust);
                 telemetry.update();
                 changingSlideSpeed = false;
             }
@@ -332,7 +341,7 @@ public class Ryk_Manual extends LinearOpMode {
             newPos = HighJunction;
         else if (newPos <= FloorPosition)
             newPos = FloorPosition;
-        telemetry.addData("newPos calc from gamePad2.left_stick_y: ", newPos);
+        telemetry.addLine("newPos calc from gamePad2.left_stick_y: " + newPos);
         telemetry.update();
 
         if (gamepad2.y) {
@@ -387,7 +396,7 @@ public class Ryk_Manual extends LinearOpMode {
         }
 
 
-        telemetry.addData("newPos from Any button triggers: ", newPos);
+        telemetry.addLine("newPos from Any button triggers: " + newPos);
         telemetry.update();
 
         if( newPos != currentSlidePos && newPos >=FloorPosition && newPos <= HighJunction ) {
@@ -406,11 +415,11 @@ public class Ryk_Manual extends LinearOpMode {
                 }
             }
             currentSlidePos = newPos;
-            telemetry.addData("currPos updated to: ", currentSlidePos);
+            telemetry.addLine("currPos updated to: "+ currentSlidePos);
             telemetry.update();
         }
 
-        telemetry.addData("rykUpSlide_rue: Current Slide Position: ", Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE));
+        telemetry.addLine("rykUpSlide_rue: Current Slide Position: " + Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE));
         telemetry.update();
     }
 
@@ -426,7 +435,7 @@ public class Ryk_Manual extends LinearOpMode {
                 } else {
                     Ryk_Robot.UpAdjust -= 1;
                 }
-                telemetry.addData("Current Slide Speed: ", "%f", Ryk_Robot.UpAdjust);
+                telemetry.addLine("Current Slide Speed: "+ Ryk_Robot.UpAdjust);
                 telemetry.update();
                 changingSlideSpeed = false;
             }
@@ -443,7 +452,7 @@ public class Ryk_Manual extends LinearOpMode {
                 } else {
                     Ryk_Robot.UpAdjust += 1;
                 }
-                telemetry.addData("Current Slide Speed: ", "%f", Ryk_Robot.UpAdjust);
+                telemetry.addLine("Current Slide Speed: "+ Ryk_Robot.UpAdjust);
                 telemetry.update();
                 changingSlideSpeed = false;
             }
@@ -454,7 +463,7 @@ public class Ryk_Manual extends LinearOpMode {
             newPos = HighJunction;
         else if (newPos <= FloorPosition)
             newPos = FloorPosition;
-        telemetry.addData("newPos calc from gamePad2.left_stick_y: ", newPos);
+        telemetry.addLine("newPos calc from gamePad2.left_stick_y: "+ newPos);
         telemetry.update();
 
         if (gamepad2.y) {
@@ -534,7 +543,7 @@ public class Ryk_Manual extends LinearOpMode {
             }
         }
 
-        telemetry.addData("newPos from Any button triggers: ", newPos);
+        telemetry.addLine("newPos from Any button triggers: " + newPos);
         telemetry.update();
 
         if( newPos != currentSlidePos && newPos >=FloorPosition && newPos <= HighJunction ) {
@@ -547,11 +556,11 @@ public class Ryk_Manual extends LinearOpMode {
                 Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
             }
             currentSlidePos = newPos;
-            telemetry.addData("currPos updated to: ", currentSlidePos);
+            telemetry.addLine("currPos updated to: "+ currentSlidePos);
             telemetry.update();
         }
 
-        telemetry.addData("rykUpSlide_rue: Current Slide Position: ", Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE));
+        telemetry.addLine("rykUpSlide_rue: Current Slide Position: "+ Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.CAT_MOUSE));
         telemetry.update();
     }
 
@@ -569,7 +578,7 @@ public class Ryk_Manual extends LinearOpMode {
                 } else {
                     UpAdjust -= 1;
                 }
-                telemetry.addData("Current Slide Speed: ", "%f", UpAdjust);
+                telemetry.addLine("Current Slide Speed: "+ UpAdjust);
                 telemetry.update();
                 changingSlideSpeed = false;
             }
@@ -586,7 +595,7 @@ public class Ryk_Manual extends LinearOpMode {
                 } else {
                     UpAdjust += 1;
                 }
-                telemetry.addData("Current Slide Speed: ", "%f", UpAdjust);
+                telemetry.addLine("Current Slide Speed: "+ UpAdjust);
                 telemetry.update();
                 changingSlideSpeed = false;
             }

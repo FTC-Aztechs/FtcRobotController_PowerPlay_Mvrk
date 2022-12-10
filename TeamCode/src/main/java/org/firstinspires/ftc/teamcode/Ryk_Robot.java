@@ -89,10 +89,6 @@ public class Ryk_Robot
     public DcMotor Tom = null;
 
     //    public DcMotor duck_wheel = null;
-//    public DcMotor another_duck_wheel = null;
-//    public DcMotor Linac = null;
-//    public DcMotor Da_Winch = null;
-//    //public Servo The_Claw = null;
     public Servo FlameThrower = null;
     public Servo Handsel = null;
     public Servo Grabbel = null;
@@ -115,22 +111,23 @@ public class Ryk_Robot
     public static double GrabbelClawLastPos = 0.0f;
 
     public static double UpAdjust = 10;
-    public static int HighJunction = 1080;
-    public static int MidJunction = 800;
-    public static int LowJunction = 500;
-    public static int GroundJunction = 100;
-    public static int FloorPosition = 10;
-    public static int DropoffPos = 900;
-    public static int BottomCone = 20;
-    public static int BottomMidCone = 135;
-    public static int MiddleCone = 145;
+    public static int HighJunction = 1110;
+    public static int MidJunction = 830;
+    public static int LowJunction = 530;
+    public static int GroundJunction = 130;
+    public static int FloorPosition = 40;
+    public static int DropoffPos = 930;
+    public static int BottomCone = 50;
+    public static int BottomMidCone = 165;
+    public static int MiddleCone = 175;
     public static int TopMidCone = 180;
-    public static int TopCone = 230;
+    public static int TopCone = 220;
     public static double SlidePower_Up= 1;
     public static double SlidePower_Down = 0.5;
     public static int ticks_stepSize = 13;
     public static int BUTTON_TRIGGER_TIMER_MS = 500;
 
+    public static int cyclesToRun = 2;
 
     public static final String VUFORIA_KEY =
             "AZRnab7/////AAABmTUhzFGJLEyEnSXEYWthkjhGRzu8klNOmOa9WEHaryl9AZCo2bZwq/rtvx83YRIgV60/Jy/2aivoXaHNzwi7dEMGoaglSVmdmzPF/zOPyiz27dDJgLVvIROD8ww7lYzL8eweJ+5PqLAavvX3wgrahkOxxOCNeKG9Tl0LkbS5R11ATXL7LLWeUv5FP1aDNgMZvb8P/u96OdOvD6D40Nf01Xf+KnkF5EXwNQKk1r7qd/hiv9h80gvBXMFqMkVgUyogwEnlK2BfmeUhGVm/99BiwwW65LpKSaLVPpW/6xqz9SyPgZ/L/vshbWgSkTB/KoERiV8MsW79RPUuQS6NTOLY32I/kukmsis3MFst5LP/d3gx";
@@ -151,39 +148,43 @@ public class Ryk_Robot
 
     public static boolean targetVisible       = false;
 
+//    public static Pose2d Red_Offset = new Pose2d(36.5, 62.75, Math.toRadians(-90));
+//    public static Pose2d Red_Dropoff_Dodge = new Pose2d(36.5,0, Math.toRadians(-90));
+//    public static Pose2d Red_Preload_Tile = new Pose2d(36.5,11.75, Math.toRadians(-90));
+//    public static Pose2d Red_Cycle_Tile = new Pose2d(36,12, Math.toRadians(0));
+//    public static Pose2d Red_Cycle_DropOff = new Pose2d(28,4.4, Math.toRadians(-130));
+//    public static Pose2d Red_TurnToCones = new Pose2d(10,12, Math.toRadians(0));
+
+
+//    public static Pose2d Blue_Offset = new Pose2d(-36.5, 62.75, Math.toRadians(-90));
+//    public static Pose2d Blue_Dropoff_Dodge = new Pose2d(-36.5,0, Math.toRadians(-90));
+//    public static Pose2d Blue_Preload_Tile = new Pose2d(-36.5,11.75, Math.toRadians(-90));
+//    public static Pose2d Blue_Cycle_Tile = new Pose2d(-36,12, Math.toRadians(-180));
+//    public static Pose2d Blue_Cycle_DropOff = new Pose2d(-28,4.4, Math.toRadians(-130));
+//    public static Pose2d Blue_TurnToCones = new Pose2d(-10,12, Math.toRadians(-180));
+//    public static Pose2d Blue_Cycle_Tile = new Pose2d(-36,12, Math.toRadians(-180));
+//    public static Pose2d Blue_Cycle_DropOff = new Pose2d(-28,4.4, Math.toRadians(-130));
+//    public static Pose2d Blue_TurnToCones = new Pose2d(-10,12, Math.toRadians(-180));
+
+
     public static Pose2d Red_Start = new Pose2d(35.5, 63.75, Math.toRadians(-90));
-    public static Pose2d Red_Offset = new Pose2d(36.5, 62.75, Math.toRadians(-90));
-    public static Pose2d Red_Dropoff_Dodge = new Pose2d(36.5,0, Math.toRadians(-90));
-    public static Pose2d Red_Preload_Tile = new Pose2d(36.5,11.75, Math.toRadians(-90));
-    public static Pose2d Red_Preload_DropOff = new Pose2d(29,6, Math.toRadians(-130));
-    public static Pose2d Red_Cycle_Tile = new Pose2d(36,12, Math.toRadians(0));
-    public static Pose2d Red_Cycle_DropOff = new Pose2d(28,4.4, Math.toRadians(-130));
-    public static Pose2d Red_TurnToCones = new Pose2d(10,12, Math.toRadians(0));
-    public static Pose2d Red_Pickup = new Pose2d(54.5,12, Math.toRadians(0));
-
-    // New Positions - Coach
-    public static Pose2d Red_Dropoff = new Pose2d(35.5,12, Math.toRadians(-135));
     public static Pose2d Red_Push_Signal = new Pose2d(35.5,0, Math.toRadians(-90));
-
-    public static Pose2d Blue_Start = new Pose2d(-31.5, 63.75, Math.toRadians(-90));
-    public static Pose2d Blue_Offset = new Pose2d(-36.5, 62.75, Math.toRadians(-90));
-    public static Pose2d Blue_Dropoff_Dodge = new Pose2d(-36.5,0, Math.toRadians(-90));
-    public static Pose2d Blue_Preload_Tile = new Pose2d(-36.5,11.75, Math.toRadians(-90));
-    public static Pose2d Blue_Preload_DropOff = new Pose2d(-28.5,6, Math.toRadians(-50));
-    public static Pose2d Blue_Cycle_Tile = new Pose2d(-36,12, Math.toRadians(-180));
-    public static Pose2d Blue_Cycle_DropOff = new Pose2d(-28,4.4, Math.toRadians(-130));
-    public static Pose2d Blue_TurnToCones = new Pose2d(-10,12, Math.toRadians(-180));
-    public static Pose2d Blue_Pickup = new Pose2d(-57.5,12, Math.toRadians(-180));
-
+    public static Pose2d Red_Pickup = new Pose2d(54.5,12, Math.toRadians(0));
+    public static Pose2d Red_Dropoff = new Pose2d(35.5,12, Math.toRadians(-135));
     public static Pose2d Red_Park_Pos1 = new Pose2d(57,12, Math.toRadians(0));
     public static Pose2d Red_Park_Pos2 = new Pose2d(36,12, Math.toRadians(0));
     public static Pose2d Red_Park_Pos3 = new Pose2d(13,12, Math.toRadians(0));
 
-    public static Pose2d Blue_Park_Pos1 = new Pose2d(-13,12, Math.toRadians(180));
-    public static Pose2d Blue_Park_Pos2 = new Pose2d(-36,12, Math.toRadians(180));
-    public static Pose2d Blue_Park_Pos3 = new Pose2d(-57,12, Math.toRadians(180));
+    public static Pose2d Blue_Start = new Pose2d(-35.5, 63.75, Math.toRadians(-90));
+    public static Pose2d Blue_Push_Signal = new Pose2d(-35.5,0, Math.toRadians(-90));
+    public static Pose2d Blue_Pickup = new Pose2d(-54.5,12, Math.toRadians(-180));
+    public static Pose2d Blue_Dropoff = new Pose2d(-35.5,12, Math.toRadians(-45));
+    public static Pose2d Blue_Park_Pos1 = new Pose2d(-13,12, Math.toRadians(-180));
+    public static Pose2d Blue_Park_Pos2 = new Pose2d(-36,12, Math.toRadians(-180));
+    public static Pose2d Blue_Park_Pos3 = new Pose2d(-57,12, Math.toRadians(-180));;
+
     public static double Slide_Ticks_Per_Rev = 537.7; // From REV Robotics Core HEX
-//
+
     double dSlidePower = 1;
 
     public static double Claw_Open_Pos = 0.5;
@@ -196,7 +197,8 @@ public class Ryk_Robot
 
     public static double xSlideOutPos = 0.75;
     public static double xSlideDropPos = 0.5;
-    public static double xSlideInPos = 0;
+    public static double xSlideInPos = 0.43;
+
 
     public static double auto_move_wait = 0.5;
     public static double auto_drop_wait = 0.5;
@@ -204,12 +206,8 @@ public class Ryk_Robot
     public static double auto_half_raise_wait = 0.5;
     public static double auto_raise_wait = 2;
     public static double auto_extend_wait = 0.8;
+    public static double auto_extend_half_wait = 0.4;
     public static double auto_retract_wait = 0.25;
-
-
-    static int[] red = {135, 180, 0, 10};
-    static int[] green = {70, 90};
-    static int[] blue = {100, 120};
 
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
@@ -244,14 +242,6 @@ public class Ryk_Robot
         Sweeper_Left = hwMap.get(CRServo.class, "SweeperLeft");
         Sweeper_Right = hwMap.get(CRServo.class, "SweeperRight");
 
-        // Acquire gyro
-
-        //get touch sensor
-//        Touche_Linac = hwMap.get(DigitalChannel.class, "Touche");
-//        Touche_Winch = hwMap.get(DigitalChannel.class, "Touche2");
-
-
-
         // Set all motors to zero power
         upper_left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         upper_right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -279,13 +269,9 @@ public class Ryk_Robot
         Sweeper_Left.setDirection(CRServo.Direction.REVERSE);
         Sweeper_Right.setDirection(CRServo.Direction.FORWARD);
 
-
-
         mecanumDrive = new SampleMecanumDrive(hwMap);
         eyeOfSauron = hwMap.get(WebcamName.class, "Sauron");
 
-//        Touche_Linac.setMode(DigitalChannel.Mode.INPUT);
-//        Touche_Winch.setMode(DigitalChannel.Mode.INPUT);
 
     }
     String formatAngle( AngleUnit angleUnit, double angle) {
@@ -470,7 +456,6 @@ public class Ryk_Robot
                 //return Linac.isBusy() && duck_wheel.isBusy() && Da_Winch.isBusy();
             case ALL:
                 return lower_left.isBusy() && lower_right.isBusy() && upper_left.isBusy() && upper_right.isBusy();
-                        //&& duck_wheel.isBusy() && Linac.isBusy()&& Da_Winch.isBusy();
             default:
                 return false;
         }

@@ -4,11 +4,32 @@ import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_WITHOUT_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
 import static com.qualcomm.robotcore.util.ElapsedTime.Resolution.MILLISECONDS;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.Claw_Close_Pos;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.BottomCone;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.BottomMidCone;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.Claw_Close_Pos;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.Claw_Open_Pos;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.DropoffPos;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.FloorPosition;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.IntakeInsidePos;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.MiddleCone;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.Blue_Preload_DropOff;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.Blue_Dropoff;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.Blue_Park_Pos1;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.Blue_Park_Pos2;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.Blue_Park_Pos3;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.Blue_Pickup;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.Blue_Push_Signal;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.Blue_Start;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.Blue_Dropoff;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.Blue_Park_Pos1;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.Blue_Park_Pos2;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.Blue_Park_Pos3;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.Blue_Pickup;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.Blue_Push_Signal;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.Blue_Start;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.RykMotors.CAT_MOUSE;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.RykServos.FLAMETHROWER;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.RykServos.FUNKY_MONKEY;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.RykServos.TWIN_TOWERS;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.TopMidCone;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.TopCone;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.GroundJunction;
@@ -17,12 +38,24 @@ import static org.firstinspires.ftc.teamcode.Ryk_Robot.LowJunction;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.SlidePower_Down;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.SlidePower_Up;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.auto_drop_wait;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.auto_extend_half_wait;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.auto_extend_wait;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.auto_half_raise_wait;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.auto_move_wait;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.auto_pickup_wait;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.auto_raise_wait;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.auto_retract_wait;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.cyclesToRun;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.xSlideDropPos;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.xSlideInPos;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.xSlideOutPos;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -47,6 +80,7 @@ import java.util.ArrayList;
 @Config
 @Autonomous(name="Blue Corner",group = "Autonomous")
 public class Ryk_Autonomous_Blue extends LinearOpMode {
+    private Pose2d currentPose;
 
     enum RykAllianceField {
         RED,
@@ -72,10 +106,6 @@ public class Ryk_Autonomous_Blue extends LinearOpMode {
     private static final float oneAndHalfTile = 36 * mmPerInch;
     private OpenGLMatrix mrvLastLocation = new OpenGLMatrix();
 
-    public TrajectorySequence Position1;
-    public TrajectorySequence Position2;
-    public TrajectorySequence Position3;
-    public TrajectorySequence Terminal;
 
     static final double FEET_PER_METER = 3.28084;
 
@@ -100,9 +130,15 @@ public class Ryk_Autonomous_Blue extends LinearOpMode {
 
     ElapsedTime timer = new ElapsedTime(MILLISECONDS);
 
-
-
-    public TrajectorySequence Park;
+    //    public TrajectorySequence Park;
+    public TrajectorySequence trajPreLoadDropOff;
+    public TrajectorySequence trajCycleDropOffTopCone;
+    public TrajectorySequence trajCycleDropOffTopMidCone;
+    public TrajectorySequence trajCycleDropOffMiddleCone;
+    public TrajectorySequence trajCycleDropOffBottomMidCone;
+    public TrajectorySequence trajCycleDropOffBottomCone;
+    public TrajectorySequence trajParking;
+    public int currentCyclePickupCone = TopCone;
 
     public static int pos = 1;
 
@@ -122,8 +158,9 @@ public class Ryk_Autonomous_Blue extends LinearOpMode {
         double volts = getBatteryVoltage();
         telemetry.addLine(String.format("%d. Battery voltage: %.1f volts", iTeleCt++, volts));
 
-        Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Mavryk.Claw_Close_Pos);
-        sleep(1000);
+        Mavryk.setPosition(TWIN_TOWERS, Mavryk.Claw_Close_Pos);
+        Mavryk.setPosition(FUNKY_MONKEY, IntakeInsidePos);
+        Mavryk.setPosition(FLAMETHROWER, xSlideInPos);
 
         telemetry.addData("Status: ", "Initializing camera......");
         telemetry.update();
@@ -151,6 +188,7 @@ public class Ryk_Autonomous_Blue extends LinearOpMode {
                 telemetry.addData("Status: ", "Sauron Streaming ...");
                 rykRobot.startCameraStream(Sauron, 0);
             }
+
             public void onError(int errorCode) {
                 return;
             }
@@ -160,55 +198,40 @@ public class Ryk_Autonomous_Blue extends LinearOpMode {
         telemetry.update();
 
         // while waiting for the game to start, search for april tags
-        while (!isStarted() && !isStopRequested())
-        {
+        while (!isStarted() && !isStopRequested()) {
             ArrayList<AprilTagDetection> currentDetections = pipeline.getLatestDetections();
 
-            if(currentDetections.size() != 0)
-            {
+            if (currentDetections.size() != 0) {
                 boolean tagFound = false;
 
-                for(AprilTagDetection tag : currentDetections)
-                {
-                    if(tag.id == LEFT ||  tag.id == MIDDLE || tag.id == RIGHT)
-                    {
+                for (AprilTagDetection tag : currentDetections) {
+                    if (tag.id == LEFT || tag.id == MIDDLE || tag.id == RIGHT) {
                         tagOfInterest = tag;
                         tagFound = true;
                         break;
                     }
                 }
 
-                if(tagFound)
-                {
+                if (tagFound) {
                     telemetry.addLine("Tag of interest is in sight!\n\nLocation data:");
                     tagToTelemetry(tagOfInterest);
-                }
-                else
-                {
+                } else {
                     telemetry.addLine("Don't see tag of interest :(");
 
-                    if(tagOfInterest == null)
-                    {
+                    if (tagOfInterest == null) {
                         telemetry.addLine("(The tag has never been seen)");
-                    }
-                    else
-                    {
+                    } else {
                         telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
                         tagToTelemetry(tagOfInterest);
                     }
                 }
 
-            }
-            else
-            {
+            } else {
                 telemetry.addLine("Don't see tag of interest :(");
 
-                if(tagOfInterest == null)
-                {
+                if (tagOfInterest == null) {
                     telemetry.addLine("(The tag has never been seen)");
-                }
-                else
-                {
+                } else {
                     telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
                     tagToTelemetry(tagOfInterest);
                 }
@@ -220,28 +243,24 @@ public class Ryk_Autonomous_Blue extends LinearOpMode {
         }
 
         //once program starts
-        if(tagOfInterest != null)
-        {
+        if (tagOfInterest != null) {
             telemetry.addLine("Tag snapshot:\n");
             tagToTelemetry(tagOfInterest);
             telemetry.update();
-        }
-        else
-        {
+        } else {
             telemetry.addLine("No tag snapshot available, it was never sighted during the init loop :(");
             telemetry.update();
         }
 
-
         // 1. Calculate Parking Position
 
-        if(tagOfInterest == null || tagOfInterest.id == LEFT) {
+        if (tagOfInterest == null || tagOfInterest.id == LEFT) {
             telemetry.addLine("Going to Position 1");
             pos = 1;
-        } else if(tagOfInterest.id == MIDDLE){
+        } else if (tagOfInterest.id == MIDDLE) {
             telemetry.addLine("Going to Position 2");
             pos = 2;
-        }else{
+        } else {
             telemetry.addLine("Going to Position 3");
             pos = 3;
         }
@@ -249,975 +268,361 @@ public class Ryk_Autonomous_Blue extends LinearOpMode {
         telemetry.update();
 
         initMotorsAndServos(true);
-        buildParkTrajectories_position(pos);
 
-        // 2. Move to dropoff pole
+        // Coach Stuff:
+        // buildParkTrajectories_position_coach(pos);
 
-        // 3. Extend Slides + dropoff
-        /*int iLinacDropoffPos = (int) (Mavryk.Linac_Dropoff_Revs * Mavryk.Linac_Ticks_Per_Rev);
-        double dLinacPower = 1;
-        Mavryk.setPower(Ryk_Robot.RykMotors.LIN_AC, dLinacPower);
-        while(opModeIsActive() && Mavryk.getCurrentPosition(Ryk_Robot.RykMotors.LIN_AC) < iLinacDropoffPos ) {
-            idle();
-        }
-        Mavryk.setPower(Ryk_Robot.RykMotors.LIN_AC, 0);*/
+        buildPreloadTrajectory();
+        buildParkTrajectory(pos);
+        if(cyclesToRun > 0)
+            trajCycleDropOffTopCone = buildCycleTrajectory(TopMidCone); // Note: Drop slides to pick up the next cone, in this case Top Mid
+        if(cyclesToRun > 1)
+            trajCycleDropOffTopMidCone = buildCycleTrajectory(MiddleCone); // Note: Drop slides to pick up the next cone, in this case Middle
+        if(cyclesToRun > 2)
+            trajCycleDropOffMiddleCone = buildCycleTrajectory(BottomMidCone); // Note: Drop slides to pick up the next cone, in this case BottomMid
+        if(cyclesToRun > 3)
+            trajCycleDropOffBottomMidCone = buildCycleTrajectory(BottomCone); // Note: Drop slides to pick up the next cone, in this case Bottom
+        if(cyclesToRun > 4)
+            trajCycleDropOffBottomCone = buildCycleTrajectory(FloorPosition); // Note: Drop slides to pick up the next cone, in this case Floor
 
-        // 4. Drive to cone stack
 
-        // 5. Pickup cone
-        Pose2d startPose = Ryk_Robot.Blue_Start;
-        Mavryk.mecanumDrive.setPoseEstimate(startPose);
-
-        // 6. Drive back to pole
-
-        // 7. repeat steps 3-6 for cycling
-
-        // 8. park in spot
-
-        telemetry.addLine(String.format("%d. Initial Pose Estimate: (x: %.3f, y: %.3f, Heading: %.3f)", iTeleCt++, startPose.getX(), startPose.getY(), startPose.getHeading()));
+        // Drop off preload
         trajectoryTimer.reset();
+        Mavryk.mecanumDrive.setPoseEstimate(Blue_Start);
+        Mavryk.mecanumDrive.followTrajectorySequence(trajPreLoadDropOff);
+        telemetry.addLine(String.format("%d. Preload Trajectory completed in: %.3f ", iTeleCt++, trajectoryTimer.seconds()));
 
-        Mavryk.mecanumDrive.followTrajectorySequence(Park);
+        // Cycle 1
+        if (cyclesToRun > 0) {
+            trajectoryTimer.reset();
+            Mavryk.mecanumDrive.followTrajectorySequence(trajCycleDropOffTopCone);
+            telemetry.addLine(String.format("%d. Cycle 1 Trajectory completed in: %.3f ", iTeleCt++, trajectoryTimer.seconds()));
+        }
+
+        // Cycle 2
+        if (cyclesToRun > 1) {
+            trajectoryTimer.reset();
+            Mavryk.mecanumDrive.followTrajectorySequence(trajCycleDropOffTopMidCone);
+            telemetry.addLine(String.format("%d. Cycle 2 Trajectory completed in: %.3f ", iTeleCt++, trajectoryTimer.seconds()));
+        }
+
+        // Cycle 3
+        if (cyclesToRun > 2) {
+            trajectoryTimer.reset();
+            Mavryk.mecanumDrive.followTrajectorySequence(trajCycleDropOffMiddleCone);
+            telemetry.addLine(String.format("%d. Cycle 3 Trajectory completed in: %.3f ", iTeleCt++, trajectoryTimer.seconds()));
+        }
+
+        // Cycle 4
+        if (cyclesToRun > 3) {
+            trajectoryTimer.reset();
+            Mavryk.mecanumDrive.followTrajectorySequence(trajCycleDropOffBottomMidCone);
+            telemetry.addLine(String.format("%d. Cycle 4 Trajectory completed in: %.3f ", iTeleCt++, trajectoryTimer.seconds()));
+        }
+
+        // Cycle 5
+        if (cyclesToRun > 4) {
+            trajectoryTimer.reset();
+            Mavryk.mecanumDrive.followTrajectorySequence(trajCycleDropOffBottomCone);
+            telemetry.addLine(String.format("%d. Cycle 5 Trajectory completed in: %.3f ", iTeleCt++, trajectoryTimer.seconds()));
+        }
+
+        // Park
+//        EstimateCurrentPose();
+//        if (!currentPose.epsilonEquals(Blue_Pickup)) {
+//            Trajectory trajAdjustPos = Mavryk.mecanumDrive.trajectoryBuilder(currentPose)
+//                    .lineToLinearHeading(Blue_Pickup)
+//                    .build();
+//            Mavryk.mecanumDrive.followTrajectory(trajAdjustPos);
+//        }
+        trajectoryTimer.reset();
+        Mavryk.mecanumDrive.followTrajectorySequence(trajParking);
+        telemetry.addLine(String.format("%d. Park Trajectory completed in: %.3f ", iTeleCt++, trajectoryTimer.seconds()));
 
         telemetry.addLine(String.format("%d. Total time to complete Trajectory Sequence: %.3f ", iTeleCt++, trajectoryTimer.seconds()));
         telemetry.update();
     }
 
+    private void EstimateCurrentPose() {
+        // TODO: use vumarks to update current pose
+        currentPose = Blue_Pickup;
+    }
 
-    void buildParkTrajectories_position(int col) {
+    void buildPreloadTrajectory() {
+        telemetry.addLine(String.format("%d. buildPreloadTrajectory", iTeleCt++));
 
-        telemetry.addLine(String.format("%d. buildWarehouseTrajectories_position", iTeleCt++));
+        trajPreLoadDropOff = Mavryk.mecanumDrive.trajectorySequenceBuilder(Blue_Start)
+                //preload
+                .lineToLinearHeading(Blue_Push_Signal)
+                .lineToLinearHeading(Blue_Dropoff)
+                .addTemporalMarker(() -> {
+                    // Raise Tom&Jerry
+                    Mavryk.setTargetPosition(CAT_MOUSE, HighJunction);
+                    Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
+                    Mavryk.setPower(CAT_MOUSE, SlidePower_Up);
+                })
+                .waitSeconds(auto_raise_wait)
+                .addTemporalMarker(() -> { // Start after 1.5s of raise
+                    // Extend FlameThrower
+                    Mavryk.setPosition(FLAMETHROWER, xSlideOutPos);
+                })
+                .waitSeconds(auto_extend_wait)
+                .addTemporalMarker(() -> {
+                    // Lower Tom & Jerry
+                    Mavryk.setTargetPosition(CAT_MOUSE, DropoffPos);
+                    Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
+                    Mavryk.setPower(CAT_MOUSE, SlidePower_Down);
+                    Mavryk.setPosition(TWIN_TOWERS, Claw_Open_Pos);
+                })
+                .waitSeconds(auto_drop_wait)
+                .addTemporalMarker(() -> {
+                    // Retract FlameThrower
+                    Mavryk.setPosition(FLAMETHROWER, xSlideDropPos);
+                })
+                .waitSeconds(auto_retract_wait) // Eliminate
+                .addTemporalMarker(() -> {
+                    // Lower Tom&Jerry to Top Cone
+                    Mavryk.setTargetPosition(CAT_MOUSE, TopCone);
+                    Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
+                    Mavryk.setPower(CAT_MOUSE, SlidePower_Down);
+                })
+                .waitSeconds(auto_drop_wait)
+                .build();
 
-        switch (col) {
+        telemetry.addLine(String.format("%d. Preload Trajectory calculated Duration: %.3f", iTeleCt++, trajPreLoadDropOff.duration()));
+        return;
+    }
+
+    void buildParkTrajectory(int iPos)
+    {
+        telemetry.addLine(String.format("%d. buildParkTrajectory", iTeleCt++));
+
+        switch (iPos) {
             case 1:
-                Park = Mavryk.mecanumDrive.trajectorySequenceBuilder(Ryk_Robot.Blue_Start)
-                        //preload
-                        .lineToLinearHeading(Ryk_Robot.Blue_Offset)
-                        .lineToLinearHeading(Ryk_Robot.Blue_Dropoff_Dodge)
-                        .waitSeconds(auto_move_wait)
-                        .lineToLinearHeading(Ryk_Robot.Blue_Preload_Tile)
-                        .addTemporalMarker(() -> {
-                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, HighJunction);
-                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-//                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-//                                idle();
-//                            }
-                        })
-                        .waitSeconds(auto_move_wait)
-                        .turn(Math.toRadians(37))
-                        .lineToLinearHeading(Ryk_Robot.Blue_Preload_DropOff)
-                        .addTemporalMarker(() -> {
-                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, LowJunction);
-                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
-//                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-//                                idle();
-//                            }
-                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Ryk_Robot.Claw_Open_Pos);
-                        })
-                        .waitSeconds(auto_drop_wait)
-                        .lineToLinearHeading(Ryk_Robot.Blue_Preload_Tile)
-                        .turn(Math.toRadians(-90))
-                        .lineToLinearHeading(Ryk_Robot.Blue_Park_Pos3)
-                        .waitSeconds(auto_move_wait)
-//                        //pickup cone 5
-                        .addTemporalMarker(() -> {
-                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, TopCone);
-                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-
-//                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-//                                telemetry.addLine("Picking up Top Cone");
-//                                telemetry.update();
-//                                idle();
-//                            }
-                        })
-                        .lineToLinearHeading(Ryk_Robot.Blue_Pickup)
-                        .addTemporalMarker(() ->{
-                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Close_Pos);
-                        })
-                        .waitSeconds(auto_move_wait)
+            default:
+                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Blue_Dropoff)
                         .addTemporalMarker(()->{
-                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Ryk_Robot.LowJunction);
-                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-
-//                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-//                                telemetry.addLine("Lift up cone");
-//                                telemetry.update();
-//                                idle();
-//                            }
-                            timer.reset();
+                            Mavryk.setPosition(FLAMETHROWER, xSlideInPos);
                         })
-                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_Tile)
-                        .waitSeconds(auto_move_wait)
-                        .turn(Math.toRadians(130))
-                        .addTemporalMarker(() -> {
-                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, HighJunction);
-                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-//                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-//                                idle();
-//                            }
-                        })
-                        .waitSeconds(auto_move_wait)
-                        .lineToLinearHeading(Blue_Preload_DropOff)
-                        .addTemporalMarker(() -> {
-                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, LowJunction);
-                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
-//                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-//                                idle();
-//                            }
-                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Ryk_Robot.Claw_Open_Pos);
-                        })
-                        .waitSeconds(auto_drop_wait)
-                        .lineToLinearHeading(Ryk_Robot.Blue_Preload_Tile)
-//                        //cone 4
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, TopMidCone);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-//
-////                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-////                                telemetry.addLine("Picking up Top Middle Cone");
-////                                telemetry.update();
-////                                idle();
-////                            }
-//                        })
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Pickup)
-//                        .addTemporalMarker(() ->{
-//                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Close_Pos);
-//                        })
-//                        .waitSeconds(auto_move_wait)
-//                        .addTemporalMarker(()->{
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Ryk_Robot.LowJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-//
-////                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-////                                telemetry.addLine("Lift up cone");
-////                                telemetry.update();
-////                                idle();
-////                            }
-//                            timer.reset();
-//                        })
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_Tile)
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, HighJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-////                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-////                                idle();
-////                            }
-//                        })
-//                        .waitSeconds(auto_move_wait)
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_DropOff)
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, LowJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
-////                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-////                                idle();
-////                            }
-//                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Ryk_Robot.Claw_Open_Pos);
-//                        })
-//                        .waitSeconds(auto_drop_wait)
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_Tile)
-//                        //cone 3
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, MiddleCone);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-//
-////                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-////                                telemetry.addLine("Picking Up Middle Cone");
-////                                telemetry.update();
-////                                idle();
-////                            }
-//                        })
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Pickup)
-//                        .addTemporalMarker(() ->{
-//                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Close_Pos);
-//                        })
-//                        .waitSeconds(auto_move_wait)
-//                        .addTemporalMarker(()->{
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Ryk_Robot.LowJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-//
-////                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-////                                telemetry.addLine("Lift up cone");
-////                                telemetry.update();
-////                                idle();
-////                            }
-//                            timer.reset();
-//                        })
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_Tile)
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, HighJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-////                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-////                                idle();
-////                            }
-//                        })
-//                        .waitSeconds(auto_move_wait)
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_DropOff)
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, LowJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
-////                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-////                                idle();
-////                            }
-//                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Ryk_Robot.Claw_Open_Pos);
-//                        })
-//                        .waitSeconds(auto_drop_wait)
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_Tile)
-//                        //cone 2
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, BottomMidCone);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-////
-////                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-////                                telemetry.addLine("Picking up Bottom Middle Cone");
-////                                telemetry.update();
-////                                idle();
-////                            }
-//                        })
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Pickup)
-//                        .addTemporalMarker(() ->{
-//                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Close_Pos);
-//                        })
-//                        .waitSeconds(auto_move_wait)
-//                        .addTemporalMarker(()->{
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Ryk_Robot.LowJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-//
-////                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-////                                telemetry.addLine("Lift up cone");
-////                                telemetry.update();
-////                                idle();
-////                            }
-//                            timer.reset();
-//                        })
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_Tile)
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, HighJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-////                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-////                                idle();
-////                            }
-//                        })
-//                        .waitSeconds(auto_move_wait)
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_DropOff)
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, LowJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
-////                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-////                                idle();
-////                            }
-//                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Ryk_Robot.Claw_Open_Pos);
-//                        })
-//                        .waitSeconds(auto_drop_wait)
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_Tile)
-//                        //cone 1
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, BottomCone);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-//
-////                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-////                                telemetry.addLine("Picking Up Bottom Cone");
-////                                telemetry.update();
-////                                idle();
-////                            }
-//                        })
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Pickup)
-//                        .addTemporalMarker(() ->{
-//                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Close_Pos);
-//                        })
-//                        .waitSeconds(auto_move_wait)
-//                        .addTemporalMarker(()->{
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Ryk_Robot.LowJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-//
-////                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-////                                telemetry.addLine("Lift up cone");
-////                                telemetry.update();
-////                                idle();
-////                            }
-//                            timer.reset();
-//                        })
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_Tile)
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, HighJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-////                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-////                                idle();
-////                            }
-//                        })
-//                        .waitSeconds(auto_move_wait)
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_DropOff)
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, LowJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
-////                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-////                                idle();
-////                            }
-//                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Ryk_Robot.Claw_Open_Pos);
-//                        })
-//                        .waitSeconds(auto_drop_wait)
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_Tile)
-//                        //park
-                        .addTemporalMarker(() -> {
-                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, GroundJunction);
-                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
-
-//                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-//                                telemetry.addLine("Lowering to rest position.");
-//                                telemetry.update();
-//                                idle();
-//                            }
-                        })
-                        .lineToLinearHeading(Ryk_Robot.Blue_Park_Pos1)
+                        .lineToLinearHeading(Blue_Park_Pos1)
                         .build();
                 break;
             case 2:
-                Park = Mavryk.mecanumDrive.trajectorySequenceBuilder(Ryk_Robot.Blue_Start)
-                        //preload
-                        .lineToLinearHeading(Ryk_Robot.Blue_Offset)
-                        .lineToLinearHeading(Ryk_Robot.Blue_Dropoff_Dodge)
-                        .waitSeconds(auto_move_wait)
-                        .lineToLinearHeading(Ryk_Robot.Blue_Preload_Tile)
-                        .addTemporalMarker(() -> {
-                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, HighJunction);
-                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-//                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-//                                idle();
-//                            }
-                        })
-                        .waitSeconds(auto_move_wait)
-                        .turn(Math.toRadians(37))
-                        .lineToLinearHeading(Ryk_Robot.Blue_Preload_DropOff)
-                        .addTemporalMarker(() -> {
-                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, LowJunction);
-                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
-//                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-//                                idle();
-//                            }
-                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Ryk_Robot.Claw_Open_Pos);
-                        })
-                        .waitSeconds(auto_drop_wait)
-                        .lineToLinearHeading(Ryk_Robot.Blue_Preload_Tile)
-                        .turn(Math.toRadians(-90))
-                        .lineToLinearHeading(Ryk_Robot.Blue_Park_Pos3)
-                        .waitSeconds(auto_move_wait)
-//                        //pickup cone 5
-                        .addTemporalMarker(() -> {
-                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, TopCone);
-                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-
-//                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-//                                telemetry.addLine("Picking up Top Cone");
-//                                telemetry.update();
-//                                idle();
-//                            }
-                        })
-                        .lineToLinearHeading(Ryk_Robot.Blue_Pickup)
-                        .addTemporalMarker(() ->{
-                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Close_Pos);
-                        })
-                        .waitSeconds(auto_move_wait)
+                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Blue_Dropoff)
                         .addTemporalMarker(()->{
-                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Ryk_Robot.LowJunction);
-                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-
-//                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-//                                telemetry.addLine("Lift up cone");
-//                                telemetry.update();
-//                                idle();
-//                            }
-                            timer.reset();
+                            Mavryk.setPosition(FLAMETHROWER, xSlideInPos);
                         })
-                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_Tile)
-                        .waitSeconds(auto_move_wait)
-                        .turn(Math.toRadians(130))
-                        .addTemporalMarker(() -> {
-                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, HighJunction);
-                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-//                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-//                                idle();
-//                            }
-                        })
-                        .waitSeconds(auto_move_wait)
-                        .lineToLinearHeading(Blue_Preload_DropOff)
-                        .addTemporalMarker(() -> {
-                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, LowJunction);
-                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
-//                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-//                                idle();
-//                            }
-                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Ryk_Robot.Claw_Open_Pos);
-                        })
-                        .waitSeconds(auto_drop_wait)
-                        .lineToLinearHeading(Ryk_Robot.Blue_Preload_Tile)
-//                        //cone 4
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, TopMidCone);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-//
-////                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-////                                telemetry.addLine("Picking up Top Middle Cone");
-////                                telemetry.update();
-////                                idle();
-////                            }
-//                        })
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Pickup)
-//                        .addTemporalMarker(() ->{
-//                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Close_Pos);
-//                        })
-//                        .waitSeconds(auto_move_wait)
-//                        .addTemporalMarker(()->{
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Ryk_Robot.LowJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-//
-////                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-////                                telemetry.addLine("Lift up cone");
-////                                telemetry.update();
-////                                idle();
-////                            }
-//                            timer.reset();
-//                        })
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_Tile)
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, HighJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-////                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-////                                idle();
-////                            }
-//                        })
-//                        .waitSeconds(auto_move_wait)
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_DropOff)
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, LowJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
-////                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-////                                idle();
-////                            }
-//                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Ryk_Robot.Claw_Open_Pos);
-//                        })
-//                        .waitSeconds(auto_drop_wait)
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_Tile)
-//                        //cone 3
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, MiddleCone);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-//
-////                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-////                                telemetry.addLine("Picking Up Middle Cone");
-////                                telemetry.update();
-////                                idle();
-////                            }
-//                        })
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Pickup)
-//                        .addTemporalMarker(() ->{
-//                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Close_Pos);
-//                        })
-//                        .waitSeconds(auto_move_wait)
-//                        .addTemporalMarker(()->{
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Ryk_Robot.LowJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-//
-////                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-////                                telemetry.addLine("Lift up cone");
-////                                telemetry.update();
-////                                idle();
-////                            }
-//                            timer.reset();
-//                        })
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_Tile)
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, HighJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-////                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-////                                idle();
-////                            }
-//                        })
-//                        .waitSeconds(auto_move_wait)
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_DropOff)
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, LowJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
-////                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-////                                idle();
-////                            }
-//                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Ryk_Robot.Claw_Open_Pos);
-//                        })
-//                        .waitSeconds(auto_drop_wait)
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_Tile)
-//                        //cone 2
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, BottomMidCone);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-////
-////                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-////                                telemetry.addLine("Picking up Bottom Middle Cone");
-////                                telemetry.update();
-////                                idle();
-////                            }
-//                        })
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Pickup)
-//                        .addTemporalMarker(() ->{
-//                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Close_Pos);
-//                        })
-//                        .waitSeconds(auto_move_wait)
-//                        .addTemporalMarker(()->{
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Ryk_Robot.LowJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-//
-////                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-////                                telemetry.addLine("Lift up cone");
-////                                telemetry.update();
-////                                idle();
-////                            }
-//                            timer.reset();
-//                        })
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_Tile)
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, HighJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-////                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-////                                idle();
-////                            }
-//                        })
-//                        .waitSeconds(auto_move_wait)
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_DropOff)
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, LowJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
-////                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-////                                idle();
-////                            }
-//                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Ryk_Robot.Claw_Open_Pos);
-//                        })
-//                        .waitSeconds(auto_drop_wait)
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_Tile)
-//                        //cone 1
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, BottomCone);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-//
-////                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-////                                telemetry.addLine("Picking Up Bottom Cone");
-////                                telemetry.update();
-////                                idle();
-////                            }
-//                        })
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Pickup)
-//                        .addTemporalMarker(() ->{
-//                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Close_Pos);
-//                        })
-//                        .waitSeconds(auto_move_wait)
-//                        .addTemporalMarker(()->{
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Ryk_Robot.LowJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-//
-////                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-////                                telemetry.addLine("Lift up cone");
-////                                telemetry.update();
-////                                idle();
-////                            }
-//                            timer.reset();
-//                        })
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_Tile)
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, HighJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-////                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-////                                idle();
-////                            }
-//                        })
-//                        .waitSeconds(auto_move_wait)
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_DropOff)
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, LowJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
-////                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-////                                idle();
-////                            }
-//                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Ryk_Robot.Claw_Open_Pos);
-//                        })
-//                        .waitSeconds(auto_drop_wait)
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_Tile)
-                        //park
-                        .addTemporalMarker(() -> {
-                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, GroundJunction);
-                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
-
-//                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-//                                telemetry.addLine("Lowering to rest position.");
-//                                telemetry.update();
-//                                idle();
-//                            }
-                        })
-                        .lineToLinearHeading(Ryk_Robot.Blue_Park_Pos2)
+                        .lineToLinearHeading(Blue_Park_Pos2)
                         .build();
-
                 break;
             case 3:
-                Park = Mavryk.mecanumDrive.trajectorySequenceBuilder(Ryk_Robot.Blue_Start)
-                        //preload
-                        .lineToLinearHeading(Ryk_Robot.Blue_Offset)
-                        .lineToLinearHeading(Ryk_Robot.Blue_Dropoff_Dodge)
-                        .waitSeconds(auto_move_wait)
-                        .lineToLinearHeading(Ryk_Robot.Blue_Preload_Tile)
-                        .addTemporalMarker(() -> {
-                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, HighJunction);
-                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-//                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-//                                idle();
-//                            }
-                        })
-                        .waitSeconds(auto_move_wait)
-                        .turn(Math.toRadians(37))
-                        .lineToLinearHeading(Ryk_Robot.Blue_Preload_DropOff)
-                        .addTemporalMarker(() -> {
-                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, LowJunction);
-                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
-//                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-//                                idle();
-//                            }
-                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Ryk_Robot.Claw_Open_Pos);
-                        })
-                        .waitSeconds(auto_drop_wait)
-                        .lineToLinearHeading(Ryk_Robot.Blue_Preload_Tile)
-                        .turn(Math.toRadians(-90))
-                        .lineToLinearHeading(Ryk_Robot.Blue_Park_Pos3)
-                        .waitSeconds(auto_move_wait)
-//                        //pickup cone 5
-                        .addTemporalMarker(() -> {
-                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, TopCone);
-                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-
-//                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-//                                telemetry.addLine("Picking up Top Cone");
-//                                telemetry.update();
-//                                idle();
-//                            }
-                        })
-                        .lineToLinearHeading(Ryk_Robot.Blue_Pickup)
-                        .addTemporalMarker(() ->{
-                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Close_Pos);
-                        })
-                        .waitSeconds(auto_move_wait)
+                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Blue_Dropoff)
                         .addTemporalMarker(()->{
-                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Ryk_Robot.LowJunction);
-                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
+                            Mavryk.setPosition(FLAMETHROWER, xSlideInPos);
+                        })
+                        .lineToLinearHeading(Blue_Park_Pos3)
+                        .build();
+                break;
+        }
+        telemetry.addLine(String.format("%d. Park Trajectory calculated Duration: %.3f", iTeleCt++, trajParking.duration()));
+        return;
+    }
 
-//                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-//                                telemetry.addLine("Lift up cone");
-//                                telemetry.update();
-//                                idle();
-//                            }
-                            timer.reset();
-                        })
-                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_Tile)
-                        .waitSeconds(auto_move_wait)
-                        .turn(Math.toRadians(130))
-                        .addTemporalMarker(() -> {
-                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, HighJunction);
-                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-//                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-//                                idle();
-//                            }
-                        })
-                        .waitSeconds(auto_move_wait)
-                        .lineToLinearHeading(Blue_Preload_DropOff)
-                        .addTemporalMarker(() -> {
-                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, LowJunction);
-                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
-//                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-//                                idle();
-//                            }
-                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Ryk_Robot.Claw_Open_Pos);
-                        })
-                        .waitSeconds(auto_drop_wait)
-                        .lineToLinearHeading(Ryk_Robot.Blue_Preload_Tile)
-                        .turn(Math.toRadians(-90))
-//                        //cone 4
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, TopMidCone);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-//
-////                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-////                                telemetry.addLine("Picking up Top Middle Cone");
-////                                telemetry.update();
-////                                idle();
-////                            }
-//                        })
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Pickup)
-//                        .addTemporalMarker(() ->{
-//                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Close_Pos);
-//                        })
-//                        .waitSeconds(auto_move_wait)
-//                        .addTemporalMarker(()->{
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Ryk_Robot.LowJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-//
-////                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-////                                telemetry.addLine("Lift up cone");
-////                                telemetry.update();
-////                                idle();
-////                            }
-//                            timer.reset();
-//                        })
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_Tile)
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, HighJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-////                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-////                                idle();
-////                            }
-//                        })
-//                        .waitSeconds(auto_move_wait)
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_DropOff)
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, LowJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
-////                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-////                                idle();
-////                            }
-//                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Ryk_Robot.Claw_Open_Pos);
-//                        })
-//                        .waitSeconds(auto_drop_wait)
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_Tile)
-//                        //cone 3
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, MiddleCone);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-//
-////                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-////                                telemetry.addLine("Picking Up Middle Cone");
-////                                telemetry.update();
-////                                idle();
-////                            }
-//                        })
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Pickup)
-//                        .addTemporalMarker(() ->{
-//                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Close_Pos);
-//                        })
-//                        .waitSeconds(auto_move_wait)
-//                        .addTemporalMarker(()->{
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Ryk_Robot.LowJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-//
-////                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-////                                telemetry.addLine("Lift up cone");
-////                                telemetry.update();
-////                                idle();
-////                            }
-//                            timer.reset();
-//                        })
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_Tile)
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, HighJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-////                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-////                                idle();
-////                            }
-//                        })
-//                        .waitSeconds(auto_move_wait)
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_DropOff)
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, LowJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
-////                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-////                                idle();
-////                            }
-//                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Ryk_Robot.Claw_Open_Pos);
-//                        })
-//                        .waitSeconds(auto_drop_wait)
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_Tile)
-//                        //cone 2
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, BottomMidCone);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-////
-////                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-////                                telemetry.addLine("Picking up Bottom Middle Cone");
-////                                telemetry.update();
-////                                idle();
-////                            }
-//                        })
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Pickup)
-//                        .addTemporalMarker(() ->{
-//                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Close_Pos);
-//                        })
-//                        .waitSeconds(auto_move_wait)
-//                        .addTemporalMarker(()->{
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Ryk_Robot.LowJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-//
-////                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-////                                telemetry.addLine("Lift up cone");
-////                                telemetry.update();
-////                                idle();
-////                            }
-//                            timer.reset();
-//                        })
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_Tile)
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, HighJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-////                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-////                                idle();
-////                            }
-//                        })
-//                        .waitSeconds(auto_move_wait)
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_DropOff)
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, LowJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
-////                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-////                                idle();
-////                            }
-//                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Ryk_Robot.Claw_Open_Pos);
-//                        })
-//                        .waitSeconds(auto_drop_wait)
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_Tile)
-//                        //cone 1
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, BottomCone);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-//
-////                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-////                                telemetry.addLine("Picking Up Bottom Cone");
-////                                telemetry.update();
-////                                idle();
-////                            }
-//                        })
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Pickup)
-//                        .addTemporalMarker(() ->{
-//                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Claw_Close_Pos);
-//                        })
-//                        .waitSeconds(auto_move_wait)
-//                        .addTemporalMarker(()->{
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, Ryk_Robot.LowJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-//
-////                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-////                                telemetry.addLine("Lift up cone");
-////                                telemetry.update();
-////                                idle();
-////                            }
-//                            timer.reset();
-//                        })
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_Tile)
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, HighJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-////                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-////                                idle();
-////                            }
-//                        })
-//                        .waitSeconds(auto_move_wait)
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_DropOff)
-//                        .addTemporalMarker(() -> {
-//                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, LowJunction);
-//                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
-////                            while(opModeIsActive() && Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) ) {
-////                                idle();
-////                            }
-//                            Mavryk.setPosition(Ryk_Robot.RykServos.TWIN_TOWERS, Ryk_Robot.Claw_Open_Pos);
-//                        })
-//                        .waitSeconds(auto_drop_wait)
-//                        .lineToLinearHeading(Ryk_Robot.Blue_Cycle_Tile)
-                        //park
-                        .addTemporalMarker(() -> {
-                            Mavryk.setTargetPosition(Ryk_Robot.RykMotors.CAT_MOUSE, GroundJunction);
-                            Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-                            Mavryk.setPower(Ryk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
+    TrajectorySequence buildCycleTrajectory(int iCycleConePickup)
+    {
+        telemetry.addLine(String.format("%d. buildCycleTrajectory %d", iTeleCt++, iCycleConePickup));
+        TrajectorySequence trajSeq = Mavryk.mecanumDrive.trajectorySequenceBuilder(Blue_Dropoff)
+                .lineToLinearHeading(Blue_Pickup)
+                .waitSeconds(auto_move_wait)  // Eliminate
+                .addTemporalMarker(() -> {
+                    // Extend Flamethrower & Grab Cone
+                    Mavryk.setPosition(FLAMETHROWER, xSlideOutPos);
+                })
+                .waitSeconds(auto_extend_half_wait)
+                .addTemporalMarker(() -> {
+                    Mavryk.setPosition(TWIN_TOWERS, Claw_Close_Pos);
+                })
+                .waitSeconds(auto_pickup_wait)
+                .addTemporalMarker(() -> {
+                    // Raise to Low Junction
+                    Mavryk.setTargetPosition(CAT_MOUSE, LowJunction);
+                    Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
+                    Mavryk.setPower(CAT_MOUSE, SlidePower_Up);
+                })
+                .waitSeconds(auto_half_raise_wait)
+                .addTemporalMarker(() -> {
+                    // Retract Flamethrower
+                    Mavryk.setPosition(FLAMETHROWER, xSlideDropPos);
+                })
+                .waitSeconds(auto_retract_wait) // Eliminate
+                .lineToLinearHeading(Blue_Dropoff)
+                .addTemporalMarker(() -> {
+                    // Raise Tom&Jerry
+                    Mavryk.setTargetPosition(CAT_MOUSE, HighJunction);
+                    Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
+                    Mavryk.setPower(CAT_MOUSE, SlidePower_Up);
+                })
+                .waitSeconds(auto_raise_wait)
+                .addTemporalMarker(() -> {
+                    // Extend FlameThrower
+                    Mavryk.setPosition(FLAMETHROWER, xSlideOutPos);
+                })
+                .waitSeconds(auto_extend_half_wait)
+                .addTemporalMarker(() -> {
+                    // Lower Tom & Jerry
+                    Mavryk.setTargetPosition(CAT_MOUSE, DropoffPos);
+                    Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
+                    Mavryk.setPower(CAT_MOUSE, SlidePower_Down);
+                    Mavryk.setPosition(TWIN_TOWERS, Claw_Open_Pos);
+                })
+                .waitSeconds(auto_drop_wait)
+                .addTemporalMarker(() -> {
+                    // Retract FlameThrower
+                    Mavryk.setPosition(FLAMETHROWER, xSlideDropPos);
+                })
+                .waitSeconds(auto_retract_wait) // Eliminate
+                .addTemporalMarker(() -> {
+                    // Lower Tom&Jerry to Top Cone
+                    Mavryk.setTargetPosition(CAT_MOUSE, iCycleConePickup);
+                    Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
+                    Mavryk.setPower(CAT_MOUSE, SlidePower_Down);
+                })
+                .build();
 
-//                            while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
-//                                telemetry.addLine("Lowering to rest position.");
-//                                telemetry.update();
-//                                idle();
-//                            }
-                        })
-                        .lineToLinearHeading(Ryk_Robot.Blue_Park_Pos3)
+        telemetry.addLine(String.format("%d. Cycle %d Trajectory calculated Duration: %.3f", iTeleCt++, iCycleConePickup, trajSeq.duration()));
+        return trajSeq;
+    }
+
+    void buildParkTrajectories_position_coach(int col) {
+
+        telemetry.addLine(String.format("%d. buildParkTrajectories_position_coach", iTeleCt++));
+
+        trajPreLoadDropOff = Mavryk.mecanumDrive.trajectorySequenceBuilder(Blue_Start)
+                //preload
+                .lineToLinearHeading(Blue_Push_Signal)
+                .lineToLinearHeading(Blue_Dropoff)
+                .addTemporalMarker(() -> {
+                    // Raise Tom&Jerry
+                    Mavryk.setTargetPosition(CAT_MOUSE, HighJunction);
+                    Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
+                    Mavryk.setPower(CAT_MOUSE, SlidePower_Up);
+                })
+                .waitSeconds(auto_raise_wait)
+                .addTemporalMarker(() -> {
+                    // Extend FlameThrower
+                    Mavryk.setPosition(FLAMETHROWER, xSlideOutPos);
+                })
+                .waitSeconds(auto_extend_wait)
+                .addTemporalMarker(() -> {
+                    // Lower Tom & Jerry
+                    Mavryk.setTargetPosition(CAT_MOUSE, DropoffPos);
+                    Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
+                    Mavryk.setPower(CAT_MOUSE, SlidePower_Down);
+                    Mavryk.setPosition(TWIN_TOWERS, Claw_Open_Pos);
+                })
+                .waitSeconds(auto_drop_wait)
+                .addTemporalMarker(() -> {
+                    // Retract FlameThrower
+                    Mavryk.setPosition(FLAMETHROWER, xSlideInPos);
+                })
+                .waitSeconds(auto_retract_wait)
+                .addTemporalMarker(() -> {
+                    // Lower Tom&Jerry to Top Cone
+                    Mavryk.setTargetPosition(CAT_MOUSE, TopCone);
+                    Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
+                    Mavryk.setPower(CAT_MOUSE, SlidePower_Down);
+                })
+                .waitSeconds(auto_drop_wait)
+                .build();
+
+        trajCycleDropOffTopCone = Mavryk.mecanumDrive.trajectorySequenceBuilder(Blue_Dropoff)
+                .lineToLinearHeading(Blue_Pickup)
+                .waitSeconds(auto_move_wait)
+                .addTemporalMarker(() -> {
+                    // Extend Flamethrower & Grab Cone
+                    Mavryk.setPosition(FLAMETHROWER, xSlideOutPos);
+                })
+                .waitSeconds(auto_extend_wait)
+                .addTemporalMarker(() -> {
+                    Mavryk.setPosition(TWIN_TOWERS, Claw_Close_Pos);
+                })
+                .waitSeconds(auto_pickup_wait)
+                .addTemporalMarker(() -> {
+                    // Raise to Low Junction
+                    Mavryk.setTargetPosition(CAT_MOUSE, LowJunction);
+                    Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
+                    Mavryk.setPower(CAT_MOUSE, SlidePower_Up);
+                })
+                .waitSeconds(auto_half_raise_wait)
+                .addTemporalMarker(() -> {
+                    // Retract Flamethrower
+                    Mavryk.setPosition(FLAMETHROWER, xSlideInPos);
+                })
+                .waitSeconds(auto_retract_wait)
+                .lineToLinearHeading(Blue_Dropoff)
+                .addTemporalMarker(() -> {
+                    // Raise Tom&Jerry
+                    Mavryk.setTargetPosition(CAT_MOUSE, HighJunction);
+                    Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
+                    Mavryk.setPower(CAT_MOUSE, SlidePower_Up);
+                })
+                .waitSeconds(auto_raise_wait)
+                .addTemporalMarker(() -> {
+                    // Extend FlameThrower
+                    Mavryk.setPosition(FLAMETHROWER, xSlideOutPos);
+                })
+                .waitSeconds(auto_extend_wait)
+                .addTemporalMarker(() -> {
+                    // Lower Tom & Jerry
+                    Mavryk.setTargetPosition(CAT_MOUSE, DropoffPos);
+                    Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
+                    Mavryk.setPower(CAT_MOUSE, SlidePower_Down);
+                    Mavryk.setPosition(TWIN_TOWERS, Claw_Open_Pos);
+                })
+                .waitSeconds(auto_drop_wait)
+                .addTemporalMarker(() -> {
+                    // Retract FlameThrower
+                    Mavryk.setPosition(FLAMETHROWER, xSlideInPos);
+                })
+                .waitSeconds(auto_retract_wait)
+                .addTemporalMarker(() -> {
+                    // Lower Tom&Jerry to Top Cone
+                    Mavryk.setTargetPosition(CAT_MOUSE, currentCyclePickupCone);
+                    Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
+                    Mavryk.setPower(CAT_MOUSE, SlidePower_Down);
+                })
+                .build();
+
+        switch (col) {
+            case 1:
+            default:
+                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Blue_Dropoff)
+                        .lineToLinearHeading(Blue_Park_Pos1)
+                        .build();
+                break;
+            case 2:
+                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Blue_Dropoff)
+                        .lineToLinearHeading(Blue_Park_Pos2)
+                        .build();
+                break;
+            case 3:
+                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Blue_Dropoff)
+                        .lineToLinearHeading(Blue_Park_Pos3)
                         .build();
                 break;
         }
 
-        telemetry.addLine(String.format("%d. Trajectory Duration after build: %.3f", iTeleCt++, Park.duration()));
+        telemetry.addLine(String.format("%d. Trajectory Duration after build: %.3f", iTeleCt++, trajParking.duration()));
         return;
-
     }
 
     void initMotorsAndServos(boolean run_to_position)
     {
         // Reset Slides - current position becomes 0
-        Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, STOP_AND_RESET_ENCODER);
-        Mavryk.setRunMode(Ryk_Robot.RykMotors.CAT_MOUSE, RUN_WITHOUT_ENCODER);
+        Mavryk.setRunMode(CAT_MOUSE, STOP_AND_RESET_ENCODER);
+        Mavryk.setRunMode(CAT_MOUSE, RUN_WITHOUT_ENCODER);
 
     }
-
 
     private double getBatteryVoltage() {
         double result = Double.POSITIVE_INFINITY;
@@ -1230,42 +635,9 @@ public class Ryk_Autonomous_Blue extends LinearOpMode {
         return result;
     }
 
-    public void acquireCamera()
+    public void getTag(AprilTagDetectionPipeline pipeline)
     {
-        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Sauron");
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        Sauron = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
-        pipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
-        Sauron.setPipeline(pipeline);
-
-        // We set the viewport policy to optimized view so the preview doesn't appear 90 deg
-        // out when the RC activity is in portrait. We do our actual image processing assuming
-        // landscape orientation, though.
-
-        Sauron.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            public void onOpened() {
-                Sauron.startStreaming(1920, 1080, OpenCvCameraRotation.UPRIGHT);
-                rykRobot.startCameraStream(Sauron, 0);
-            }
-
-            public void onError(int errorCode) {
-
-                return;
-
-            }
-
-
-
-        });
-
-
-        return;
-    }
-
-    public void getTag(AprilTagDetectionPipeline pipeline){
-
         ArrayList<AprilTagDetection> currentDetections = pipeline.getLatestDetections();
-
         if(currentDetections.size() != 0)
         {
             boolean tagFound = false;
@@ -1321,12 +693,6 @@ public class Ryk_Autonomous_Blue extends LinearOpMode {
         sleep(20);
     }
 
-
-
-
-
-
-
     void tagToTelemetry(AprilTagDetection detection)
     {
         telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
@@ -1338,7 +704,4 @@ public class Ryk_Autonomous_Blue extends LinearOpMode {
         telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
     }
 
-
 }
-
-
