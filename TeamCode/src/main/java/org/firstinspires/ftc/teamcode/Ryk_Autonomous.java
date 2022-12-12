@@ -348,33 +348,33 @@ public class Ryk_Autonomous extends LinearOpMode {
         trajPreLoadDropOff = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Start)
             //preload
             .lineToLinearHeading(Red_Push_Signal)
+                .UNSTABLE_addTemporalMarkerOffset(.3, () -> {
+                    // Raise Tom&Jerry
+                    Mavryk.setTargetPosition(CAT_MOUSE, HighJunction);
+                    Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
+                    Mavryk.setPower(CAT_MOUSE, SlidePower_Up);
+                })
             .lineToLinearHeading(Red_Dropoff)
-            .addTemporalMarker(() -> {
-                // Raise Tom&Jerry
-                Mavryk.setTargetPosition(CAT_MOUSE, HighJunction);
-                Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
-                Mavryk.setPower(CAT_MOUSE, SlidePower_Up);
-            })
             .waitSeconds(auto_raise_wait)
             .addTemporalMarker(() -> { // Start after 1.5s of raise
                 // Extend FlameThrower
                 Mavryk.setPosition(FLAMETHROWER, xSlideOutPos);
             })
+                .UNSTABLE_addTemporalMarkerOffset(.3, () -> {
+                    // Lower Tom & Jerry
+                    Mavryk.setTargetPosition(CAT_MOUSE, DropoffPos);
+                    Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
+                    Mavryk.setPower(CAT_MOUSE, SlidePower_Down);
+                    Mavryk.setPosition(TWIN_TOWERS, Claw_Open_Pos);
+                })
             .waitSeconds(auto_extend_wait)
-            .addTemporalMarker(() -> {
-                // Lower Tom & Jerry
-                Mavryk.setTargetPosition(CAT_MOUSE, DropoffPos);
-                Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
-                Mavryk.setPower(CAT_MOUSE, SlidePower_Down);
-                Mavryk.setPosition(TWIN_TOWERS, Claw_Open_Pos);
-            })
             .waitSeconds(auto_drop_wait)
             .addTemporalMarker(() -> {
                 // Retract FlameThrower
                 Mavryk.setPosition(FLAMETHROWER, xSlideDropPos);
             })
             .waitSeconds(auto_retract_wait) // Eliminate
-            .addTemporalMarker(() -> {
+                .UNSTABLE_addTemporalMarkerOffset(.3, () -> {
                 // Lower Tom&Jerry to Top Cone
                 Mavryk.setTargetPosition(CAT_MOUSE, TopCone);
                 Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
@@ -450,7 +450,7 @@ public class Ryk_Autonomous extends LinearOpMode {
                 })
                 .waitSeconds(auto_retract_wait) // Eliminate
                 .lineToLinearHeading(Red_Dropoff)
-                .addTemporalMarker(() -> {
+                .UNSTABLE_addTemporalMarkerOffset(.3, () -> {
                     // Raise Tom&Jerry
                     Mavryk.setTargetPosition(CAT_MOUSE, HighJunction);
                     Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);

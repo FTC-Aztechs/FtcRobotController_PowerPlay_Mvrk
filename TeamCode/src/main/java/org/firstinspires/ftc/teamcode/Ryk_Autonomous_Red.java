@@ -49,6 +49,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
+import com.outoftheboxrobotics.photoncore.PhotonCore;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -79,7 +80,6 @@ public class Ryk_Autonomous_Red extends LinearOpMode {
         RED,
         BLUE
     }
-
     Ryk_Robot Mavryk = new Ryk_Robot();
 
     private static FtcDashboard rykRobot;
@@ -137,7 +137,7 @@ public class Ryk_Autonomous_Red extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-
+        PhotonCore.enable();
         Mavryk.init(hardwareMap);
 
         ElapsedTime trajectoryTimer = new ElapsedTime(MILLISECONDS);

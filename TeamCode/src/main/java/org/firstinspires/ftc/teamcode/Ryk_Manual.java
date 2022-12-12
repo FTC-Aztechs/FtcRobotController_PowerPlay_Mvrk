@@ -51,6 +51,7 @@ import static org.firstinspires.ftc.teamcode.Ryk_Robot.ticks_stepSize;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.outoftheboxrobotics.photoncore.PhotonCore;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -124,7 +125,7 @@ public class Ryk_Manual extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-
+    PhotonCore.enable();
         // Initialize the drive system vriables
         Mavryk.init(hardwareMap);
 

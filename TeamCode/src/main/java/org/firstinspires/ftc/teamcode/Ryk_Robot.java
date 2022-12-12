@@ -169,16 +169,16 @@ public class Ryk_Robot
 
     public static Pose2d Red_Start = new Pose2d(35.5, 63.75, Math.toRadians(-90));
     public static Pose2d Red_Push_Signal = new Pose2d(35.5,0, Math.toRadians(-90));
-    public static Pose2d Red_Pickup = new Pose2d(54.5,12, Math.toRadians(0));
-    public static Pose2d Red_Dropoff = new Pose2d(35.5,12, Math.toRadians(-135));
+    public static Pose2d Red_Pickup = new Pose2d(54.25,12, Math.toRadians(0));
+    public static Pose2d Red_Dropoff = new Pose2d(35.5,12, Math.toRadians(-140));
     public static Pose2d Red_Park_Pos1 = new Pose2d(57,12, Math.toRadians(0));
     public static Pose2d Red_Park_Pos2 = new Pose2d(36,12, Math.toRadians(0));
     public static Pose2d Red_Park_Pos3 = new Pose2d(13,12, Math.toRadians(0));
 
     public static Pose2d Blue_Start = new Pose2d(-35.5, 63.75, Math.toRadians(-90));
     public static Pose2d Blue_Push_Signal = new Pose2d(-35.5,0, Math.toRadians(-90));
-    public static Pose2d Blue_Pickup = new Pose2d(-54.5,12, Math.toRadians(-180));
-    public static Pose2d Blue_Dropoff = new Pose2d(-35.5,12, Math.toRadians(-45));
+    public static Pose2d Blue_Pickup = new Pose2d(-54.25,12, Math.toRadians(-180));
+    public static Pose2d Blue_Dropoff = new Pose2d(-35.5,12, Math.toRadians(-40));
     public static Pose2d Blue_Park_Pos1 = new Pose2d(-13,12, Math.toRadians(-180));
     public static Pose2d Blue_Park_Pos2 = new Pose2d(-36,12, Math.toRadians(-180));
     public static Pose2d Blue_Park_Pos3 = new Pose2d(-57,12, Math.toRadians(-180));;
@@ -202,7 +202,7 @@ public class Ryk_Robot
 
     public static double auto_move_wait = 0.5;
     public static double auto_drop_wait = 0.5;
-    public static double auto_pickup_wait = 0.5;
+    public static double auto_pickup_wait = 0.65;
     public static double auto_half_raise_wait = 0.5;
     public static double auto_raise_wait = 2;
     public static double auto_extend_wait = 0.8;
@@ -261,6 +261,7 @@ public class Ryk_Robot
         Tom.setDirection(DcMotor.Direction.REVERSE); //+ used to be
 
         Handsel.setDirection(Servo.Direction.REVERSE);
+
         Grabbel.setDirection(Servo.Direction.FORWARD);
 
         LeftMonkey.setDirection(Servo.Direction.REVERSE);
