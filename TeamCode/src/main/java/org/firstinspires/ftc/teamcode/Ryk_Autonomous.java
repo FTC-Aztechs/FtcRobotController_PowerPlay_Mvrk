@@ -8,10 +8,15 @@ import static org.firstinspires.ftc.teamcode.Ryk_Robot.BottomCone;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.BottomMidCone;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.Claw_Close_Pos;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.Claw_Open_Pos;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.CycleExtendFlamethrowerOffset;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.CycleRetractFlamethrowerOffset;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.DropoffPos;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.FloorPosition;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.IntakeInsidePos;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.MiddleCone;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.DropoffExtendFlamethrowerOffset;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.PlSlideDownOffset;
+import static org.firstinspires.ftc.teamcode.Ryk_Robot.PlSlideUpOffset;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.Red_Dropoff;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.Red_Park_Pos1;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.Red_Park_Pos2;
@@ -25,7 +30,6 @@ import static org.firstinspires.ftc.teamcode.Ryk_Robot.RykServos.FUNKY_MONKEY;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.RykServos.TWIN_TOWERS;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.TopMidCone;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.TopCone;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.GroundJunction;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.HighJunction;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.LowJunction;
 import static org.firstinspires.ftc.teamcode.Ryk_Robot.SlidePower_Down;
@@ -47,8 +51,6 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -57,6 +59,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.trajectorysequence.sequencesegment.SequenceSegment;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -156,6 +159,23 @@ public class Ryk_Autonomous extends LinearOpMode {
         Mavryk.setPosition(FUNKY_MONKEY, IntakeInsidePos);
         Mavryk.setPosition(FLAMETHROWER, xSlideInPos);
 
+        telemetry.addData("Status: ", "Building Pre-load and drop off Trajectories......");
+        telemetry.update();
+
+        buildPreloadTrajectory();
+        if(cyclesToRun > 0)
+            trajCycleDropOffTopCone = buildCycleTrajectory(TopMidCone); // Note: Drop slides to pick up the next cone, in this case Top Mid
+        if(cyclesToRun > 1)
+            trajCycleDropOffTopMidCone = buildCycleTrajectory(MiddleCone); // Note: Drop slides to pick up the next cone, in this case Middle
+        if(cyclesToRun > 2)
+            trajCycleDropOffMiddleCone = buildCycleTrajectory(BottomMidCone); // Note: Drop slides to pick up the next cone, in this case BottomMid
+        if(cyclesToRun > 3)
+            trajCycleDropOffBottomMidCone = buildCycleTrajectory(BottomCone); // Note: Drop slides to pick up the next cone, in this case Bottom
+        if(cyclesToRun > 4)
+            trajCycleDropOffBottomCone = buildCycleTrajectory(FloorPosition); // Note: Drop slides to pick up the next cone, in this case Floor
+
+        telemetry.update();
+
         telemetry.addData("Status: ", "Initializing camera......");
         telemetry.update();
 
@@ -179,7 +199,7 @@ public class Ryk_Autonomous extends LinearOpMode {
         Sauron.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             public void onOpened() {
                 Sauron.startStreaming(800, 448, OpenCvCameraRotation.UPRIGHT);
-                telemetry.addData("Status: ", "Sauron Streaming ...");
+//                telemetry.addData("Status: ", "Sauron Streaming ...");
                 rykRobot.startCameraStream(Sauron, 0);
             }
 
@@ -206,45 +226,45 @@ public class Ryk_Autonomous extends LinearOpMode {
                     }
                 }
 
-                if (tagFound) {
-                    telemetry.addLine("Tag of interest is in sight!\n\nLocation data:");
-                    tagToTelemetry(tagOfInterest);
-                } else {
-                    telemetry.addLine("Don't see tag of interest :(");
-
-                    if (tagOfInterest == null) {
-                        telemetry.addLine("(The tag has never been seen)");
-                    } else {
-                        telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
-                        tagToTelemetry(tagOfInterest);
-                    }
-                }
+//                if (tagFound) {
+//                    //telemetry.addLine("Tag of interest is in sight!\n\nLocation data:");
+//                    //tagToTelemetry(tagOfInterest);
+//                } else {
+//                    telemetry.addLine("Don't see tag of interest :(");
+//
+//                    if (tagOfInterest == null) {
+//                        //telemetry.addLine("(The tag has never been seen)");
+//                    } else {
+//                        //telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
+//                        //tagToTelemetry(tagOfInterest);
+//                    }
+//                }
 
             } else {
-                telemetry.addLine("Don't see tag of interest :(");
-
-                if (tagOfInterest == null) {
-                    telemetry.addLine("(The tag has never been seen)");
-                } else {
-                    telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
-                    tagToTelemetry(tagOfInterest);
-                }
+//                telemetry.addLine("Don't see tag of interest :(");
+//
+//                if (tagOfInterest == null) {
+//                    telemetry.addLine("(The tag has never been seen)");
+//                } else {
+//                    telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
+//                    tagToTelemetry(tagOfInterest);
+//                }
 
             }
 
-            telemetry.update();
+//            telemetry.update();
             sleep(20);
         }
 
-        //once program starts
-        if (tagOfInterest != null) {
-            telemetry.addLine("Tag snapshot:\n");
-            tagToTelemetry(tagOfInterest);
-            telemetry.update();
-        } else {
-            telemetry.addLine("No tag snapshot available, it was never sighted during the init loop :(");
-            telemetry.update();
-        }
+//        //once program starts
+//        if (tagOfInterest != null) {
+//            telemetry.addLine("Tag snapshot:\n");
+//            tagToTelemetry(tagOfInterest);
+//            telemetry.update();
+//        } else {
+//            telemetry.addLine("No tag snapshot available, it was never sighted during the init loop :(");
+//            telemetry.update();
+//        }
 
         // 1. Calculate Parking Position
 
@@ -263,26 +283,12 @@ public class Ryk_Autonomous extends LinearOpMode {
 
         initMotorsAndServos(true);
 
-        // Coach Stuff:
-        // buildParkTrajectories_position_coach(pos);
-
-        buildPreloadTrajectory();
         buildParkTrajectory(pos);
-        if(cyclesToRun > 0)
-            trajCycleDropOffTopCone = buildCycleTrajectory(TopMidCone); // Note: Drop slides to pick up the next cone, in this case Top Mid
-        if(cyclesToRun > 1)
-            trajCycleDropOffTopMidCone = buildCycleTrajectory(MiddleCone); // Note: Drop slides to pick up the next cone, in this case Middle
-        if(cyclesToRun > 2)
-            trajCycleDropOffMiddleCone = buildCycleTrajectory(BottomMidCone); // Note: Drop slides to pick up the next cone, in this case BottomMid
-        if(cyclesToRun > 3)
-            trajCycleDropOffBottomMidCone = buildCycleTrajectory(BottomCone); // Note: Drop slides to pick up the next cone, in this case Bottom
-        if(cyclesToRun > 4)
-            trajCycleDropOffBottomCone = buildCycleTrajectory(FloorPosition); // Note: Drop slides to pick up the next cone, in this case Floor
-
+        telemetry.update();
 
         // Drop off preload
         trajectoryTimer.reset();
-        Mavryk.mecanumDrive.setPoseEstimate(Red_Start);
+        Mavryk.mecanumDrive.setPoseEstimate(Red_Start.pose2d());
         Mavryk.mecanumDrive.followTrajectorySequence(trajPreLoadDropOff);
         telemetry.addLine(String.format("%d. Preload Trajectory completed in: %.3f ", iTeleCt++, trajectoryTimer.seconds()));
 
@@ -333,48 +339,48 @@ public class Ryk_Autonomous extends LinearOpMode {
         Mavryk.mecanumDrive.followTrajectorySequence(trajParking);
         telemetry.addLine(String.format("%d. Park Trajectory completed in: %.3f ", iTeleCt++, trajectoryTimer.seconds()));
 
-        telemetry.addLine(String.format("%d. Total time to complete Trajectory Sequence: %.3f ", iTeleCt++, trajectoryTimer.seconds()));
         telemetry.update();
     }
 
     private void EstimateCurrentPose() {
         // TODO: use vumarks to update current pose
-        currentPose = Red_Pickup;
+        currentPose = Red_Pickup.pose2d();
     }
 
     void buildPreloadTrajectory() {
         telemetry.addLine(String.format("%d. buildPreloadTrajectory", iTeleCt++));
 
-        trajPreLoadDropOff = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Start)
+        trajPreLoadDropOff = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Start.pose2d())
             //preload
-            .lineToLinearHeading(Red_Push_Signal)
-                .UNSTABLE_addTemporalMarkerOffset(.3, () -> {
+            .lineToLinearHeading(Red_Push_Signal.pose2d())
+            .lineToLinearHeading(Red_Dropoff.pose2d())
+                .UNSTABLE_addTemporalMarkerOffset(PlSlideUpOffset, () -> {
                     // Raise Tom&Jerry
                     Mavryk.setTargetPosition(CAT_MOUSE, HighJunction);
                     Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
                     Mavryk.setPower(CAT_MOUSE, SlidePower_Up);
                 })
-            .lineToLinearHeading(Red_Dropoff)
             .waitSeconds(auto_raise_wait)
-            .addTemporalMarker(() -> { // Start after 1.5s of raise
+            .UNSTABLE_addTemporalMarkerOffset(DropoffExtendFlamethrowerOffset, () -> { // Start after 1.5s of raise
                 // Extend FlameThrower
                 Mavryk.setPosition(FLAMETHROWER, xSlideOutPos);
             })
-                .UNSTABLE_addTemporalMarkerOffset(.3, () -> {
-                    // Lower Tom & Jerry
+
+                .waitSeconds(auto_extend_half_wait)
+                .UNSTABLE_addTemporalMarkerOffset(PlSlideDownOffset, () -> {
+                    // Lower Tom&Jerry to Top Cone
                     Mavryk.setTargetPosition(CAT_MOUSE, DropoffPos);
                     Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
                     Mavryk.setPower(CAT_MOUSE, SlidePower_Down);
                     Mavryk.setPosition(TWIN_TOWERS, Claw_Open_Pos);
                 })
-            .waitSeconds(auto_extend_wait)
             .waitSeconds(auto_drop_wait)
             .addTemporalMarker(() -> {
                 // Retract FlameThrower
                 Mavryk.setPosition(FLAMETHROWER, xSlideDropPos);
             })
             .waitSeconds(auto_retract_wait) // Eliminate
-                .UNSTABLE_addTemporalMarkerOffset(.3, () -> {
+            .UNSTABLE_addTemporalMarkerOffset(PlSlideDownOffset, () -> {
                 // Lower Tom&Jerry to Top Cone
                 Mavryk.setTargetPosition(CAT_MOUSE, TopCone);
                 Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
@@ -383,7 +389,14 @@ public class Ryk_Autonomous extends LinearOpMode {
             .waitSeconds(auto_drop_wait)
             .build();
 
-        telemetry.addLine(String.format("%d. Preload Trajectory calculated Duration: %.3f", iTeleCt++, trajPreLoadDropOff.duration()));
+
+        int iNumSegments = trajPreLoadDropOff.size();
+        telemetry.addLine(String.format("%d. Preload Trajectory numTrajectory Segments: %d", iTeleCt++, iNumSegments));
+        for(int iSeg=0; iSeg<iNumSegments; iSeg++ ) {
+            telemetry.addLine(String.format("%d. Preload Trajectory Segment %d Duration: %.3f", iTeleCt++, iSeg,trajPreLoadDropOff.get(iSeg).getDuration()));
+        }
+        telemetry.addLine(String.format("%d. Park Preload calculated Duration: %.3f", iTeleCt++, trajPreLoadDropOff.duration()));
+
         return;
     }
 
@@ -394,41 +407,48 @@ public class Ryk_Autonomous extends LinearOpMode {
         switch (iPos) {
             case 1:
             default:
-                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Dropoff)
+                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Dropoff.pose2d())
                         .addTemporalMarker(()->{
                             Mavryk.setPosition(FLAMETHROWER, xSlideInPos);
                         })
-                        .lineToLinearHeading(Red_Park_Pos1)
+                        .lineToLinearHeading(Red_Park_Pos1.pose2d())
                         .build();
                 break;
             case 2:
-                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Dropoff)
+                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Dropoff.pose2d())
                         .addTemporalMarker(()->{
                             Mavryk.setPosition(FLAMETHROWER, xSlideInPos);
                         })
-                        .lineToLinearHeading(Red_Park_Pos2)
+                        .lineToLinearHeading(Red_Park_Pos2.pose2d())
                         .build();
                 break;
             case 3:
-                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Dropoff)
+                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Dropoff.pose2d())
                         .addTemporalMarker(()->{
                             Mavryk.setPosition(FLAMETHROWER, xSlideInPos);
                         })
-                        .lineToLinearHeading(Red_Park_Pos3)
+                        .lineToLinearHeading(Red_Park_Pos3.pose2d())
                         .build();
                 break;
         }
+
+        int iNumSegments = trajParking.size();
+        telemetry.addLine(String.format("%d. Park Trajectory numTrajectory Segments: %d", iTeleCt++, iNumSegments));
+        for(int iSeg=0; iSeg<iNumSegments; iSeg++ ) {
+            telemetry.addLine(String.format("%d. Park Trajectory Segment %d Duration: %.3f", iTeleCt++, iSeg,trajParking.get(iSeg).getDuration()));
+        }
         telemetry.addLine(String.format("%d. Park Trajectory calculated Duration: %.3f", iTeleCt++, trajParking.duration()));
+
         return;
     }
 
     TrajectorySequence buildCycleTrajectory(int iCycleConePickup)
     {
         telemetry.addLine(String.format("%d. buildCycleTrajectory %d", iTeleCt++, iCycleConePickup));
-        TrajectorySequence trajSeq = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Dropoff)
-                .lineToLinearHeading(Red_Pickup)
+        TrajectorySequence trajSeq = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Dropoff.pose2d())
+                .lineToLinearHeading(Red_Pickup.pose2d())
                 .waitSeconds(auto_move_wait)  // Eliminate
-                .addTemporalMarker(() -> {
+                .UNSTABLE_addTemporalMarkerOffset(CycleExtendFlamethrowerOffset, () -> {
                     // Extend Flamethrower & Grab Cone
                     Mavryk.setPosition(FLAMETHROWER, xSlideOutPos);
                 })
@@ -444,26 +464,26 @@ public class Ryk_Autonomous extends LinearOpMode {
                     Mavryk.setPower(CAT_MOUSE, SlidePower_Up);
                 })
                 .waitSeconds(auto_half_raise_wait)
-                .addTemporalMarker(() -> {
+                .UNSTABLE_addTemporalMarkerOffset(CycleRetractFlamethrowerOffset, () -> {
                     // Retract Flamethrower
                     Mavryk.setPosition(FLAMETHROWER, xSlideDropPos);
                 })
                 .waitSeconds(auto_retract_wait) // Eliminate
-                .lineToLinearHeading(Red_Dropoff)
-                .UNSTABLE_addTemporalMarkerOffset(.3, () -> {
+                .lineToLinearHeading(Red_Dropoff.pose2d())
+                .UNSTABLE_addTemporalMarkerOffset(PlSlideUpOffset, () -> {
                     // Raise Tom&Jerry
                     Mavryk.setTargetPosition(CAT_MOUSE, HighJunction);
                     Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
                     Mavryk.setPower(CAT_MOUSE, SlidePower_Up);
                 })
                 .waitSeconds(auto_raise_wait)
-                .addTemporalMarker(() -> {
+                .UNSTABLE_addTemporalMarkerOffset(DropoffExtendFlamethrowerOffset, () -> {
                     // Extend FlameThrower
                     Mavryk.setPosition(FLAMETHROWER, xSlideOutPos);
                 })
                 .waitSeconds(auto_extend_half_wait)
-                .addTemporalMarker(() -> {
-                    // Lower Tom & Jerry
+                .UNSTABLE_addTemporalMarkerOffset(PlSlideDownOffset, () -> {
+                    // Lower Tom&Jerry to Top Cone
                     Mavryk.setTargetPosition(CAT_MOUSE, DropoffPos);
                     Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
                     Mavryk.setPower(CAT_MOUSE, SlidePower_Down);
@@ -483,131 +503,14 @@ public class Ryk_Autonomous extends LinearOpMode {
                 })
                 .build();
 
-        telemetry.addLine(String.format("%d. Cycle %d Trajectory calculated Duration: %.3f", iTeleCt++, iCycleConePickup, trajSeq.duration()));
-        return trajSeq;
-    }
-
-    void buildParkTrajectories_position_coach(int col) {
-
-        telemetry.addLine(String.format("%d. buildParkTrajectories_position_coach", iTeleCt++));
-
-        trajPreLoadDropOff = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Start)
-                //preload
-                .lineToLinearHeading(Red_Push_Signal)
-                .lineToLinearHeading(Red_Dropoff)
-                .addTemporalMarker(() -> {
-                    // Raise Tom&Jerry
-                    Mavryk.setTargetPosition(CAT_MOUSE, HighJunction);
-                    Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
-                    Mavryk.setPower(CAT_MOUSE, SlidePower_Up);
-                })
-                .waitSeconds(auto_raise_wait)
-                .addTemporalMarker(() -> {
-                    // Extend FlameThrower
-                    Mavryk.setPosition(FLAMETHROWER, xSlideOutPos);
-                })
-                .waitSeconds(auto_extend_wait)
-                .addTemporalMarker(() -> {
-                    // Lower Tom & Jerry
-                    Mavryk.setTargetPosition(CAT_MOUSE, DropoffPos);
-                    Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
-                    Mavryk.setPower(CAT_MOUSE, SlidePower_Down);
-                    Mavryk.setPosition(TWIN_TOWERS, Claw_Open_Pos);
-                })
-                .waitSeconds(auto_drop_wait)
-                .addTemporalMarker(() -> {
-                    // Retract FlameThrower
-                    Mavryk.setPosition(FLAMETHROWER, xSlideInPos);
-                })
-                .waitSeconds(auto_retract_wait)
-                .addTemporalMarker(() -> {
-                    // Lower Tom&Jerry to Top Cone
-                    Mavryk.setTargetPosition(CAT_MOUSE, TopCone);
-                    Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
-                    Mavryk.setPower(CAT_MOUSE, SlidePower_Down);
-                })
-                .waitSeconds(auto_drop_wait)
-                .build();
-
-        trajCycleDropOffTopCone = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Dropoff)
-                .lineToLinearHeading(Red_Pickup)
-                .waitSeconds(auto_move_wait)
-                .addTemporalMarker(() -> {
-                    // Extend Flamethrower & Grab Cone
-                    Mavryk.setPosition(FLAMETHROWER, xSlideOutPos);
-                })
-                .waitSeconds(auto_extend_wait)
-                .addTemporalMarker(() -> {
-                    Mavryk.setPosition(TWIN_TOWERS, Claw_Close_Pos);
-                })
-                .waitSeconds(auto_pickup_wait)
-                .addTemporalMarker(() -> {
-                    // Raise to Low Junction
-                    Mavryk.setTargetPosition(CAT_MOUSE, LowJunction);
-                    Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
-                    Mavryk.setPower(CAT_MOUSE, SlidePower_Up);
-                })
-                .waitSeconds(auto_half_raise_wait)
-                .addTemporalMarker(() -> {
-                    // Retract Flamethrower
-                    Mavryk.setPosition(FLAMETHROWER, xSlideInPos);
-                })
-                .waitSeconds(auto_retract_wait)
-                .lineToLinearHeading(Red_Dropoff)
-                .addTemporalMarker(() -> {
-                    // Raise Tom&Jerry
-                    Mavryk.setTargetPosition(CAT_MOUSE, HighJunction);
-                    Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
-                    Mavryk.setPower(CAT_MOUSE, SlidePower_Up);
-                })
-                .waitSeconds(auto_raise_wait)
-                .addTemporalMarker(() -> {
-                    // Extend FlameThrower
-                    Mavryk.setPosition(FLAMETHROWER, xSlideOutPos);
-                })
-                .waitSeconds(auto_extend_wait)
-                .addTemporalMarker(() -> {
-                    // Lower Tom & Jerry
-                    Mavryk.setTargetPosition(CAT_MOUSE, DropoffPos);
-                    Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
-                    Mavryk.setPower(CAT_MOUSE, SlidePower_Down);
-                    Mavryk.setPosition(TWIN_TOWERS, Claw_Open_Pos);
-                })
-                .waitSeconds(auto_drop_wait)
-                .addTemporalMarker(() -> {
-                    // Retract FlameThrower
-                    Mavryk.setPosition(FLAMETHROWER, xSlideInPos);
-                })
-                .waitSeconds(auto_retract_wait)
-                .addTemporalMarker(() -> {
-                    // Lower Tom&Jerry to Top Cone
-                    Mavryk.setTargetPosition(CAT_MOUSE, currentCyclePickupCone);
-                    Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
-                    Mavryk.setPower(CAT_MOUSE, SlidePower_Down);
-                })
-                .build();
-
-        switch (col) {
-            case 1:
-            default:
-                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Dropoff)
-                        .lineToLinearHeading(Red_Park_Pos1)
-                        .build();
-                break;
-            case 2:
-                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Dropoff)
-                        .lineToLinearHeading(Red_Park_Pos2)
-                        .build();
-                break;
-            case 3:
-                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Dropoff)
-                        .lineToLinearHeading(Red_Park_Pos3)
-                        .build();
-                break;
+        int iNumSegments = trajSeq.size();
+        telemetry.addLine(String.format("%d. Cycle %d numTrajectory Segments: %d", iTeleCt++, iCycleConePickup, iNumSegments));
+        for(int iSeg=0; iSeg<iNumSegments; iSeg++ ) {
+            telemetry.addLine(String.format("%d. Cycle %d Trajectory Segment %d Duration: %.3f", iTeleCt++, iCycleConePickup, iSeg,trajSeq.get(iSeg).getDuration()));
         }
+        telemetry.addLine(String.format("%d. Cycle %d Trajectory calculated Duration: %.3f", iTeleCt++, iCycleConePickup, trajSeq.duration()));
 
-        telemetry.addLine(String.format("%d. Trajectory Duration after build: %.3f", iTeleCt++, trajParking.duration()));
-        return;
+        return trajSeq;
     }
 
     void initMotorsAndServos(boolean run_to_position)

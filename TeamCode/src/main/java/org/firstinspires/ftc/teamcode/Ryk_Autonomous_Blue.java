@@ -288,7 +288,7 @@ public class Ryk_Autonomous_Blue extends LinearOpMode {
 
         // Drop off preload
         trajectoryTimer.reset();
-        Mavryk.mecanumDrive.setPoseEstimate(Blue_Start);
+        Mavryk.mecanumDrive.setPoseEstimate(Blue_Start.pose2d());
         Mavryk.mecanumDrive.followTrajectorySequence(trajPreLoadDropOff);
         telemetry.addLine(String.format("%d. Preload Trajectory completed in: %.3f ", iTeleCt++, trajectoryTimer.seconds()));
 
@@ -345,16 +345,16 @@ public class Ryk_Autonomous_Blue extends LinearOpMode {
 
     private void EstimateCurrentPose() {
         // TODO: use vumarks to update current pose
-        currentPose = Blue_Pickup;
+        currentPose = Blue_Pickup.pose2d();
     }
 
     void buildPreloadTrajectory() {
         telemetry.addLine(String.format("%d. buildPreloadTrajectory", iTeleCt++));
 
-        trajPreLoadDropOff = Mavryk.mecanumDrive.trajectorySequenceBuilder(Blue_Start)
+        trajPreLoadDropOff = Mavryk.mecanumDrive.trajectorySequenceBuilder(Blue_Start.pose2d())
                 //preload
-                .lineToLinearHeading(Blue_Push_Signal)
-                .lineToLinearHeading(Blue_Dropoff)
+                .lineToLinearHeading(Blue_Push_Signal.pose2d())
+                .lineToLinearHeading(Blue_Dropoff.pose2d())
                 .addTemporalMarker(() -> {
                     // Raise Tom&Jerry
                     Mavryk.setTargetPosition(CAT_MOUSE, HighJunction);
@@ -400,27 +400,27 @@ public class Ryk_Autonomous_Blue extends LinearOpMode {
         switch (iPos) {
             case 1:
             default:
-                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Blue_Dropoff)
+                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Blue_Dropoff.pose2d())
                         .addTemporalMarker(()->{
                             Mavryk.setPosition(FLAMETHROWER, xSlideInPos);
                         })
-                        .lineToLinearHeading(Blue_Park_Pos1)
+                        .lineToLinearHeading(Blue_Park_Pos1.pose2d())
                         .build();
                 break;
             case 2:
-                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Blue_Dropoff)
+                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Blue_Dropoff.pose2d())
                         .addTemporalMarker(()->{
                             Mavryk.setPosition(FLAMETHROWER, xSlideInPos);
                         })
-                        .lineToLinearHeading(Blue_Park_Pos2)
+                        .lineToLinearHeading(Blue_Park_Pos2.pose2d())
                         .build();
                 break;
             case 3:
-                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Blue_Dropoff)
+                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Blue_Dropoff.pose2d())
                         .addTemporalMarker(()->{
                             Mavryk.setPosition(FLAMETHROWER, xSlideInPos);
                         })
-                        .lineToLinearHeading(Blue_Park_Pos3)
+                        .lineToLinearHeading(Blue_Park_Pos3.pose2d())
                         .build();
                 break;
         }
@@ -431,8 +431,8 @@ public class Ryk_Autonomous_Blue extends LinearOpMode {
     TrajectorySequence buildCycleTrajectory(int iCycleConePickup)
     {
         telemetry.addLine(String.format("%d. buildCycleTrajectory %d", iTeleCt++, iCycleConePickup));
-        TrajectorySequence trajSeq = Mavryk.mecanumDrive.trajectorySequenceBuilder(Blue_Dropoff)
-                .lineToLinearHeading(Blue_Pickup)
+        TrajectorySequence trajSeq = Mavryk.mecanumDrive.trajectorySequenceBuilder(Blue_Dropoff.pose2d())
+                .lineToLinearHeading(Blue_Pickup.pose2d())
                 .waitSeconds(auto_move_wait)  // Eliminate
                 .addTemporalMarker(() -> {
                     // Extend Flamethrower & Grab Cone
@@ -455,7 +455,7 @@ public class Ryk_Autonomous_Blue extends LinearOpMode {
                     Mavryk.setPosition(FLAMETHROWER, xSlideDropPos);
                 })
                 .waitSeconds(auto_retract_wait) // Eliminate
-                .lineToLinearHeading(Blue_Dropoff)
+                .lineToLinearHeading(Blue_Dropoff.pose2d())
                 .addTemporalMarker(() -> {
                     // Raise Tom&Jerry
                     Mavryk.setTargetPosition(CAT_MOUSE, HighJunction);
@@ -491,129 +491,6 @@ public class Ryk_Autonomous_Blue extends LinearOpMode {
 
         telemetry.addLine(String.format("%d. Cycle %d Trajectory calculated Duration: %.3f", iTeleCt++, iCycleConePickup, trajSeq.duration()));
         return trajSeq;
-    }
-
-    void buildParkTrajectories_position_coach(int col) {
-
-        telemetry.addLine(String.format("%d. buildParkTrajectories_position_coach", iTeleCt++));
-
-        trajPreLoadDropOff = Mavryk.mecanumDrive.trajectorySequenceBuilder(Blue_Start)
-                //preload
-                .lineToLinearHeading(Blue_Push_Signal)
-                .lineToLinearHeading(Blue_Dropoff)
-                .addTemporalMarker(() -> {
-                    // Raise Tom&Jerry
-                    Mavryk.setTargetPosition(CAT_MOUSE, HighJunction);
-                    Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
-                    Mavryk.setPower(CAT_MOUSE, SlidePower_Up);
-                })
-                .waitSeconds(auto_raise_wait)
-                .addTemporalMarker(() -> {
-                    // Extend FlameThrower
-                    Mavryk.setPosition(FLAMETHROWER, xSlideOutPos);
-                })
-                .waitSeconds(auto_extend_wait)
-                .addTemporalMarker(() -> {
-                    // Lower Tom & Jerry
-                    Mavryk.setTargetPosition(CAT_MOUSE, DropoffPos);
-                    Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
-                    Mavryk.setPower(CAT_MOUSE, SlidePower_Down);
-                    Mavryk.setPosition(TWIN_TOWERS, Claw_Open_Pos);
-                })
-                .waitSeconds(auto_drop_wait)
-                .addTemporalMarker(() -> {
-                    // Retract FlameThrower
-                    Mavryk.setPosition(FLAMETHROWER, xSlideInPos);
-                })
-                .waitSeconds(auto_retract_wait)
-                .addTemporalMarker(() -> {
-                    // Lower Tom&Jerry to Top Cone
-                    Mavryk.setTargetPosition(CAT_MOUSE, TopCone);
-                    Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
-                    Mavryk.setPower(CAT_MOUSE, SlidePower_Down);
-                })
-                .waitSeconds(auto_drop_wait)
-                .build();
-
-        trajCycleDropOffTopCone = Mavryk.mecanumDrive.trajectorySequenceBuilder(Blue_Dropoff)
-                .lineToLinearHeading(Blue_Pickup)
-                .waitSeconds(auto_move_wait)
-                .addTemporalMarker(() -> {
-                    // Extend Flamethrower & Grab Cone
-                    Mavryk.setPosition(FLAMETHROWER, xSlideOutPos);
-                })
-                .waitSeconds(auto_extend_wait)
-                .addTemporalMarker(() -> {
-                    Mavryk.setPosition(TWIN_TOWERS, Claw_Close_Pos);
-                })
-                .waitSeconds(auto_pickup_wait)
-                .addTemporalMarker(() -> {
-                    // Raise to Low Junction
-                    Mavryk.setTargetPosition(CAT_MOUSE, LowJunction);
-                    Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
-                    Mavryk.setPower(CAT_MOUSE, SlidePower_Up);
-                })
-                .waitSeconds(auto_half_raise_wait)
-                .addTemporalMarker(() -> {
-                    // Retract Flamethrower
-                    Mavryk.setPosition(FLAMETHROWER, xSlideInPos);
-                })
-                .waitSeconds(auto_retract_wait)
-                .lineToLinearHeading(Blue_Dropoff)
-                .addTemporalMarker(() -> {
-                    // Raise Tom&Jerry
-                    Mavryk.setTargetPosition(CAT_MOUSE, HighJunction);
-                    Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
-                    Mavryk.setPower(CAT_MOUSE, SlidePower_Up);
-                })
-                .waitSeconds(auto_raise_wait)
-                .addTemporalMarker(() -> {
-                    // Extend FlameThrower
-                    Mavryk.setPosition(FLAMETHROWER, xSlideOutPos);
-                })
-                .waitSeconds(auto_extend_wait)
-                .addTemporalMarker(() -> {
-                    // Lower Tom & Jerry
-                    Mavryk.setTargetPosition(CAT_MOUSE, DropoffPos);
-                    Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
-                    Mavryk.setPower(CAT_MOUSE, SlidePower_Down);
-                    Mavryk.setPosition(TWIN_TOWERS, Claw_Open_Pos);
-                })
-                .waitSeconds(auto_drop_wait)
-                .addTemporalMarker(() -> {
-                    // Retract FlameThrower
-                    Mavryk.setPosition(FLAMETHROWER, xSlideInPos);
-                })
-                .waitSeconds(auto_retract_wait)
-                .addTemporalMarker(() -> {
-                    // Lower Tom&Jerry to Top Cone
-                    Mavryk.setTargetPosition(CAT_MOUSE, currentCyclePickupCone);
-                    Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
-                    Mavryk.setPower(CAT_MOUSE, SlidePower_Down);
-                })
-                .build();
-
-        switch (col) {
-            case 1:
-            default:
-                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Blue_Dropoff)
-                        .lineToLinearHeading(Blue_Park_Pos1)
-                        .build();
-                break;
-            case 2:
-                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Blue_Dropoff)
-                        .lineToLinearHeading(Blue_Park_Pos2)
-                        .build();
-                break;
-            case 3:
-                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Blue_Dropoff)
-                        .lineToLinearHeading(Blue_Park_Pos3)
-                        .build();
-                break;
-        }
-
-        telemetry.addLine(String.format("%d. Trajectory Duration after build: %.3f", iTeleCt++, trajParking.duration()));
-        return;
     }
 
     void initMotorsAndServos(boolean run_to_position)

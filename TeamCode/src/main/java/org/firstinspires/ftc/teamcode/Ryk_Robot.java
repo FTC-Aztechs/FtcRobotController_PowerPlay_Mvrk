@@ -148,40 +148,21 @@ public class Ryk_Robot
 
     public static boolean targetVisible       = false;
 
-//    public static Pose2d Red_Offset = new Pose2d(36.5, 62.75, Math.toRadians(-90));
-//    public static Pose2d Red_Dropoff_Dodge = new Pose2d(36.5,0, Math.toRadians(-90));
-//    public static Pose2d Red_Preload_Tile = new Pose2d(36.5,11.75, Math.toRadians(-90));
-//    public static Pose2d Red_Cycle_Tile = new Pose2d(36,12, Math.toRadians(0));
-//    public static Pose2d Red_Cycle_DropOff = new Pose2d(28,4.4, Math.toRadians(-130));
-//    public static Pose2d Red_TurnToCones = new Pose2d(10,12, Math.toRadians(0));
+    public static RykPose2d Red_Start = new RykPose2d(35.5, 63.75, -90);
+    public static RykPose2d Red_Push_Signal = new RykPose2d(35.5,0, -90);
+    public static RykPose2d Red_Pickup = new RykPose2d(54.25,12, 0);
+    public static RykPose2d Red_Dropoff = new RykPose2d(35.5,12, -140);
+    public static RykPose2d Red_Park_Pos1 = new RykPose2d(57,12, 0);
+    public static RykPose2d Red_Park_Pos2 = new RykPose2d(36,12, 0);
+    public static RykPose2d Red_Park_Pos3 = new RykPose2d(13,12, 0);
 
-
-//    public static Pose2d Blue_Offset = new Pose2d(-36.5, 62.75, Math.toRadians(-90));
-//    public static Pose2d Blue_Dropoff_Dodge = new Pose2d(-36.5,0, Math.toRadians(-90));
-//    public static Pose2d Blue_Preload_Tile = new Pose2d(-36.5,11.75, Math.toRadians(-90));
-//    public static Pose2d Blue_Cycle_Tile = new Pose2d(-36,12, Math.toRadians(-180));
-//    public static Pose2d Blue_Cycle_DropOff = new Pose2d(-28,4.4, Math.toRadians(-130));
-//    public static Pose2d Blue_TurnToCones = new Pose2d(-10,12, Math.toRadians(-180));
-//    public static Pose2d Blue_Cycle_Tile = new Pose2d(-36,12, Math.toRadians(-180));
-//    public static Pose2d Blue_Cycle_DropOff = new Pose2d(-28,4.4, Math.toRadians(-130));
-//    public static Pose2d Blue_TurnToCones = new Pose2d(-10,12, Math.toRadians(-180));
-
-
-    public static Pose2d Red_Start = new Pose2d(35.5, 63.75, Math.toRadians(-90));
-    public static Pose2d Red_Push_Signal = new Pose2d(35.5,0, Math.toRadians(-90));
-    public static Pose2d Red_Pickup = new Pose2d(54.25,12, Math.toRadians(0));
-    public static Pose2d Red_Dropoff = new Pose2d(35.5,12, Math.toRadians(-140));
-    public static Pose2d Red_Park_Pos1 = new Pose2d(57,12, Math.toRadians(0));
-    public static Pose2d Red_Park_Pos2 = new Pose2d(36,12, Math.toRadians(0));
-    public static Pose2d Red_Park_Pos3 = new Pose2d(13,12, Math.toRadians(0));
-
-    public static Pose2d Blue_Start = new Pose2d(-35.5, 63.75, Math.toRadians(-90));
-    public static Pose2d Blue_Push_Signal = new Pose2d(-35.5,0, Math.toRadians(-90));
-    public static Pose2d Blue_Pickup = new Pose2d(-54.25,12, Math.toRadians(-180));
-    public static Pose2d Blue_Dropoff = new Pose2d(-35.5,12, Math.toRadians(-40));
-    public static Pose2d Blue_Park_Pos1 = new Pose2d(-13,12, Math.toRadians(-180));
-    public static Pose2d Blue_Park_Pos2 = new Pose2d(-36,12, Math.toRadians(-180));
-    public static Pose2d Blue_Park_Pos3 = new Pose2d(-57,12, Math.toRadians(-180));;
+    public static RykPose2d Blue_Start = new RykPose2d(-35.5, 63.75, -90);
+    public static RykPose2d Blue_Push_Signal = new RykPose2d(-35.5,0, -90);
+    public static RykPose2d Blue_Pickup = new RykPose2d(-54.25,12, -180);
+    public static RykPose2d Blue_Dropoff = new RykPose2d(-35.5,12, -40);
+    public static RykPose2d Blue_Park_Pos1 = new RykPose2d(-13,12, -180);
+    public static RykPose2d Blue_Park_Pos2 = new RykPose2d(-36,12, -180);
+    public static RykPose2d Blue_Park_Pos3 = new RykPose2d(-57,12, -180);;
 
     public static double Slide_Ticks_Per_Rev = 537.7; // From REV Robotics Core HEX
 
@@ -194,20 +175,26 @@ public class Ryk_Robot
     public static double RightFunkyOutsidePos = 0.5;
     public static double LeftMonkeyOutsidePos = 0.4;
 
-
     public static double xSlideOutPos = 0.75;
     public static double xSlideDropPos = 0.5;
     public static double xSlideInPos = 0.43;
 
+    public static double auto_move_wait = 0.3; // before .5
+    public static double auto_drop_wait = 0; // before .5
+    public static double auto_pickup_wait = 0.1; // before .65
+    public static double auto_half_raise_wait = 0.3; // before .5
+    public static double auto_raise_wait = 0; // before 2
+    public static double auto_extend_wait = 0; // before .8
+    public static double auto_extend_half_wait = 0.3; // before .4
+    public static double auto_retract_wait = 0; // before .25
 
-    public static double auto_move_wait = 0.5;
-    public static double auto_drop_wait = 0.5;
-    public static double auto_pickup_wait = 0.65;
-    public static double auto_half_raise_wait = 0.5;
-    public static double auto_raise_wait = 2;
-    public static double auto_extend_wait = 0.8;
-    public static double auto_extend_half_wait = 0.4;
-    public static double auto_retract_wait = 0.25;
+    public static double PlSlideUpOffset = -1.5;
+    public static double PlSlideDownOffset = -0.2;
+    public static double DropoffExtendFlamethrowerOffset = -0.5;
+    public static double DropoffRetractFlamethrowerOffset = -0.5;
+
+    public static double CycleExtendFlamethrowerOffset = -0.5;
+    public static double CycleRetractFlamethrowerOffset = -0.25;
 
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
