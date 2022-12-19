@@ -16,7 +16,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 @Autonomous(name="Skystone camera example", group="Auto")
 public class Skystone_OpenCvExample extends LinearOpMode {
     Ryk_Robot Powerslay =new Ryk_Robot();
-    FtcDashboard rykDashboard = FtcDashboard.getInstance();
+    FtcDashboard mvrkDashboard = FtcDashboard.getInstance();
 
 
     @Override
@@ -36,7 +36,7 @@ public class Skystone_OpenCvExample extends LinearOpMode {
                 // Usually this is where you'll want to start streaming from the camera (see section 4)
                 telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
                 webcam.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
-                rykDashboard.startCameraStream(webcam,0);
+                mvrkDashboard.startCameraStream(webcam,0);
 
 
 

@@ -43,7 +43,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 public class Webcam_Testing extends LinearOpMode
 {
     OpenCvWebcam webcam;
-    FtcDashboard rykDashboard = FtcDashboard.getInstance();
+    FtcDashboard mvrkDashboard = FtcDashboard.getInstance();
 
 
 
@@ -105,7 +105,7 @@ public class Webcam_Testing extends LinearOpMode
                  * away from the user.
                  */
                 webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
-                rykDashboard.startCameraStream(webcam, 0);
+                mvrkDashboard.startCameraStream(webcam, 0);
                 telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
             }
@@ -167,7 +167,7 @@ public class Webcam_Testing extends LinearOpMode
                  * the above "important note".
                  */
                 webcam.stopStreaming();
-                rykDashboard.stopCameraStream();
+                mvrkDashboard.stopCameraStream();
                 //webcam.closeCameraDevice();
             }
 

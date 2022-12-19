@@ -31,7 +31,6 @@ package org.firstinspires.ftc.teamcode;
 
 //import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -117,17 +116,17 @@ public class Ryk_Robot
     public static int GroundJunction = 130;
     public static int FloorPosition = 40;
     public static int DropoffPos = 930;
-    public static int BottomCone = 50;
+    public static int BottomCone = 80;
     public static int BottomMidCone = 165;
-    public static int MiddleCone = 175;
-    public static int TopMidCone = 180;
-    public static int TopCone = 220;
+    public static int MiddleCone = 190;
+    public static int TopMidCone = 210;
+    public static int TopCone = 250;
     public static double SlidePower_Up= 1;
     public static double SlidePower_Down = 0.5;
     public static int ticks_stepSize = 13;
     public static int BUTTON_TRIGGER_TIMER_MS = 500;
 
-    public static int cyclesToRun = 2;
+    public static int cyclesToRun = 4;
 
     public static final String VUFORIA_KEY =
             "AZRnab7/////AAABmTUhzFGJLEyEnSXEYWthkjhGRzu8klNOmOa9WEHaryl9AZCo2bZwq/rtvx83YRIgV60/Jy/2aivoXaHNzwi7dEMGoaglSVmdmzPF/zOPyiz27dDJgLVvIROD8ww7lYzL8eweJ+5PqLAavvX3wgrahkOxxOCNeKG9Tl0LkbS5R11ATXL7LLWeUv5FP1aDNgMZvb8P/u96OdOvD6D40Nf01Xf+KnkF5EXwNQKk1r7qd/hiv9h80gvBXMFqMkVgUyogwEnlK2BfmeUhGVm/99BiwwW65LpKSaLVPpW/6xqz9SyPgZ/L/vshbWgSkTB/KoERiV8MsW79RPUuQS6NTOLY32I/kukmsis3MFst5LP/d3gx";
@@ -181,7 +180,7 @@ public class Ryk_Robot
 
     public static double auto_move_wait = 0.3; // before .5
     public static double auto_drop_wait = 0; // before .5
-    public static double auto_pickup_wait = 0.1; // before .65
+    public static double auto_pickup_wait = 0.2; // before .65
     public static double auto_half_raise_wait = 0.3; // before .5
     public static double auto_raise_wait = 0; // before 2
     public static double auto_extend_wait = 0; // before .8
@@ -376,7 +375,7 @@ public class Ryk_Robot
         }
     }
 
-    public void setPosition( RykServos eWhichServo, double iPos )
+    public void setPosition(RykServos eWhichServo, double iPos )
     {
         switch( eWhichServo)
         {
@@ -405,7 +404,7 @@ public class Ryk_Robot
         }
     }
 
-    public void setCRPower( RykServos eWhichServo, double dPower )
+    public void setCRPower(RykServos eWhichServo, double dPower )
     {
         switch( eWhichServo)
         {
@@ -449,7 +448,7 @@ public class Ryk_Robot
         }
     }
 
-    public void setTargetPosition( RykMotors eWhichMotor, int iPos ) {
+    public void setTargetPosition(RykMotors eWhichMotor, int iPos ) {
         switch (eWhichMotor) {
             case UPPER_LEFT:
                 upper_left.setTargetPosition(iPos);

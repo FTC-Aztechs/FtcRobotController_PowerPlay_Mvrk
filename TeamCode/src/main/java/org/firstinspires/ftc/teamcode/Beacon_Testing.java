@@ -31,7 +31,7 @@ public class Beacon_Testing extends OpMode {
     public void init() {
 
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Sauron");
-        FtcDashboard rykDashboard = FtcDashboard.getInstance();
+        FtcDashboard  rykDashboard = FtcDashboard.getInstance();
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -42,7 +42,7 @@ public class Beacon_Testing extends OpMode {
         webcam1.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             public void onOpened(){
                 webcam1.startStreaming(1920, 1080, OpenCvCameraRotation.UPRIGHT);
-                rykDashboard.startCameraStream(webcam1, 0);
+                 rykDashboard.startCameraStream(webcam1, 0);
             }
 
             public void onError(int errorCode){
