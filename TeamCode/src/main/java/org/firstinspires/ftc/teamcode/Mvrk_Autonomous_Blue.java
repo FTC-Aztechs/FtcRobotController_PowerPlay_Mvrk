@@ -4,49 +4,48 @@ import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_WITHOUT_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
 import static com.qualcomm.robotcore.util.ElapsedTime.Resolution.MILLISECONDS;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.BottomCone;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.BottomMidCone;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.Claw_Close_Pos;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.Claw_Open_Pos;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.DropoffPos;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.FloorPosition;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.IntakeInsidePos;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.MiddleCone;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.Red_Dropoff;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.Red_Park_Pos1;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.Red_Park_Pos2;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.Red_Park_Pos3;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.Red_Pickup;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.Red_Push_Signal;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.Red_Start;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.RykMotors.CAT_MOUSE;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.RykServos.FLAMETHROWER;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.RykServos.FUNKY_MONKEY;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.RykServos.TWIN_TOWERS;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.TopMidCone;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.TopCone;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.HighJunction;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.LowJunction;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.SlidePower_Down;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.SlidePower_Up;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.auto_drop_wait;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.auto_extend_half_wait;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.auto_extend_wait;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.auto_half_raise_wait;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.auto_move_wait;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.auto_pickup_wait;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.auto_raise_wait;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.auto_retract_wait;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.cyclesToRun;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.xSlideDropPos;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.xSlideInPos;
-import static org.firstinspires.ftc.teamcode.Ryk_Robot.xSlideOutPos;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.BottomCone;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.BottomMidCone;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Claw_Close_Pos;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Claw_Open_Pos;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.DropoffPos;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.FloorPosition;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.IntakeInsidePos;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.MiddleCone;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Blue_Dropoff;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Blue_Park_Pos1;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Blue_Park_Pos2;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Blue_Park_Pos3;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Blue_Pickup;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Blue_Push_Signal;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Blue_Start;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.RykMotors.CAT_MOUSE;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.RykServos.FLAMETHROWER;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.RykServos.FUNKY_MONKEY;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.RykServos.TWIN_TOWERS;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.TopMidCone;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.TopCone;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.HighJunction;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.LowJunction;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.SlidePower_Down;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.SlidePower_Up;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.auto_drop_wait;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.auto_extend_half_wait;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.auto_extend_wait;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.auto_half_raise_wait;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.auto_move_wait;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.auto_pickup_wait;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.auto_raise_wait;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.auto_retract_wait;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.cyclesToRun;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.xSlideDropPos;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.xSlideInPos;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.xSlideOutPos;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.outoftheboxrobotics.photoncore.PhotonCore;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -69,15 +68,16 @@ import java.util.ArrayList;
 
 
 @Config
-@Autonomous(name="Red Corner",group = "Autonomous")
-public class Ryk_Autonomous_Red extends LinearOpMode {
+@Autonomous(name="MvrkAutoBlueCorner",group = "Autonomous")
+public class Mvrk_Autonomous_Blue extends LinearOpMode {
     private Pose2d currentPose;
 
-    enum rykAllianceField {
+    enum RykAllianceField {
         RED,
         BLUE
     }
-    Ryk_Robot Mavryk = new Ryk_Robot();
+
+    Mvrk_Robot Mavryk = new Mvrk_Robot();
 
     private static FtcDashboard rykRobot;
     OpenCvWebcam Sauron = null;
@@ -134,7 +134,7 @@ public class Ryk_Autonomous_Red extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        PhotonCore.enable();
+
         Mavryk.init(hardwareMap);
 
         ElapsedTime trajectoryTimer = new ElapsedTime(MILLISECONDS);
@@ -278,7 +278,7 @@ public class Ryk_Autonomous_Red extends LinearOpMode {
 
         // Drop off preload
         trajectoryTimer.reset();
-        Mavryk.mecanumDrive.setPoseEstimate(Red_Start.pose2d());
+        Mavryk.mecanumDrive.setPoseEstimate(Blue_Start.pose2d());
         Mavryk.mecanumDrive.followTrajectorySequence(trajPreLoadDropOff);
         telemetry.addLine(String.format("%d. Preload Trajectory completed in: %.3f ", iTeleCt++, trajectoryTimer.seconds()));
 
@@ -319,9 +319,9 @@ public class Ryk_Autonomous_Red extends LinearOpMode {
 
         // Park
 //        EstimateCurrentPose();
-//        if (!currentPose.epsilonEquals(Red_Pickup)) {
+//        if (!currentPose.epsilonEquals(Blue_Pickup)) {
 //            Trajectory trajAdjustPos = Mavryk.mecanumDrive.trajectoryBuilder(currentPose)
-//                    .lineToLinearHeading(Red_Pickup)
+//                    .lineToLinearHeading(Blue_Pickup)
 //                    .build();
 //            Mavryk.mecanumDrive.followTrajectory(trajAdjustPos);
 //        }
@@ -335,16 +335,16 @@ public class Ryk_Autonomous_Red extends LinearOpMode {
 
     private void EstimateCurrentPose() {
         // TODO: use vumarks to update current pose
-        currentPose = Red_Pickup.pose2d();
+        currentPose = Blue_Pickup.pose2d();
     }
 
     void buildPreloadTrajectory() {
         telemetry.addLine(String.format("%d. buildPreloadTrajectory", iTeleCt++));
 
-        trajPreLoadDropOff = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Start.pose2d())
+        trajPreLoadDropOff = Mavryk.mecanumDrive.trajectorySequenceBuilder(Blue_Start.pose2d())
                 //preload
-                .lineToLinearHeading(Red_Push_Signal.pose2d())
-                .lineToLinearHeading(Red_Dropoff.pose2d())
+                .lineToLinearHeading(Blue_Push_Signal.pose2d())
+                .lineToLinearHeading(Blue_Dropoff.pose2d())
                 .addTemporalMarker(() -> {
                     // Raise Tom&Jerry
                     Mavryk.setTargetPosition(CAT_MOUSE, HighJunction);
@@ -390,27 +390,27 @@ public class Ryk_Autonomous_Red extends LinearOpMode {
         switch (iPos) {
             case 1:
             default:
-                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Dropoff.pose2d())
+                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Blue_Dropoff.pose2d())
                         .addTemporalMarker(()->{
                             Mavryk.setPosition(FLAMETHROWER, xSlideInPos);
                         })
-                        .lineToLinearHeading(Red_Park_Pos1.pose2d())
+                        .lineToLinearHeading(Blue_Park_Pos1.pose2d())
                         .build();
                 break;
             case 2:
-                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Dropoff.pose2d())
+                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Blue_Dropoff.pose2d())
                         .addTemporalMarker(()->{
                             Mavryk.setPosition(FLAMETHROWER, xSlideInPos);
                         })
-                        .lineToLinearHeading(Red_Park_Pos2.pose2d())
+                        .lineToLinearHeading(Blue_Park_Pos2.pose2d())
                         .build();
                 break;
             case 3:
-                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Dropoff.pose2d())
+                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Blue_Dropoff.pose2d())
                         .addTemporalMarker(()->{
                             Mavryk.setPosition(FLAMETHROWER, xSlideInPos);
                         })
-                        .lineToLinearHeading(Red_Park_Pos3.pose2d())
+                        .lineToLinearHeading(Blue_Park_Pos3.pose2d())
                         .build();
                 break;
         }
@@ -421,8 +421,8 @@ public class Ryk_Autonomous_Red extends LinearOpMode {
     TrajectorySequence buildCycleTrajectory(int iCycleConePickup)
     {
         telemetry.addLine(String.format("%d. buildCycleTrajectory %d", iTeleCt++, iCycleConePickup));
-        TrajectorySequence trajSeq = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Dropoff.pose2d())
-                .lineToLinearHeading(Red_Pickup.pose2d())
+        TrajectorySequence trajSeq = Mavryk.mecanumDrive.trajectorySequenceBuilder(Blue_Dropoff.pose2d())
+                .lineToLinearHeading(Blue_Pickup.pose2d())
                 .waitSeconds(auto_move_wait)  // Eliminate
                 .addTemporalMarker(() -> {
                     // Extend Flamethrower & Grab Cone
@@ -445,7 +445,7 @@ public class Ryk_Autonomous_Red extends LinearOpMode {
                     Mavryk.setPosition(FLAMETHROWER, xSlideDropPos);
                 })
                 .waitSeconds(auto_retract_wait) // Eliminate
-                .lineToLinearHeading(Red_Dropoff.pose2d())
+                .lineToLinearHeading(Blue_Dropoff.pose2d())
                 .addTemporalMarker(() -> {
                     // Raise Tom&Jerry
                     Mavryk.setTargetPosition(CAT_MOUSE, HighJunction);
@@ -572,5 +572,3 @@ public class Ryk_Autonomous_Red extends LinearOpMode {
     }
 
 }
-
-

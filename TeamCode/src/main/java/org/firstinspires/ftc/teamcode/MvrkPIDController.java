@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-public class RykPIDController {
+public class MvrkPIDController {
     double Kp;
     double Ki;
     double Kd;
@@ -18,13 +18,13 @@ public class RykPIDController {
      * @param Ki integral gain
      * @param Kd derivative gain
      */
-    public RykPIDController(double Kp, double Ki, double Kd) {
+    public MvrkPIDController(double Kp, double Ki, double Kd) {
         this.Kp = Kp;
         this.Ki = Ki;
         this.Kd = Kd;
     }
 
-    public RykPIDController(double Kp, double Ki, double Kd, boolean angleWrap) {
+    public MvrkPIDController(double Kp, double Ki, double Kd, boolean angleWrap) {
         this.Kp = Kp;
         this.Ki = Ki;
         this.Kd = Kd;

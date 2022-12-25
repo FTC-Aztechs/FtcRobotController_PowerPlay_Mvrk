@@ -49,7 +49,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 import java.util.Locale;
 
 @Config
-public class Ryk_Robot
+public class Mvrk_Robot
 {
     enum RykMotors
     {
@@ -147,21 +147,21 @@ public class Ryk_Robot
 
     public static boolean targetVisible       = false;
 
-    public static RykPose2d Red_Start = new RykPose2d(35.5, 63.75, -90);
-    public static RykPose2d Red_Push_Signal = new RykPose2d(35.5,0, -90);
-    public static RykPose2d Red_Pickup = new RykPose2d(54.25,12, 0);
-    public static RykPose2d Red_Dropoff = new RykPose2d(35.5,12, -140);
-    public static RykPose2d Red_Park_Pos1 = new RykPose2d(57,12, 0);
-    public static RykPose2d Red_Park_Pos2 = new RykPose2d(36,12, 0);
-    public static RykPose2d Red_Park_Pos3 = new RykPose2d(13,12, 0);
+    public static MvrkPose2d Red_Start = new MvrkPose2d(35.5, 63.75, -90);
+    public static MvrkPose2d Red_Push_Signal = new MvrkPose2d(35.5,0, -90);
+    public static MvrkPose2d Red_Pickup = new MvrkPose2d(54.25,12, 0);
+    public static MvrkPose2d Red_Dropoff = new MvrkPose2d(35.5,12, -140);
+    public static MvrkPose2d Red_Park_Pos1 = new MvrkPose2d(57,12, 0);
+    public static MvrkPose2d Red_Park_Pos2 = new MvrkPose2d(36,12, 0);
+    public static MvrkPose2d Red_Park_Pos3 = new MvrkPose2d(13,12, 0);
 
-    public static RykPose2d Blue_Start = new RykPose2d(-35.5, 63.75, -90);
-    public static RykPose2d Blue_Push_Signal = new RykPose2d(-35.5,0, -90);
-    public static RykPose2d Blue_Pickup = new RykPose2d(-54.25,12, -180);
-    public static RykPose2d Blue_Dropoff = new RykPose2d(-35.5,12, -40);
-    public static RykPose2d Blue_Park_Pos1 = new RykPose2d(-13,12, -180);
-    public static RykPose2d Blue_Park_Pos2 = new RykPose2d(-36,12, -180);
-    public static RykPose2d Blue_Park_Pos3 = new RykPose2d(-57,12, -180);;
+    public static MvrkPose2d Blue_Start = new MvrkPose2d(-35.5, 63.75, -90);
+    public static MvrkPose2d Blue_Push_Signal = new MvrkPose2d(-35.5,0, -90);
+    public static MvrkPose2d Blue_Pickup = new MvrkPose2d(-54.25,12, -180);
+    public static MvrkPose2d Blue_Dropoff = new MvrkPose2d(-35.5,12, -40);
+    public static MvrkPose2d Blue_Park_Pos1 = new MvrkPose2d(-13,12, -180);
+    public static MvrkPose2d Blue_Park_Pos2 = new MvrkPose2d(-36,12, -180);
+    public static MvrkPose2d Blue_Park_Pos3 = new MvrkPose2d(-57,12, -180);;
 
     public static double Slide_Ticks_Per_Rev = 537.7; // From REV Robotics Core HEX
 
@@ -201,7 +201,7 @@ public class Ryk_Robot
     SampleMecanumDrive mecanumDrive;
 
     /* Constructor */
-    public Ryk_Robot(){
+    public Mvrk_Robot(){
 
     }
 
