@@ -134,11 +134,11 @@ public class Mvrk_Manual extends LinearOpMode {
 
 
         while (opModeIsActive()) {
-            RykManualDrive();
-            RykUpSlide_rtp();
-            RykClaw();
-            RykIntake();
-            RykXSlide();
+            MvrkManualDrive();
+            MvrkUpSlide_rtp();
+            MvrkClaw();
+            MvrkIntake();
+            MvrkXSlide();
         }
     }
 
@@ -160,7 +160,7 @@ public class Mvrk_Manual extends LinearOpMode {
     }
 
 
-    public void RykIntake() {
+    public void MvrkIntake() {
         boolean bIntake = gamepad1.right_trigger == 1f;
 
         if (bIntake && Current_Intake_Position == IntakeInsidePos) {
@@ -220,7 +220,7 @@ public class Mvrk_Manual extends LinearOpMode {
 
     }
 
-    public void RykManualDrive() {
+    public void MvrkManualDrive() {
         if (gamepad1.dpad_left) {
             if (!changingWheelSpeed) {
                 timer_gp1_dpad_left.reset();
@@ -277,7 +277,7 @@ public class Mvrk_Manual extends LinearOpMode {
 
         return;
     }
-    public void RykXSlide() {
+    public void MvrkXSlide() {
         if(gamepad1.dpad_up) {
             xSlide_Position = Mavryk.xSlideOutPos;
 
@@ -288,7 +288,7 @@ public class Mvrk_Manual extends LinearOpMode {
         }
         Mavryk.setPosition(Mvrk_Robot.RykServos.FLAMETHROWER, xSlide_Position);
     }
-    public void RykClaw() {
+    public void MvrkClaw() {
         ServoTurn = gamepad2.right_trigger == 1f;
 
 
@@ -302,129 +302,7 @@ public class Mvrk_Manual extends LinearOpMode {
 
     }
 
-    public void rykUpSlide_rue() {
-        //Gamepad2 left -> Decrease Speed
-        if (gamepad2.dpad_left) {
-            if (!changingSlideSpeed) {
-                timer_gp2_dpad_left.reset();
-                changingSlideSpeed = true;
-            } else if (timer_gp2_dpad_left.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-                if (UpAdjust <= 1) {
-                    UpAdjust = 1;
-                } else {
-                    UpAdjust -= 1;
-                }
-                telemetry.addLine("Current slide speed: " + UpAdjust);
-                telemetry.update();
-                changingSlideSpeed = false;
-            }
-        }
-
-        //Gamepad 2right -> Increase Speed
-        if (gamepad2.dpad_right) {
-            if (!changingSlideSpeed) {
-                timer_gp2_dpad_right.reset();
-                changingSlideSpeed = true;
-            } else if (timer_gp2_dpad_right.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-                if (UpAdjust >= 10) {
-                    UpAdjust = 10;
-                } else {
-                    UpAdjust += 1;
-                }
-                telemetry.addLine("Current slide speed: " + UpAdjust);
-                telemetry.update();
-                changingSlideSpeed = false;
-            }
-        }
-
-        int newPos = currentSlidePos + (int) ( -gamepad2.left_stick_y * ticks_stepSize);
-        if( newPos >= HighJunction)
-            newPos = HighJunction;
-        else if (newPos <= FloorPosition)
-            newPos = FloorPosition;
-        telemetry.addLine("newPos calc from gamePad2.left_stick_y: " + newPos);
-        telemetry.update();
-
-        if (gamepad2.y) {
-            if (!assumingHighPosition) {
-                timer_gp2_buttonY.reset();
-                assumingHighPosition = true;
-            } else if (timer_gp2_buttonY.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-                telemetry.addLine("GP2_Y triggered. Set Tom&Jerry to High position");
-                telemetry.update();
-
-                newPos = HighJunction;
-                assumingHighPosition = false;
-            }
-        }
-
-        if (gamepad2.x) {
-            if (!assumingMidPosition) {
-                timer_gp2_buttonX.reset();
-                assumingMidPosition = true;
-            } else if (timer_gp2_buttonX.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-                telemetry.addLine("GP2_X triggered. Set Tom&Jerry to Mid position");
-                telemetry.update();
-                newPos = MidJunction;
-                assumingMidPosition = false;
-            }
-        }
-
-        if(gamepad2.a) {
-            if (!assumingLowPosition) {
-                timer_gp2_buttonY.reset();
-                assumingLowPosition = true;
-            } else if (timer_gp2_buttonA.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-                telemetry.addLine("GP2_A triggered. Set Tom&Jerry to Low position");
-                telemetry.update();
-
-                newPos = LowJunction;
-                assumingLowPosition = false;
-            }
-        }
-
-        if (gamepad2.b) {
-            if (!assumingFloorPosition) {
-                timer_gp2_buttonB.reset();
-                assumingFloorPosition = true;
-            } else if (timer_gp2_buttonB.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-                telemetry.addLine("GP2_B triggered. Set Tom&Jerry to Floor position");
-                telemetry.update();
-
-                newPos = FloorPosition;
-                assumingFloorPosition = false;
-            }
-        }
-
-
-        telemetry.addLine("newPos from Any button triggers: " + newPos);
-        telemetry.update();
-
-        if( newPos != currentSlidePos && newPos >=FloorPosition && newPos <= HighJunction ) {
-            Mavryk.setTargetPosition(Mvrk_Robot.RykMotors.CAT_MOUSE, newPos);
-            Mavryk.setRunMode(Mvrk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-            if (newPos > currentSlidePos) {
-                Mavryk.setPower(Mvrk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-                while (opModeIsActive() && Mavryk.areMotorsBusy(Mvrk_Robot.RykMotors.CAT_MOUSE)) {
-                    idle();
-                }
-            }
-            else if (newPos < currentSlidePos) {
-                Mavryk.setPower(Mvrk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
-                while (opModeIsActive() && Mavryk.areMotorsBusy(Mvrk_Robot.RykMotors.CAT_MOUSE)) {
-                    idle();
-                }
-            }
-            currentSlidePos = newPos;
-            telemetry.addLine("currPos updated to: "+ currentSlidePos);
-            telemetry.update();
-        }
-
-        telemetry.addLine("rykUpSlide_rue: Current Slide Position: " + Mavryk.getCurrentPosition(Mvrk_Robot.RykMotors.CAT_MOUSE));
-        telemetry.update();
-    }
-
-    public void RykUpSlide_rtp() {
+    public void MvrkUpSlide_rtp() {
         //Gamepad2 left -> Decrease Speed
         if (gamepad2.dpad_left) {
             if (!changingSlideSpeed) {
@@ -565,45 +443,6 @@ public class Mvrk_Manual extends LinearOpMode {
         telemetry.update();
     }
 
-
-    public void rykUpSlide() {
-
-        //Gamepad2 left -> Decrease Speed
-        if (gamepad2.dpad_left) {
-            if (!changingSlideSpeed) {
-                timer_gp2_dpad_left.reset();
-                changingSlideSpeed = true;
-            } else if (timer_gp2_dpad_left.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-                if (UpAdjust <= 1) {
-                    UpAdjust = 1;
-                } else {
-                    UpAdjust -= 1;
-                }
-                telemetry.addLine("Current Slide Speed: "+ UpAdjust);
-                telemetry.update();
-                changingSlideSpeed = false;
-            }
-        }
-
-        //Gamepad 2right -> Increase Speed
-        if (gamepad2.dpad_right) {
-            if (!changingSlideSpeed) {
-                timer_gp2_dpad_right.reset();
-                changingSlideSpeed = true;
-            } else if (timer_gp2_dpad_right.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-                if (UpAdjust >= 10) {
-                    UpAdjust = 10;
-                } else {
-                    UpAdjust += 1;
-                }
-                telemetry.addLine("Current Slide Speed: "+ UpAdjust);
-                telemetry.update();
-                changingSlideSpeed = false;
-            }
-        }
-
-        Mavryk.setPower(Mvrk_Robot.RykMotors.CAT_MOUSE, -gamepad2.left_stick_y * (UpAdjust / 10));
-    }
 }
 
 

@@ -114,7 +114,7 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
     private static final ElapsedTime timer_gp2_dpad_left = new ElapsedTime(MILLISECONDS);
     private static final ElapsedTime timer_gp2_dpad_right = new ElapsedTime(MILLISECONDS);
 
-    FtcDashboard rykDashboard;
+    FtcDashboard mvrkDashboard;
     private boolean assumingHighPosition = false;
     private boolean assumingMidPosition = false;
     private boolean assumingLowPosition = false;
@@ -171,16 +171,16 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
 
         while (opModeIsActive()) {
             if (Mode == 0) {
-                rykUpSlide();
+                mvrkUpSlide();
             } else if(Mode == 1){
-                rykUpSlide_rue();
+                mvrkUpSlide_rue();
             } else if(Mode == 2) {
-                rykSlideTester_rue();
+                mvrkSlideTester_rue();
             } else if(Mode == 3) {
-                rykSlideTester_pid();
+                mvrkSlideTester_pid();
             }
             else if(Mode == 4) {
-                rykUpSlide_rtp();
+                mvrkUpSlide_rtp();
             }
 
             //rykClaw();
@@ -191,7 +191,7 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
 
     public void initMavryk() {
         msStuckDetectStop = 2500;
-        FtcDashboard Dash = rykDashboard;
+        FtcDashboard Dash = mvrkDashboard;
         Claw_Position = Mvrk_Robot.Claw_Open_Pos;
         currPos = 0;
         Mavryk.Tom.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -221,7 +221,7 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
 
     //Slider speed control
 
-    public void rykUpSlide() {
+    public void mvrkUpSlide() {
 
         //Gamepad2 left -> Decrease Speed
         if (gamepad2.dpad_left) {
@@ -264,7 +264,7 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
 
     }
 
-    public void rykUpSlide_rue() {
+    public void mvrkUpSlide_rue() {
         //Gamepad2 left -> Decrease Speed
         if (gamepad2.dpad_left) {
             if (!changingSlideSpeed) {
@@ -386,7 +386,7 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
     }
 
 
-    public void rykUpSlide_rtp() {
+    public void mvrkUpSlide_rtp() {
         //Gamepad2 left -> Decrease Speed
         if (gamepad2.dpad_left) {
             if (!changingSlideSpeed) {
@@ -502,7 +502,7 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
     }
 
 
-    public void rykSlideTester_rue(){
+    public void mvrkSlideTester_rue(){
         
         ElapsedTime timer = new ElapsedTime(MILLISECONDS);
         timer.reset();
@@ -665,7 +665,7 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
 
     }
 
-    public void rykSlideTester_pid() {
+    public void mvrkSlideTester_pid() {
 
         //Gamepad2 left -> Decrease Speed
         if (gamepad2.dpad_left) {
