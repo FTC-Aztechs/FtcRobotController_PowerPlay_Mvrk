@@ -105,7 +105,7 @@ public class Mvrk_Robot
     public static int MidJunction = 12370 ;
     public static int LowJunction = 7900;
     public static int GroundJunction = 1940;
-    public static int FloorPosition = 600;
+    public static int FloorPosition = 0;
     public static int DropoffPos = 13860;
     public static int BottomCone = 1200;
     public static int BottomMidCone = 2460;
@@ -232,7 +232,7 @@ public class Mvrk_Robot
         lower_right.setDirection(DcMotor.Direction.FORWARD); //+ used to be
 
         Jerry.setDirection(DcMotor.Direction.FORWARD); //- used to be
-        Tom.setDirection(DcMotor.Direction.REVERSE); //+ used to be
+        Tom.setDirection(DcMotor.Direction.FORWARD); //+ used to be
 
 
         Looney.setDirection(Servo.Direction.FORWARD);
@@ -351,7 +351,7 @@ public class Mvrk_Robot
             case LOWER_RIGHT:
                 return lower_right.getCurrentPosition();
             case CAT_MOUSE:
-                return Jerry.getCurrentPosition();
+                return Tom.getCurrentPosition();
             default:
                 return 0;
         }

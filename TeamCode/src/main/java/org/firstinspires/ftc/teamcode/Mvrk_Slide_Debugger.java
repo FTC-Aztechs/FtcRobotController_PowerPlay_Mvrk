@@ -64,7 +64,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.concurrent.TimeUnit;
 
-@Disabled
+
 @Config
 @TeleOp(name="MvrkSlideTester" , group="Manual mode")
 //@Disabled
@@ -120,9 +120,10 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
     private boolean assumingLowPosition = false;
     private boolean assumingFloorPosition = false;
 
-    MvrkPIDController control = new MvrkPIDController(0.05, 0, 0 );
+    public static MvrkPIDController control = new MvrkPIDController(10, 0, 0.25);
 
-    private int currPos = FloorPosition;
+    private int currPos = 0;
+    private int newPos =0;
 
     //    public enum TomJerryState {
     //        LIFT_FLOOR,
@@ -163,8 +164,8 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
             Mavryk.setRunMode(Mvrk_Robot.MvrkMotors.CAT_MOUSE, RUN_USING_ENCODER);
         }
         else
+            Mavryk.setRunMode(Mvrk_Robot.MvrkMotors.CAT_MOUSE, STOP_AND_RESET_ENCODER);
             Mavryk.setRunMode(Mvrk_Robot.MvrkMotors.CAT_MOUSE, RUN_WITHOUT_ENCODER);
-        Mavryk.setRunMode(Mvrk_Robot.MvrkMotors.CAT_MOUSE, STOP_AND_RESET_ENCODER);
 
         telemetry.addData("Slide Debugger Running in mode: ", Mode);
         telemetry.update();
@@ -259,6 +260,8 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
 
         Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, -gamepad2.left_stick_y * (Mvrk_Robot.UpAdjust / 10));
 
+
+        telemetry.addData("gamepad power", Mavryk.Tom.getPower() + ", " + Mavryk.Jerry.getPower());
         telemetry.addData("rykUpSlide: Current Slide Position: ", Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE));
         telemetry.update();
 
@@ -701,13 +704,13 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
             }
         }
 
-        int newPos = currPos + (int) ( -gamepad2.left_stick_y * ticks_stepSize);
-        if( newPos >= HighJunction)
-            newPos = HighJunction;
-        else if (newPos <= FloorPosition)
-            newPos = FloorPosition;
-        telemetry.addData("newPos calc from gamePad2.left_stick_y: ", newPos);
-        telemetry.update();
+//        int newPos = currPos + (int) (-gamepad2.left_stick_y * ticks_stepSize);
+//        if( newPos >= HighJunction)
+//            newPos = HighJunction;
+//        else if (newPos <= FloorPosition)
+//            newPos = FloorPosition;
+//        telemetry.addData("newPos calc from gamePad2.left_stick_y: ", newPos);
+//        telemetry.update();
 
         if (gamepad2.y) {
             if (!assumingHighPosition) {
@@ -763,16 +766,17 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
         telemetry.addData("newPos from Any button triggers: ", newPos);
         telemetry.update();
 
-        if( newPos != currPos && newPos >=FloorPosition && newPos <= HighJunction ) {
+        if( newPos != currPos && newPos >= FloorPosition && newPos <= HighJunction ) {
             double command = control.output(newPos, Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE));
-            Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, command/16392);
+            Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, command/HighJunction);
 
-            currPos = newPos;
+            currPos = Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE);
             telemetry.addData("currPos updated to: ", currPos);
+            telemetry.addData("command power:", command/HighJunction);
             telemetry.update();
         }
 
-        telemetry.addData("rykUpSlide_rue: Current Slide Position: ", Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE));
+        telemetry.addData("rykUpSlide_pid: Current Slide Position: ", Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE));
         telemetry.update();
     }
 

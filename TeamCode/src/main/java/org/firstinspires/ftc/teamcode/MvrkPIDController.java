@@ -3,9 +3,9 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class MvrkPIDController {
-    double Kp;
-    double Ki;
-    double Kd;
+    public static double Kp;
+    public static double Ki;
+    public static double Kd;
     double lastError = 0;
     double integral = 0;
     boolean angleWrap = false;
