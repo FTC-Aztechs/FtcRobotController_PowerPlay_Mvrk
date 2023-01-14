@@ -33,6 +33,7 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -51,7 +52,7 @@ import java.util.Locale;
 @Config
 public class Mvrk_Robot
 {
-    enum RykMotors
+    enum MvrkMotors
     {
         UPPER_LEFT,
         LOWER_LEFT,
@@ -63,18 +64,11 @@ public class Mvrk_Robot
         ALL
     }
 
-    enum RykServos
+    enum MvrkServos
     {
         FLAMETHROWER,
-        HANDSEL,
-        GRABBEL,
-        TWIN_TOWERS,
-        LEFT_MONKEY,
-        RIGHT_FUNKY,
-        FUNKY_MONKEY,
-        SWEEPER_LEFT,
-        SWEEPER_RIGHT,
-        CAR_WASH
+        CARTOON,
+        TEACUP
     }
 
 
@@ -87,15 +81,12 @@ public class Mvrk_Robot
     public DcMotor Jerry = null;
     public DcMotor Tom = null;
 
-    //    public DcMotor duck_wheel = null;
+        public DcMotor duck_wheel = null;
     public Servo FlameThrower = null;
-    public Servo Handsel = null;
-    public Servo Grabbel = null;
-    public CRServo Sweeper_Left = null;
-    public CRServo Sweeper_Right = null;
-    public Servo LeftMonkey = null;
-    public Servo RightFunky = null;
-    public WebcamName eyeOfSauron = null;
+    public Servo Looney = null;
+    public Servo Teacup = null;
+
+//    public WebcamName eyeOfSauron = null;
     OpenCvWebcam Sauron = null;
 
 //    public DigitalChannel Touche_Linac = null;
@@ -110,17 +101,17 @@ public class Mvrk_Robot
     public static double GrabbelClawLastPos = 0.0f;
 
     public static double UpAdjust = 10;
-    public static int HighJunction = 1110;
-    public static int MidJunction = 830;
-    public static int LowJunction = 530;
-    public static int GroundJunction = 130;
-    public static int FloorPosition = 40;
-    public static int DropoffPos = 930;
-    public static int BottomCone = 80;
-    public static int BottomMidCone = 165;
-    public static int MiddleCone = 190;
-    public static int TopMidCone = 210;
-    public static int TopCone = 250;
+    public static int HighJunction = 16300;
+    public static int MidJunction = 12370 ;
+    public static int LowJunction = 7900;
+    public static int GroundJunction = 1940;
+    public static int FloorPosition = 600;
+    public static int DropoffPos = 13860;
+    public static int BottomCone = 1200;
+    public static int BottomMidCone = 2460;
+    public static int MiddleCone = 2830;
+    public static int TopMidCone = 3130;
+    public static int TopCone = 3730;
     public static double SlidePower_Up= 1;
     public static double SlidePower_Down = 0.5;
     public static int ticks_stepSize = 13;
@@ -195,6 +186,7 @@ public class Mvrk_Robot
     public static double CycleExtendFlamethrowerOffset = -0.5;
     public static double CycleRetractFlamethrowerOffset = -0.25;
 
+
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
     private ElapsedTime period  = new ElapsedTime();
@@ -221,12 +213,8 @@ public class Mvrk_Robot
 
         //Servo
         FlameThrower = hwMap.get(Servo.class, "Flamethrower");
-        Handsel = hwMap.get(Servo.class, "Handsel");
-        Grabbel = hwMap.get(Servo.class, "Grabbel");
-        LeftMonkey = hwMap.get(Servo.class, "LeftMonkey");
-        RightFunky = hwMap.get(Servo.class, "RightFunky");
-        Sweeper_Left = hwMap.get(CRServo.class, "SweeperLeft");
-        Sweeper_Right = hwMap.get(CRServo.class, "SweeperRight");
+        Looney = hwMap.get(Servo.class, "Looney_Toons");
+        Teacup = hwMap.get(Servo.class, "Teacup");
 
         // Set all motors to zero power
         upper_left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -246,18 +234,12 @@ public class Mvrk_Robot
         Jerry.setDirection(DcMotor.Direction.FORWARD); //- used to be
         Tom.setDirection(DcMotor.Direction.REVERSE); //+ used to be
 
-        Handsel.setDirection(Servo.Direction.REVERSE);
 
-        Grabbel.setDirection(Servo.Direction.FORWARD);
-
-        LeftMonkey.setDirection(Servo.Direction.REVERSE);
-        RightFunky.setDirection(Servo.Direction.FORWARD);
-
-        Sweeper_Left.setDirection(CRServo.Direction.REVERSE);
-        Sweeper_Right.setDirection(CRServo.Direction.FORWARD);
+        Looney.setDirection(Servo.Direction.FORWARD);
+        Teacup.setDirection(Servo.Direction.FORWARD);
 
         mecanumDrive = new SampleMecanumDrive(hwMap);
-        eyeOfSauron = hwMap.get(WebcamName.class, "Sauron");
+//        eyeOfSauron = hwMap.get(WebcamName.class, "Sauron");
 
 
     }
@@ -280,7 +262,7 @@ public class Mvrk_Robot
         return result;
     }
 
-    public void setRunMode(RykMotors eWhichMotor, DcMotor.RunMode eMode )
+    public void setRunMode(MvrkMotors eWhichMotor, DcMotor.RunMode eMode )
     {
 
         switch (eWhichMotor){
@@ -319,7 +301,7 @@ public class Mvrk_Robot
         }
     }
 
-    public void setPower(RykMotors eWhichMotor, double dPower )
+    public void setPower(MvrkMotors eWhichMotor, double dPower )
     {
 
         switch (eWhichMotor){
@@ -356,7 +338,7 @@ public class Mvrk_Robot
         }
     }
 
-    public int getCurrentPosition( RykMotors eWhichMotor )
+    public int getCurrentPosition( MvrkMotors eWhichMotor )
     {
         switch(eWhichMotor)
         {
@@ -375,55 +357,44 @@ public class Mvrk_Robot
         }
     }
 
-    public void setPosition(RykServos eWhichServo, double iPos )
+    public void setPosition(MvrkServos eWhichServo, double iPos )
     {
         switch( eWhichServo)
         {
             case FLAMETHROWER:
                 FlameThrower.setPosition(iPos);
                 break;
-            case HANDSEL:
-                Handsel.setPosition(iPos);
+            case CARTOON:
+                Looney.setPosition(iPos);
                 break;
-            case GRABBEL:
-                Grabbel.setPosition(iPos);
+            case TEACUP:
+                Teacup.setPosition(iPos);
                 break;
-            case LEFT_MONKEY:
-                LeftMonkey.setPosition(iPos);
-            case RIGHT_FUNKY:
-                RightFunky.setPosition(iPos);
-            case TWIN_TOWERS:
-                Handsel.setPosition(iPos);
-                Grabbel.setPosition(iPos);
-                break;
-            case FUNKY_MONKEY:
-                LeftMonkey.setPosition(iPos);
-                RightFunky.setPosition(iPos);
             default :
                 break;
         }
     }
+//
+//    public void setCRPower(MvrkServos eWhichServo, double dPower )
+//    {
+//        switch( eWhichServo)
+//        {
+//            case SWEEPER_LEFT:
+//                Sweeper_Left.setPower(dPower);
+//                break;
+//            case SWEEPER_RIGHT:
+//                Sweeper_Right.setPower(dPower);
+//                break;
+//            case CAR_WASH:
+//                Sweeper_Left.setPower(dPower);
+//                Sweeper_Right.setPower(dPower);
+//            default :
+//                break;
+//        }
+//    }
 
-    public void setCRPower(RykServos eWhichServo, double dPower )
-    {
-        switch( eWhichServo)
-        {
-            case SWEEPER_LEFT:
-                Sweeper_Left.setPower(dPower);
-                break;
-            case SWEEPER_RIGHT:
-                Sweeper_Right.setPower(dPower);
-                break;
-            case CAR_WASH:
-                Sweeper_Left.setPower(dPower);
-                Sweeper_Right.setPower(dPower);
-            default :
-                break;
-        }
-    }
 
-
-    public boolean areMotorsBusy(RykMotors eWhichMotor) {
+    public boolean areMotorsBusy(MvrkMotors eWhichMotor) {
 
         switch(eWhichMotor)
         {
@@ -448,7 +419,7 @@ public class Mvrk_Robot
         }
     }
 
-    public void setTargetPosition(RykMotors eWhichMotor, int iPos ) {
+    public void setTargetPosition(MvrkMotors eWhichMotor, int iPos ) {
         switch (eWhichMotor) {
             case UPPER_LEFT:
                 upper_left.setTargetPosition(iPos);

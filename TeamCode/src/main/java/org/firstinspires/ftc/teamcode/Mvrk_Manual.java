@@ -119,7 +119,7 @@ public class Mvrk_Manual extends LinearOpMode {
     private int currentSlidePos = FloorPosition;
 
 
-    FtcDashboard rykDashboard;
+    FtcDashboard mvrkDashboard;
     private double bumperSpeedAdjust = 8;
     private double dPadSpeedAdjust = 5;
 
@@ -136,21 +136,21 @@ public class Mvrk_Manual extends LinearOpMode {
         while (opModeIsActive()) {
             MvrkManualDrive();
             MvrkUpSlide_rtp();
-            MvrkClaw();
-            MvrkIntake();
-            MvrkXSlide();
+//            MvrkClaw();
+//            MvrkIntake();
+//            MvrkXSlide();
         }
     }
 
     public void initMavryk() {
         msStuckDetectStop = 2500;
-        FtcDashboard Dash = rykDashboard;
+        FtcDashboard Dash = mvrkDashboard;
 
         Claw_Position = Mavryk.Claw_Close_Pos;
 
         Current_Intake_Position = IntakeInsidePos;
 
-        Mavryk.setPosition(Mvrk_Robot.RykServos.FUNKY_MONKEY, Current_Intake_Position);
+        //Mavryk.setPosition(Mvrk_Robot.MvrkServos.FUNKY_MONKEY, Current_Intake_Position);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.addLine("Status: Robot is ready to roll!");
@@ -160,65 +160,65 @@ public class Mvrk_Manual extends LinearOpMode {
     }
 
 
-    public void MvrkIntake() {
-        boolean bIntake = gamepad1.right_trigger == 1f;
-
-        if (bIntake && Current_Intake_Position == IntakeInsidePos) {
-            boolean bHaveIRaisedTheClaw = false;
-            if (currentSlidePos < MiddleCone)
-            {
-                Mavryk.setTargetPosition(Mvrk_Robot.RykMotors.CAT_MOUSE, MiddleCone);
-                Mavryk.setRunMode(Mvrk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-                Mavryk.setPower(Mvrk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-                currentSlidePos = MiddleCone;
-                bHaveIRaisedTheClaw = true;
-            }
-            Current_Intake_Position = RightFunkyOutsidePos;
-            Mavryk.setPosition(Mvrk_Robot.RykServos.FUNKY_MONKEY, Current_Intake_Position);
-            Mavryk.setPosition(Mvrk_Robot.RykServos.RIGHT_FUNKY, RightFunkyOutsidePos);
-            Mavryk.setPosition(Mvrk_Robot.RykServos.LEFT_MONKEY, LeftMonkeyOutsidePos);
-            if (bHaveIRaisedTheClaw) {
-                Mavryk.setTargetPosition(Mvrk_Robot.RykMotors.CAT_MOUSE, FloorPosition);
-                Mavryk.setPower(Mvrk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
-            }
-            telemetry.addLine("Intake out!");
-            telemetry.update();
-        }
-        if (!bIntake && Current_Intake_Position == RightFunkyOutsidePos) {
-            boolean bHaveIRaisedTheClaw = false;
-            if (currentSlidePos < MiddleCone) {
-
-                Mavryk.setTargetPosition(Mvrk_Robot.RykMotors.CAT_MOUSE, MiddleCone);
-                Mavryk.setRunMode(Mvrk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-                Mavryk.setPower(Mvrk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-                currentSlidePos = MiddleCone;
-                bHaveIRaisedTheClaw = true;
-            }
-            Current_Intake_Position = IntakeInsidePos;
-            Mavryk.setPosition(Mvrk_Robot.RykServos.FUNKY_MONKEY, Current_Intake_Position);
-            if (bHaveIRaisedTheClaw) {
-                Mavryk.setTargetPosition(Mvrk_Robot.RykMotors.CAT_MOUSE, FloorPosition);
-                Mavryk.setPower(Mvrk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
-            }
-            telemetry.addLine("Intake in!");
-            telemetry.update();
-        }
-
-        if(bIntake) {
-            Sweeper_Power = 0.5;
-            Mavryk.setCRPower(Mvrk_Robot.RykServos.CAR_WASH, Sweeper_Power);
-            telemetry.addLine("Intake on!");
-            telemetry.update();
-        }
-        else {
-            //TODO: When Retracting from Intake - need to make sure claw is raised to provide clearance.
-            Sweeper_Power = 0;
-            Mavryk.setCRPower(Mvrk_Robot.RykServos.CAR_WASH, Sweeper_Power);
-            telemetry.addLine("Intake off!");
-            telemetry.update();
-        }
-
-    }
+//    public void MvrkIntake() {
+//        boolean bIntake = gamepad1.right_trigger == 1f;
+//
+//        if (bIntake && Current_Intake_Position == IntakeInsidePos) {
+//            boolean bHaveIRaisedTheClaw = false;
+//            if (currentSlidePos < MiddleCone)
+//            {
+//                Mavryk.setTargetPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE, MiddleCone);
+//                Mavryk.setRunMode(Mvrk_Robot.MvrkMotors.CAT_MOUSE, RUN_TO_POSITION);
+//                Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, SlidePower_Up);
+//                currentSlidePos = MiddleCone;
+//                bHaveIRaisedTheClaw = true;
+//            }
+//            Current_Intake_Position = RightFunkyOutsidePos;
+//            Mavryk.setPosition(Mvrk_Robot.MvrkServos.FUNKY_MONKEY, Current_Intake_Position);
+//            Mavryk.setPosition(Mvrk_Robot.MvrkServos.RIGHT_FUNKY, RightFunkyOutsidePos);
+//            Mavryk.setPosition(Mvrk_Robot.MvrkServos.LEFT_MONKEY, LeftMonkeyOutsidePos);
+//            if (bHaveIRaisedTheClaw) {
+//                Mavryk.setTargetPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE, FloorPosition);
+//                Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, SlidePower_Down);
+//            }
+//            telemetry.addLine("Intake out!");
+//            telemetry.update();
+//        }
+//        if (!bIntake && Current_Intake_Position == RightFunkyOutsidePos) {
+//            boolean bHaveIRaisedTheClaw = false;
+//            if (currentSlidePos < MiddleCone) {
+//
+//                Mavryk.setTargetPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE, MiddleCone);
+//                Mavryk.setRunMode(Mvrk_Robot.MvrkMotors.CAT_MOUSE, RUN_TO_POSITION);
+//                Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, SlidePower_Up);
+//                currentSlidePos = MiddleCone;
+//                bHaveIRaisedTheClaw = true;
+//            }
+//            Current_Intake_Position = IntakeInsidePos;
+//            Mavryk.setPosition(Mvrk_Robot.MvrkServos.FUNKY_MONKEY, Current_Intake_Position);
+//            if (bHaveIRaisedTheClaw) {
+//                Mavryk.setTargetPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE, FloorPosition);
+//                Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, SlidePower_Down);
+//            }
+//            telemetry.addLine("Intake in!");
+//            telemetry.update();
+//        }
+//
+//        if(bIntake) {
+//            Sweeper_Power = 0.5;
+//            Mavryk.setCRPower(Mvrk_Robot.MvrkServos.CAR_WASH, Sweeper_Power);
+//            telemetry.addLine("Intake on!");
+//            telemetry.update();
+//        }
+//        else {
+//            //TODO: When Retracting from Intake - need to make sure claw is raised to provide clearance.
+//            Sweeper_Power = 0;
+//            Mavryk.setCRPower(Mvrk_Robot.MvrkServos.CAR_WASH, Sweeper_Power);
+//            telemetry.addLine("Intake off!");
+//            telemetry.update();
+//        }
+//
+//    }
 
     public void MvrkManualDrive() {
         if (gamepad1.dpad_left) {
@@ -277,30 +277,30 @@ public class Mvrk_Manual extends LinearOpMode {
 
         return;
     }
-    public void MvrkXSlide() {
-        if(gamepad1.dpad_up) {
-            xSlide_Position = Mavryk.xSlideOutPos;
-
-        }
-        else if(gamepad1.dpad_down)
-        {
-            xSlide_Position = Mavryk.xSlideInPos;
-        }
-        Mavryk.setPosition(Mvrk_Robot.RykServos.FLAMETHROWER, xSlide_Position);
-    }
-    public void MvrkClaw() {
-        ServoTurn = gamepad2.right_trigger == 1f;
-
-
-        if (ServoTurn) {
-            Claw_Position = Mavryk.Claw_Open_Pos;
-        } else {
-            Claw_Position = Mavryk.Claw_Close_Pos;
-        }
-
-        Mavryk.setPosition(Mvrk_Robot.RykServos.TWIN_TOWERS, Claw_Position);
-
-    }
+//    public void MvrkXSlide() {
+//        if(gamepad1.dpad_up) {
+//            xSlide_Position = Mavryk.xSlideOutPos;
+//
+//        }
+//        else if(gamepad1.dpad_down)
+//        {
+//            xSlide_Position = Mavryk.xSlideInPos;
+//        }
+//        Mavryk.setPosition(Mvrk_Robot.MvrkServos.FLAMETHROWER, xSlide_Position);
+//    }
+//    public void MvrkClaw() {
+//        ServoTurn = gamepad2.right_trigger == 1f;
+//
+//
+//        if (ServoTurn) {
+//            Claw_Position = Mavryk.Claw_Open_Pos;
+//        } else {
+//            Claw_Position = Mavryk.Claw_Close_Pos;
+//        }
+//
+//        Mavryk.setPosition(Mvrk_Robot.MvrkServos.TWIN_TOWERS, Claw_Position);
+//
+//    }
 
     public void MvrkUpSlide_rtp() {
         //Gamepad2 left -> Decrease Speed
@@ -426,20 +426,20 @@ public class Mvrk_Manual extends LinearOpMode {
         telemetry.update();
 
         if( newPos != currentSlidePos && newPos >=FloorPosition && newPos <= HighJunction ) {
-            Mavryk.setTargetPosition(Mvrk_Robot.RykMotors.CAT_MOUSE, newPos);
-            Mavryk.setRunMode(Mvrk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
+            Mavryk.setTargetPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE, newPos);
+            Mavryk.setRunMode(Mvrk_Robot.MvrkMotors.CAT_MOUSE, RUN_TO_POSITION);
             if (newPos > currentSlidePos) {
-                Mavryk.setPower(Mvrk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
+                Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, SlidePower_Up);
             }
             else if (newPos < currentSlidePos) {
-                Mavryk.setPower(Mvrk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
+                Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, SlidePower_Down);
             }
             currentSlidePos = newPos;
             telemetry.addLine("currPos updated to: "+ currentSlidePos);
             telemetry.update();
         }
 
-        telemetry.addLine("rykUpSlide_rue: Current Slide Position: "+ Mavryk.getCurrentPosition(Mvrk_Robot.RykMotors.CAT_MOUSE));
+        telemetry.addLine("mvrkUpSlide_rue: Current Slide Position: "+ Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE));
         telemetry.update();
     }
 

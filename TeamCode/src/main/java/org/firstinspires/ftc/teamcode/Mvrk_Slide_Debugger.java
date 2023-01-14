@@ -156,15 +156,15 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
         Mavryk.init(hardwareMap);
 
         initMavryk();
-        Mavryk.setPosition(Mvrk_Robot.RykServos.TWIN_TOWERS, Mavryk.Claw_Open_Pos);
+//        Mavryk.setPosition(Mvrk_Robot.MvrkServos.TWIN_TOWERS, Mavryk.Claw_Open_Pos);
         waitForStart();
 
         if( Mode == 1 || Mode == 2) {
-            Mavryk.setRunMode(Mvrk_Robot.RykMotors.CAT_MOUSE, RUN_USING_ENCODER);
+            Mavryk.setRunMode(Mvrk_Robot.MvrkMotors.CAT_MOUSE, RUN_USING_ENCODER);
         }
         else
-            Mavryk.setRunMode(Mvrk_Robot.RykMotors.CAT_MOUSE, RUN_WITHOUT_ENCODER);
-        Mavryk.setRunMode(Mvrk_Robot.RykMotors.CAT_MOUSE, STOP_AND_RESET_ENCODER);
+            Mavryk.setRunMode(Mvrk_Robot.MvrkMotors.CAT_MOUSE, RUN_WITHOUT_ENCODER);
+        Mavryk.setRunMode(Mvrk_Robot.MvrkMotors.CAT_MOUSE, STOP_AND_RESET_ENCODER);
 
         telemetry.addData("Slide Debugger Running in mode: ", Mode);
         telemetry.update();
@@ -215,7 +215,7 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
             Claw_Position = Mvrk_Robot.Claw_Close_Pos;
         }
 
-        Mavryk.setPosition(Mvrk_Robot.RykServos.TWIN_TOWERS, Claw_Position);
+//        Mavryk.setPosition(Mvrk_Robot.MvrkServos.TWIN_TOWERS, Claw_Position);
 
     }
 
@@ -257,9 +257,9 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
             }
         }
 
-        Mavryk.setPower(Mvrk_Robot.RykMotors.CAT_MOUSE, -gamepad2.left_stick_y * (Mvrk_Robot.UpAdjust / 10));
+        Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, -gamepad2.left_stick_y * (Mvrk_Robot.UpAdjust / 10));
 
-        telemetry.addData("rykUpSlide: Current Slide Position: ", Mavryk.getCurrentPosition(Mvrk_Robot.RykMotors.CAT_MOUSE));
+        telemetry.addData("rykUpSlide: Current Slide Position: ", Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE));
         telemetry.update();
 
     }
@@ -362,17 +362,17 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
         telemetry.update();
 
         if( newPos != currPos && newPos >=FloorPosition && newPos <= HighJunction ) {
-            Mavryk.setTargetPosition(Mvrk_Robot.RykMotors.CAT_MOUSE, newPos);
-            Mavryk.setRunMode(Mvrk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
+            Mavryk.setTargetPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE, newPos);
+            Mavryk.setRunMode(Mvrk_Robot.MvrkMotors.CAT_MOUSE, RUN_TO_POSITION);
             if (newPos > currPos) {
-                Mavryk.setPower(Mvrk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
-                while (opModeIsActive() && Mavryk.areMotorsBusy(Mvrk_Robot.RykMotors.CAT_MOUSE)) {
+                Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, SlidePower_Up);
+                while (opModeIsActive() && Mavryk.areMotorsBusy(Mvrk_Robot.MvrkMotors.CAT_MOUSE)) {
                     idle();
                 }
             }
             else if (newPos < currPos) {
-                Mavryk.setPower(Mvrk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
-                while (opModeIsActive() && Mavryk.areMotorsBusy(Mvrk_Robot.RykMotors.CAT_MOUSE)) {
+                Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, SlidePower_Down);
+                while (opModeIsActive() && Mavryk.areMotorsBusy(Mvrk_Robot.MvrkMotors.CAT_MOUSE)) {
                     idle();
                 }
             }
@@ -381,7 +381,7 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
             telemetry.update();
         }
 
-        telemetry.addData("rykUpSlide_rue: Current Slide Position: ", Mavryk.getCurrentPosition(Mvrk_Robot.RykMotors.CAT_MOUSE));
+        telemetry.addData("rykUpSlide_rue: Current Slide Position: ", Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE));
         telemetry.update();
     }
 
@@ -484,20 +484,20 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
         telemetry.update();
 
         if( newPos != currPos && newPos >=FloorPosition && newPos <= HighJunction ) {
-            Mavryk.setTargetPosition(Mvrk_Robot.RykMotors.CAT_MOUSE, newPos);
-            Mavryk.setRunMode(Mvrk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
+            Mavryk.setTargetPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE, newPos);
+            Mavryk.setRunMode(Mvrk_Robot.MvrkMotors.CAT_MOUSE, RUN_TO_POSITION);
             if (newPos > currPos) {
-                Mavryk.setPower(Mvrk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
+                Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, SlidePower_Up);
             }
             else if (newPos < currPos) {
-                Mavryk.setPower(Mvrk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
+                Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, SlidePower_Down);
             }
             currPos = newPos;
             telemetry.addData("currPos updated to: ", currPos);
             telemetry.update();
         }
 
-        telemetry.addData("rykUpSlide_rue: Current Slide Position: ", Mavryk.getCurrentPosition(Mvrk_Robot.RykMotors.CAT_MOUSE));
+        telemetry.addData("rykUpSlide_rue: Current Slide Position: ", Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE));
         telemetry.update();
     }
 
@@ -507,160 +507,160 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
         ElapsedTime timer = new ElapsedTime(MILLISECONDS);
         timer.reset();
 
-        Mavryk.setPosition(Mvrk_Robot.RykServos.TWIN_TOWERS, Claw_Open_Pos);
+//        Mavryk.setPosition(Mvrk_Robot.MvrkServos.TWIN_TOWERS, Claw_Open_Pos);
 
         // Setting the target position to Cone5
-        Mavryk.setTargetPosition(Mvrk_Robot.RykMotors.CAT_MOUSE, TopCone);
-        Mavryk.setRunMode(Mvrk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-        Mavryk.setPower(Mvrk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
+        Mavryk.setTargetPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE, TopCone);
+        Mavryk.setRunMode(Mvrk_Robot.MvrkMotors.CAT_MOUSE, RUN_TO_POSITION);
+        Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, SlidePower_Up);
 
-        while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
+        while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.MvrkMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
             telemetry.addLine("In Cone5 position....");
             telemetry.update();
             idle();
         }
         timer.reset();
 
-        Mavryk.setPosition(Mvrk_Robot.RykServos.TWIN_TOWERS, Claw_Close_Pos);
+//        Mavryk.setPosition(Mvrk_Robot.MvrkServos.TWIN_TOWERS, Claw_Close_Pos);
 
-        Mavryk.setTargetPosition(Mvrk_Robot.RykMotors.CAT_MOUSE, LowJunction);
-        Mavryk.setRunMode(Mvrk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-        Mavryk.setPower(Mvrk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
+        Mavryk.setTargetPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE, LowJunction);
+        Mavryk.setRunMode(Mvrk_Robot.MvrkMotors.CAT_MOUSE, RUN_TO_POSITION);
+        Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, SlidePower_Up);
 
-        while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
+        while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.MvrkMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
             telemetry.addLine("In Cone5 position....");
             telemetry.update();
             idle();
         }
         timer.reset();
 
-        Mavryk.setPosition(Mvrk_Robot.RykServos.TWIN_TOWERS, Claw_Open_Pos);
+//        Mavryk.setPosition(Mvrk_Robot.MvrkServos.TWIN_TOWERS, Claw_Open_Pos);
 
 
         // Setting the target position to Cone4
-        Mavryk.setTargetPosition(Mvrk_Robot.RykMotors.CAT_MOUSE, TopMidCone);
-        Mavryk.setRunMode(Mvrk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-        Mavryk.setPower(Mvrk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
+        Mavryk.setTargetPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE, TopMidCone);
+        Mavryk.setRunMode(Mvrk_Robot.MvrkMotors.CAT_MOUSE, RUN_TO_POSITION);
+        Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, SlidePower_Down);
 
-        while(opModeIsActive() /*&& Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE)*/ && timer.milliseconds() < 5000 ) {
+        while(opModeIsActive() /*&& Mavryk.areMotorsBusy(Ryk_Robot.MvrkMotors.CAT_MOUSE)*/ && timer.milliseconds() < 5000 ) {
             telemetry.addLine("In Cone4 position....");
             telemetry.update();
             idle();
         }
         timer.reset();
-        Mavryk.setPosition(Mvrk_Robot.RykServos.TWIN_TOWERS, Claw_Close_Pos);
+//        Mavryk.setPosition(Mvrk_Robot.MvrkServos.TWIN_TOWERS, Claw_Close_Pos);
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        Mavryk.setTargetPosition(Mvrk_Robot.RykMotors.CAT_MOUSE, LowJunction);
-        Mavryk.setRunMode(Mvrk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-        Mavryk.setPower(Mvrk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
+        Mavryk.setTargetPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE, LowJunction);
+        Mavryk.setRunMode(Mvrk_Robot.MvrkMotors.CAT_MOUSE, RUN_TO_POSITION);
+        Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, SlidePower_Up);
 
-        while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
+        while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.MvrkMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
             telemetry.addLine("In Cone5 position....");
             telemetry.update();
             idle();
         }
         timer.reset();
 
-        Mavryk.setPosition(Mvrk_Robot.RykServos.TWIN_TOWERS, Claw_Open_Pos);
+//        Mavryk.setPosition(Mvrk_Robot.MvrkServos.TWIN_TOWERS, Claw_Open_Pos);
 
 
         // Setting the target position to Cone3
-        Mavryk.setTargetPosition(Mvrk_Robot.RykMotors.CAT_MOUSE, MiddleCone);
-        Mavryk.setRunMode(Mvrk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-        Mavryk.setPower(Mvrk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
+        Mavryk.setTargetPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE, MiddleCone);
+        Mavryk.setRunMode(Mvrk_Robot.MvrkMotors.CAT_MOUSE, RUN_TO_POSITION);
+        Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, SlidePower_Down);
 
-        while(opModeIsActive() /*&& Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE)*/ && timer.milliseconds() < 5000 ) {
+        while(opModeIsActive() /*&& Mavryk.areMotorsBusy(Ryk_Robot.MvrkMotors.CAT_MOUSE)*/ && timer.milliseconds() < 5000 ) {
             telemetry.addLine("In Cone3 position....");
             telemetry.update();
             idle();
         }
         timer.reset();
-        Mavryk.setPosition(Mvrk_Robot.RykServos.TWIN_TOWERS, Claw_Close_Pos);
+//        Mavryk.setPosition(Mvrk_Robot.MvrkServos.TWIN_TOWERS, Claw_Close_Pos);
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        Mavryk.setTargetPosition(Mvrk_Robot.RykMotors.CAT_MOUSE, LowJunction);
-        Mavryk.setRunMode(Mvrk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-        Mavryk.setPower(Mvrk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
+        Mavryk.setTargetPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE, LowJunction);
+        Mavryk.setRunMode(Mvrk_Robot.MvrkMotors.CAT_MOUSE, RUN_TO_POSITION);
+        Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, SlidePower_Up);
 
-        while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
+        while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.MvrkMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
             telemetry.addLine("In Cone5 position....");
             telemetry.update();
             idle();
         }
         timer.reset();
 
-        Mavryk.setPosition(Mvrk_Robot.RykServos.TWIN_TOWERS, Claw_Open_Pos);
+//        Mavryk.setPosition(Mvrk_Robot.MvrkServos.TWIN_TOWERS, Claw_Open_Pos);
 
 
         // Setting the target position to Cone2
-        Mavryk.setTargetPosition(Mvrk_Robot.RykMotors.CAT_MOUSE, BottomMidCone);
-        Mavryk.setRunMode(Mvrk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-        Mavryk.setPower(Mvrk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
+        Mavryk.setTargetPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE, BottomMidCone);
+        Mavryk.setRunMode(Mvrk_Robot.MvrkMotors.CAT_MOUSE, RUN_TO_POSITION);
+        Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, SlidePower_Down);
 
-        while(opModeIsActive() /*&& Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE)*/ && timer.milliseconds() < 5000 ) {
+        while(opModeIsActive() /*&& Mavryk.areMotorsBusy(Ryk_Robot.MvrkMotors.CAT_MOUSE)*/ && timer.milliseconds() < 5000 ) {
             telemetry.addLine("In Cone2 position....");
             telemetry.update();
             idle();
         }
         timer.reset();
-        Mavryk.setPosition(Mvrk_Robot.RykServos.TWIN_TOWERS, Claw_Close_Pos);
+//        Mavryk.setPosition(Mvrk_Robot.MvrkServos.TWIN_TOWERS, Claw_Close_Pos);
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        Mavryk.setTargetPosition(Mvrk_Robot.RykMotors.CAT_MOUSE, LowJunction);
-        Mavryk.setRunMode(Mvrk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-        Mavryk.setPower(Mvrk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
+        Mavryk.setTargetPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE, LowJunction);
+        Mavryk.setRunMode(Mvrk_Robot.MvrkMotors.CAT_MOUSE, RUN_TO_POSITION);
+        Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, SlidePower_Up);
 
-        while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
+        while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.MvrkMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
             telemetry.addLine("In Cone5 position....");
             telemetry.update();
             idle();
         }
         timer.reset();
 
-        Mavryk.setPosition(Mvrk_Robot.RykServos.TWIN_TOWERS, Claw_Open_Pos);
+//        Mavryk.setPosition(Mvrk_Robot.MvrkServos.TWIN_TOWERS, Claw_Open_Pos);
 
 
         // Setting the target position to Cone1
-        Mavryk.setTargetPosition(Mvrk_Robot.RykMotors.CAT_MOUSE, BottomCone);
-        Mavryk.setRunMode(Mvrk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-        Mavryk.setPower(Mvrk_Robot.RykMotors.CAT_MOUSE, SlidePower_Down);
+        Mavryk.setTargetPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE, BottomCone);
+        Mavryk.setRunMode(Mvrk_Robot.MvrkMotors.CAT_MOUSE, RUN_TO_POSITION);
+        Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, SlidePower_Down);
 
-        while(opModeIsActive() /*&& Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE)*/ && timer.milliseconds() < 5000 ) {
+        while(opModeIsActive() /*&& Mavryk.areMotorsBusy(Ryk_Robot.MvrkMotors.CAT_MOUSE)*/ && timer.milliseconds() < 5000 ) {
             telemetry.addLine("In Cone1 position....");
             telemetry.update();
             idle();
         }
         timer.reset();
-        Mavryk.setPosition(Mvrk_Robot.RykServos.TWIN_TOWERS, Claw_Close_Pos);
+//        Mavryk.setPosition(Mvrk_Robot.MvrkServos.TWIN_TOWERS, Claw_Close_Pos);
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        Mavryk.setTargetPosition(Mvrk_Robot.RykMotors.CAT_MOUSE, LowJunction);
-        Mavryk.setRunMode(Mvrk_Robot.RykMotors.CAT_MOUSE, RUN_TO_POSITION);
-        Mavryk.setPower(Mvrk_Robot.RykMotors.CAT_MOUSE, SlidePower_Up);
+        Mavryk.setTargetPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE, LowJunction);
+        Mavryk.setRunMode(Mvrk_Robot.MvrkMotors.CAT_MOUSE, RUN_TO_POSITION);
+        Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, SlidePower_Up);
 
-        while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.RykMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
+        while(opModeIsActive() && /*Mavryk.areMotorsBusy(Ryk_Robot.MvrkMotors.CAT_MOUSE) &&*/ timer.milliseconds() < 5000 ) {
             telemetry.addLine("In Cone5 position....");
             telemetry.update();
             idle();
         }
         timer.reset();
 
-        Mavryk.setPosition(Mvrk_Robot.RykServos.TWIN_TOWERS, Claw_Open_Pos);
+//        Mavryk.setPosition(Mvrk_Robot.MvrkServos.TWIN_TOWERS, Claw_Open_Pos);
 
-        telemetry.addData("Tester_rue: Current Slide Position: ", Mavryk.getCurrentPosition(Mvrk_Robot.RykMotors.CAT_MOUSE));
+        telemetry.addData("Tester_rue: Current Slide Position: ", Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE));
         telemetry.update();
 
     }
@@ -764,15 +764,15 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
         telemetry.update();
 
         if( newPos != currPos && newPos >=FloorPosition && newPos <= HighJunction ) {
-            double command = control.output(newPos, Mavryk.getCurrentPosition(Mvrk_Robot.RykMotors.CAT_MOUSE));
-            Mavryk.setPower(Mvrk_Robot.RykMotors.CAT_MOUSE, command);
+            double command = control.output(newPos, Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE));
+            Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, command/16392);
 
             currPos = newPos;
             telemetry.addData("currPos updated to: ", currPos);
             telemetry.update();
         }
 
-        telemetry.addData("rykUpSlide_rue: Current Slide Position: ", Mavryk.getCurrentPosition(Mvrk_Robot.RykMotors.CAT_MOUSE));
+        telemetry.addData("rykUpSlide_rue: Current Slide Position: ", Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE));
         telemetry.update();
     }
 
