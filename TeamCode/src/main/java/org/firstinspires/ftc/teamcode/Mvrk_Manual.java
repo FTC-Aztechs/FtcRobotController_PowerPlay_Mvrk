@@ -31,30 +31,35 @@ package org.firstinspires.ftc.teamcode;
 
 //import com.acmerobotics.dashboard.FtcDashboard;
 //import com.acmerobotics.dashboard.config.Config;
-import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
 import static com.qualcomm.robotcore.util.ElapsedTime.Resolution.MILLISECONDS;
 
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.BUTTON_TRIGGER_TIMER_MS;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.FloorPosition;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.HighJunction;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.IntakeInsidePos;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.LeftMonkeyOutsidePos;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.LowJunction;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.MidJunction;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.MiddleCone;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.RightFunkyOutsidePos;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.SlidePower_Down;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.SlidePower_Up;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.TopMidCone;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.ticks_stepSize;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.imu;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.slideHeightSafetyBarrier;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.turretIncrement;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.turret_Range;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.turret_fullRange;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.turret_restrictedRange;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.xSlideInPos;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.xSlideIncrement;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.xSlideOutPos;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.xSlideSafetyBarrier;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.localization.Localizer;
 import com.outoftheboxrobotics.photoncore.PhotonCore;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.teamcode.util.AxisDirection;
+import org.firstinspires.ftc.teamcode.util.BNO055IMUUtil;
 
 import java.util.concurrent.TimeUnit;
 
@@ -82,6 +87,7 @@ public class Mvrk_Manual extends LinearOpMode {
     boolean ServoTurn = false;
     double Claw_Position; // Start at halfway position
     double xSlide_Position;
+    double turret_Position;
     double Current_Intake_Position;
     double Sweeper_Power;
 
@@ -110,6 +116,9 @@ public class Mvrk_Manual extends LinearOpMode {
     private static ElapsedTime timer_gp2_dpad_left = new ElapsedTime(MILLISECONDS);
     private static ElapsedTime timer_gp2_dpad_right = new ElapsedTime(MILLISECONDS);
 
+    private static ElapsedTime timer_gp1_left_bumper = new ElapsedTime(MILLISECONDS);
+
+
     private boolean assumingHighPosition = false;
     private boolean assumingMidPosition = false;
     private boolean assumingLowPosition = false;
@@ -117,6 +126,8 @@ public class Mvrk_Manual extends LinearOpMode {
     private boolean assumingTopMidCone = false;
     private boolean assumingMiddleCone = false;
     private int currentSlidePos = FloorPosition;
+    private boolean changing_drive_mode = false;
+    private boolean fieldCentric = true;
 
 
     FtcDashboard mvrkDashboard;
@@ -125,7 +136,7 @@ public class Mvrk_Manual extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-    PhotonCore.enable();
+        PhotonCore.enable();
         // Initialize the drive system vriables
         Mavryk.init(hardwareMap);
 
@@ -134,11 +145,31 @@ public class Mvrk_Manual extends LinearOpMode {
 
 
         while (opModeIsActive()) {
-            MvrkManualDrive();
-            MvrkUpSlide_rtp();
-//            MvrkClaw();
+            //MvrkUpSlide_rtp();
+            MvrkClaw();
 //            MvrkIntake();
-//            MvrkXSlide();
+            MvrkXSlide();
+            MrvkTurret();
+
+            if(gamepad1.left_bumper) {
+                if (!changing_drive_mode) {
+                    timer_gp1_left_bumper.reset();
+                    changing_drive_mode = true;
+                } else if (timer_gp1_left_bumper.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+                    fieldCentric = !fieldCentric;
+                    changing_drive_mode = false;
+                }
+            }
+
+            if(fieldCentric){
+                MvrkManualDrive_FieldCentric();
+                telemetry.addLine("Drive Mode: Field Centric");
+                telemetry.update();
+            }else{
+                MvrkManualDrive();
+                telemetry.addLine("Drive Mode: Forward Facing");
+                telemetry.update();
+            }
         }
     }
 
@@ -148,9 +179,14 @@ public class Mvrk_Manual extends LinearOpMode {
 
         Claw_Position = Mavryk.Claw_Close_Pos;
 
-        Current_Intake_Position = IntakeInsidePos;
+        //Current_Intake_Position = IntakeInsidePos;
 
         //Mavryk.setPosition(Mvrk_Robot.MvrkServos.FUNKY_MONKEY, Current_Intake_Position);
+
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
+        BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_Y);
+        imu.initialize(parameters);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.addLine("Status: Robot is ready to roll!");
@@ -254,10 +290,9 @@ public class Mvrk_Manual extends LinearOpMode {
             }
         }
 
-        if(gamepad1.right_bumper) {
+        if (gamepad1.right_bumper) {
             speedAdjust = bumperSpeedAdjust;
-        }
-        else {
+        } else {
             speedAdjust = dPadSpeedAdjust;
         }
 
@@ -277,173 +312,236 @@ public class Mvrk_Manual extends LinearOpMode {
 
         return;
     }
-//    public void MvrkXSlide() {
-//        if(gamepad1.dpad_up) {
-//            xSlide_Position = Mavryk.xSlideOutPos;
-//
-//        }
-//        else if(gamepad1.dpad_down)
-//        {
-//            xSlide_Position = Mavryk.xSlideInPos;
-//        }
-//        Mavryk.setPosition(Mvrk_Robot.MvrkServos.FLAMETHROWER, xSlide_Position);
-//    }
-//    public void MvrkClaw() {
-//        ServoTurn = gamepad2.right_trigger == 1f;
-//
-//
-//        if (ServoTurn) {
-//            Claw_Position = Mavryk.Claw_Open_Pos;
-//        } else {
-//            Claw_Position = Mavryk.Claw_Close_Pos;
-//        }
-//
-//        Mavryk.setPosition(Mvrk_Robot.MvrkServos.TWIN_TOWERS, Claw_Position);
-//
-//    }
 
-    public void MvrkUpSlide_rtp() {
-        //Gamepad2 left -> Decrease Speed
-        if (gamepad2.dpad_left) {
-            if (!changingSlideSpeed) {
-                timer_gp2_dpad_left.reset();
-                changingSlideSpeed = true;
-            } else if (timer_gp2_dpad_left.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-                if (Mvrk_Robot.UpAdjust <= 1) {
-                    Mvrk_Robot.UpAdjust = 1;
-                } else {
-                    Mvrk_Robot.UpAdjust -= 1;
-                }
-                telemetry.addLine("Current Slide Speed: "+ Mvrk_Robot.UpAdjust);
-                telemetry.update();
-                changingSlideSpeed = false;
-            }
-        }
+    public void MvrkManualDrive_FieldCentric()
+    {
 
-        //Gamepad 2right -> Increase Speed
-        if (gamepad2.dpad_right) {
-            if (!changingSlideSpeed) {
-                timer_gp2_dpad_right.reset();
-                changingSlideSpeed = true;
-            } else if (timer_gp2_dpad_right.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-                if (Mvrk_Robot.UpAdjust >= 10) {
-                    Mvrk_Robot.UpAdjust = 10;
-                } else {
-                    Mvrk_Robot.UpAdjust += 1;
-                }
-                telemetry.addLine("Current Slide Speed: "+ Mvrk_Robot.UpAdjust);
-                telemetry.update();
-                changingSlideSpeed = false;
-            }
-        }
+        Localizer myLocaliizer = Mavryk.mecanumDrive.getLocalizer();
+        myLocaliizer.getPoseVelocity();
+        Pose2d poseEstimate = Mavryk.mecanumDrive.getPoseEstimate();
+        Vector2d input = new Vector2d( -gamepad1.left_stick_y,
+                -gamepad1.left_stick_x).rotated(-imu.getAngularOrientation().firstAngle);
 
-        int newPos = currentSlidePos + (int) ( -gamepad2.left_stick_y * ticks_stepSize);
-        if( newPos >= HighJunction)
-            newPos = HighJunction;
-        else if (newPos <= FloorPosition)
-            newPos = FloorPosition;
-        telemetry.addLine("newPos calc from gamePad2.left_stick_y: "+ newPos);
-        telemetry.update();
+        Mavryk.mecanumDrive.setWeightedDrivePower(new Pose2d(input.getX(), input.getY(), -gamepad1.right_stick_x));
+        Mavryk.mecanumDrive.update();
 
-        if (gamepad2.y) {
-            if (!assumingHighPosition) {
-                timer_gp2_buttonY.reset();
-                assumingHighPosition = true;
-            } else if (timer_gp2_buttonY.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-                telemetry.addLine("GP2_Y triggered. Set Tom&Jerry to High position");
-                telemetry.update();
+//        telemetry.addData("gamepad 1 right stick y", -gamepad1.right_stick_y);
+//        telemetry.update();
 
-                newPos = HighJunction;
-                assumingHighPosition = false;
-            }
-        }
-
-        if (gamepad2.x) {
-            if (!assumingMidPosition) {
-                timer_gp2_buttonX.reset();
-                assumingMidPosition = true;
-            } else if (timer_gp2_buttonX.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-                telemetry.addLine("GP2_X triggered. Set Tom&Jerry to Mid position");
-                telemetry.update();
-                newPos = MidJunction;
-                assumingMidPosition = false;
-            }
-        }
-
-        if(gamepad2.a) {
-            if (!assumingLowPosition) {
-                timer_gp2_buttonY.reset();
-                assumingLowPosition = true;
-            } else if (timer_gp2_buttonA.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-                telemetry.addLine("GP2_A triggered. Set Tom&Jerry to Low position");
-                telemetry.update();
-
-                newPos = LowJunction;
-                assumingLowPosition = false;
-            }
-        }
-
-        if (gamepad2.b) {
-            if (!assumingFloorPosition) {
-                timer_gp2_buttonB.reset();
-                assumingFloorPosition = true;
-            } else if (timer_gp2_buttonB.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-                telemetry.addLine("GP2_B triggered. Set Tom&Jerry to Floor position");
-                telemetry.update();
-
-                newPos = FloorPosition;
-                assumingFloorPosition = false;
-            }
-        }
-
-        if(gamepad2.dpad_up) {
-            if (!assumingTopMidCone) {
-                timer_gp2_dpad_up.reset();
-                assumingTopMidCone = true;
-            } else if (timer_gp2_dpad_up.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-                telemetry.addLine("GP2_dpad_up triggered. Set Tom&Jerry to TopMidCone");
-                telemetry.update();
-
-                newPos = TopMidCone;
-                assumingTopMidCone = false;
-            }
-        }
-
-        if(gamepad2.dpad_down) {
-            if (!assumingMiddleCone) {
-                timer_gp2_dpad_down.reset();
-                assumingMiddleCone = true;
-            } else if (timer_gp2_dpad_down.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-                telemetry.addLine("GP2_dpad_up triggered. Set Tom&Jerry to MiddleCone");
-                telemetry.update();
-
-                newPos = MiddleCone;
-                assumingMiddleCone = false;
-            }
-        }
-
-        telemetry.addLine("newPos from Any button triggers: " + newPos);
-        telemetry.update();
-
-        if( newPos != currentSlidePos && newPos >=FloorPosition && newPos <= HighJunction ) {
-            Mavryk.setTargetPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE, newPos);
-            Mavryk.setRunMode(Mvrk_Robot.MvrkMotors.CAT_MOUSE, RUN_TO_POSITION);
-            if (newPos > currentSlidePos) {
-                Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, SlidePower_Up);
-            }
-            else if (newPos < currentSlidePos) {
-                Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, SlidePower_Down);
-            }
-            currentSlidePos = newPos;
-            telemetry.addLine("currPos updated to: "+ currentSlidePos);
-            telemetry.update();
-        }
-
-        telemetry.addLine("mvrkUpSlide_rue: Current Slide Position: "+ Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE));
-        telemetry.update();
+        return;
     }
 
+    public void MvrkXSlide() {
+
+        if (turret_restrictedRange[0] < Mavryk.Teacup.getPosition() && Mavryk.Teacup.getPosition() < turret_restrictedRange[1]) {
+            Mavryk.xSlideMinExtension = xSlideInPos;
+            Mavryk.xSlideMaxExtension = xSlideOutPos;
+        } else {
+            Mavryk.xSlideMinExtension = xSlideSafetyBarrier;
+            Mavryk.xSlideMaxExtension = xSlideOutPos;
+        }
+
+        if (gamepad1.dpad_up) {
+            if (xSlide_Position >= Mavryk.xSlideMaxExtension) {
+                xSlide_Position = Mavryk.xSlideMaxExtension;
+            } else {
+                xSlide_Position += xSlideIncrement;
+            }
+
+        }
+        if (gamepad1.dpad_down) {
+            if (xSlide_Position <= Mavryk.xSlideMinExtension) {
+                xSlide_Position = Mavryk.xSlideMaxExtension;
+            } else {
+                xSlide_Position -= xSlideIncrement;
+            }
+            Mavryk.setPosition(Mvrk_Robot.MvrkServos.FLAMETHROWER, xSlide_Position);
+        }
+    }
+
+    public void MvrkClaw() {
+        ServoTurn = gamepad2.right_trigger == 1f;
+
+
+        if (ServoTurn) {
+            Claw_Position = Mavryk.Claw_Open_Pos;
+        } else {
+            Claw_Position = Mavryk.Claw_Close_Pos;
+        }
+
+        Mavryk.setPosition(Mvrk_Robot.MvrkServos.CARTOON, Claw_Position);
+
+    }
+
+//        public void MvrkUpSlide_rtp(){
+//            //Gamepad2 left -> Decrease Speed
+//            if (gamepad2.dpad_left) {
+//                if (!changingSlideSpeed) {
+//                    timer_gp2_dpad_left.reset();
+//                    changingSlideSpeed = true;
+//                } else if (timer_gp2_dpad_left.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+//                    if (Mvrk_Robot.UpAdjust <= 1) {
+//                        Mvrk_Robot.UpAdjust = 1;
+//                    } else {
+//                        Mvrk_Robot.UpAdjust -= 1;
+//                    }
+//                    telemetry.addLine("Current Slide Speed: " + Mvrk_Robot.UpAdjust);
+//                    telemetry.update();
+//                    changingSlideSpeed = false;
+//                }
+//            }
+//
+//            //Gamepad 2right -> Increase Speed
+//            if (gamepad2.dpad_right) {
+//                if (!changingSlideSpeed) {
+//                    timer_gp2_dpad_right.reset();
+//                    changingSlideSpeed = true;
+//                } else if (timer_gp2_dpad_right.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+//                    if (Mvrk_Robot.UpAdjust >= 10) {
+//                        Mvrk_Robot.UpAdjust = 10;
+//                    } else {
+//                        Mvrk_Robot.UpAdjust += 1;
+//                    }
+//                    telemetry.addLine("Current Slide Speed: " + Mvrk_Robot.UpAdjust);
+//                    telemetry.update();
+//                    changingSlideSpeed = false;
+//                }
+//            }
+//
+//            int newPos = currentSlidePos + (int) (-gamepad2.left_stick_y * ticks_stepSize);
+//            if (newPos >= HighJunction)
+//                newPos = HighJunction;
+//            else if (newPos <= FloorPosition)
+//                newPos = FloorPosition;
+//            telemetry.addLine("newPos calc from gamePad2.left_stick_y: " + newPos);
+//            telemetry.update();
+//
+//            if (gamepad2.y) {
+//                if (!assumingHighPosition) {
+//                    timer_gp2_buttonY.reset();
+//                    assumingHighPosition = true;
+//                } else if (timer_gp2_buttonY.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+//                    telemetry.addLine("GP2_Y triggered. Set Tom&Jerry to High position");
+//                    telemetry.update();
+//
+//                    newPos = HighJunction;
+//                    assumingHighPosition = false;
+//                }
+//            }
+//
+//            if (gamepad2.x) {
+//                if (!assumingMidPosition) {
+//                    timer_gp2_buttonX.reset();
+//                    assumingMidPosition = true;
+//                } else if (timer_gp2_buttonX.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+//                    telemetry.addLine("GP2_X triggered. Set Tom&Jerry to Mid position");
+//                    telemetry.update();
+//                    newPos = MidJunction;
+//                    assumingMidPosition = false;
+//                }
+//            }
+//
+//            if (gamepad2.a) {
+//                if (!assumingLowPosition) {
+//                    timer_gp2_buttonY.reset();
+//                    assumingLowPosition = true;
+//                } else if (timer_gp2_buttonA.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+//                    telemetry.addLine("GP2_A triggered. Set Tom&Jerry to Low position");
+//                    telemetry.update();
+//
+//                    newPos = LowJunction;
+//                    assumingLowPosition = false;
+//                }
+//            }
+//
+//            if (gamepad2.b) {
+//                if (!assumingFloorPosition) {
+//                    timer_gp2_buttonB.reset();
+//                    assumingFloorPosition = true;
+//                } else if (timer_gp2_buttonB.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+//                    telemetry.addLine("GP2_B triggered. Set Tom&Jerry to Floor position");
+//                    telemetry.update();
+//
+//                    newPos = FloorPosition;
+//                    assumingFloorPosition = false;
+//                }
+//            }
+//
+//            if (gamepad2.dpad_up) {
+//                if (!assumingTopMidCone) {
+//                    timer_gp2_dpad_up.reset();
+//                    assumingTopMidCone = true;
+//                } else if (timer_gp2_dpad_up.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+//                    telemetry.addLine("GP2_dpad_up triggered. Set Tom&Jerry to TopMidCone");
+//                    telemetry.update();
+//
+//                    newPos = TopMidCone;
+//                    assumingTopMidCone = false;
+//                }
+//            }
+//
+//            if (gamepad2.dpad_down) {
+//                if (!assumingMiddleCone) {
+//                    timer_gp2_dpad_down.reset();
+//                    assumingMiddleCone = true;
+//                } else if (timer_gp2_dpad_down.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+//                    telemetry.addLine("GP2_dpad_up triggered. Set Tom&Jerry to MiddleCone");
+//                    telemetry.update();
+//
+//                    newPos = MiddleCone;
+//                    assumingMiddleCone = false;
+//                }
+//            }
+//
+//            telemetry.addLine("newPos from Any button triggers: " + newPos);
+//            telemetry.update();
+//
+//            if (newPos != currentSlidePos && newPos >= FloorPosition && newPos <= HighJunction) {
+//                Mavryk.setTargetPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE, newPos);
+//                Mavryk.setRunMode(Mvrk_Robot.MvrkMotors.CAT_MOUSE, RUN_TO_POSITION);
+//                if (newPos > currentSlidePos) {
+//                    Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, SlidePower_Up);
+//                } else if (newPos < currentSlidePos) {
+//                    Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, SlidePower_Down);
+//                }
+//                currentSlidePos = newPos;
+//                telemetry.addLine("currPos updated to: " + currentSlidePos);
+//                telemetry.update();
+//            }
+//
+//            telemetry.addLine("mvrkUpSlide_rue: Current Slide Position: " + Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE));
+//            telemetry.update();
+//        }
+//
+    public void MrvkTurret(){
+        if (Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE) >= slideHeightSafetyBarrier || Mavryk.FlameThrower.getPosition() >= xSlideSafetyBarrier) {
+            turret_Range[0] = turret_fullRange[0];
+            turret_Range[1] = turret_fullRange[1];
+        } else {
+            turret_Range[0] = turret_restrictedRange[0];
+            turret_Range[1] = turret_restrictedRange[1];
+        }
+
+        if (gamepad2.dpad_left) {
+            if (turret_Position >= turret_Range[1]) {
+                turret_Position = turret_Range[1];
+            } else {
+                turret_Position += turretIncrement;
+            }
+
+        }
+        if (gamepad2.dpad_right) {
+            if (turret_Position <= turret_Range[0]) {
+                turret_Position = turret_Range[0];
+            } else {
+                turret_Position -= turretIncrement;
+            }
+            Mavryk.setPosition(Mvrk_Robot.MvrkServos.TEACUP, turret_Position);
+        }
+
+    }
 }
+
 
 
 

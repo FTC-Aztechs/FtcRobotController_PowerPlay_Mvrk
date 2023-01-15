@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.HighJunction;
+
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class MvrkPIDController {
     public static double Kp;
     public static double Ki;
     public static double Kd;
+    public static double Kg;
     double lastError = 0;
     double integral = 0;
     boolean angleWrap = false;
@@ -18,16 +21,18 @@ public class MvrkPIDController {
      * @param Ki integral gain
      * @param Kd derivative gain
      */
-    public MvrkPIDController(double Kp, double Ki, double Kd) {
+    public MvrkPIDController(double Kp, double Ki, double Kd, double Kg) {
         this.Kp = Kp;
         this.Ki = Ki;
         this.Kd = Kd;
+        this.Kg = Kg;
     }
 
-    public MvrkPIDController(double Kp, double Ki, double Kd, boolean angleWrap) {
+    public MvrkPIDController(double Kp, double Ki, double Kd, double Kg, boolean angleWrap) {
         this.Kp = Kp;
         this.Ki = Ki;
         this.Kd = Kd;
+        this.Kg = Kg;
         this.angleWrap = angleWrap;
     }
 
@@ -50,7 +55,7 @@ public class MvrkPIDController {
         integral += error * timer.seconds();
         derivative = (error - lastError) / timer.seconds();
 
-        double output = (error * Kp) + (integral * Ki) + (derivative * Kd);
+        double output = ((error * Kp) + (integral * Ki) + (derivative * Kd) + Kg);
 
         timer.reset();
         lastError = error;

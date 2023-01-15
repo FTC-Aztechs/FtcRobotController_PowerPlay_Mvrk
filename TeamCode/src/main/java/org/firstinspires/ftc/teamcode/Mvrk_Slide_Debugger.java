@@ -93,7 +93,7 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
 //    public static double SlidePower_Up= 1;
 //    public static double SlidePower_Down = 0.5;
 //    public static int ticks_stepSize = 100;
-    public static int Mode = 4;
+    public static int Mode = 3;
 //    public static int BUTTON_TRIGGER_TIMER_MS = 500;
 
 
@@ -120,7 +120,7 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
     private boolean assumingLowPosition = false;
     private boolean assumingFloorPosition = false;
 
-    public static MvrkPIDController control = new MvrkPIDController(10, 0, 0.25);
+    public static MvrkPIDController control = new MvrkPIDController(10, 0, 0.25, 0);
 
     private int currPos = 0;
     private int newPos =0;
@@ -183,6 +183,7 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
             else if(Mode == 4) {
                 mvrkUpSlide_rtp();
             }
+            telemetry.addData("Ryk reporting voltage: ", Mavryk.getBatteryVoltage());
 
             //rykClaw();
         }
@@ -768,11 +769,11 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
 
         if( newPos != currPos && newPos >= FloorPosition && newPos <= HighJunction ) {
             double command = control.output(newPos, Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE));
-            Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, command/HighJunction);
+            Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, Math.min(command/HighJunction, 1.0) );
 
             currPos = Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE);
             telemetry.addData("currPos updated to: ", currPos);
-            telemetry.addData("command power:", command/HighJunction);
+            telemetry.addData("command power:", Math.min(command/HighJunction, 1.0));
             telemetry.update();
         }
 

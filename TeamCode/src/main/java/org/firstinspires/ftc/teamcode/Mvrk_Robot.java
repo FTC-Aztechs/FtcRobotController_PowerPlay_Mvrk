@@ -31,6 +31,8 @@ package org.firstinspires.ftc.teamcode;
 
 //import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -88,6 +90,8 @@ public class Mvrk_Robot
 
 //    public WebcamName eyeOfSauron = null;
     OpenCvWebcam Sauron = null;
+    public static BNO055IMU imu = null;
+
 
 //    public DigitalChannel Touche_Linac = null;
 //    public DigitalChannel Touche_Winch = null;
@@ -100,7 +104,80 @@ public class Mvrk_Robot
     public static double HandselClawLastPos = 0.0f;
     public static double GrabbelClawLastPos = 0.0f;
 
+    // speeds/times
     public static double UpAdjust = 10;
+    public static double SlidePower_Up= 1;
+    public static double SlidePower_Down = 0.5;
+    public static int ticks_stepSize = 13;
+    public static int BUTTON_TRIGGER_TIMER_MS = 500;
+
+    //auto cycles
+    public static int Red_cyclesToRun = 4; // Before 5 and 4
+    public static int Blue_cyclesToRun = 3;
+   
+    // Vuforia Class Members
+    public static OpenGLMatrix lastLocation   = null;
+    public static VuforiaLocalizer vuforia    = null;
+    public static VuforiaTrackables targets   = null ;
+    public static WebcamName webcamName       = null;
+    public static final String VUFORIA_KEY =
+            "AZRnab7/////AAABmTUhzFGJLEyEnSXEYWthkjhGRzu8klNOmOa9WEHaryl9AZCo2bZwq/rtvx83YRIgV60/Jy/2aivoXaHNzwi7dEMGoaglSVmdmzPF/zOPyiz27dDJgLVvIROD8ww7lYzL8eweJ+5PqLAavvX3wgrahkOxxOCNeKG9Tl0LkbS5R11ATXL7LLWeUv5FP1aDNgMZvb8P/u96OdOvD6D40Nf01Xf+KnkF5EXwNQKk1r7qd/hiv9h80gvBXMFqMkVgUyogwEnlK2BfmeUhGVm/99BiwwW65LpKSaLVPpW/6xqz9SyPgZ/L/vshbWgSkTB/KoERiV8MsW79RPUuQS6NTOLY32I/kukmsis3MFst5LP/d3gx";
+
+
+    public static boolean targetVisible       = false;
+
+    //dimensions for vuforia recognition
+    public static final float mmPerInch        = 25.4f;
+    public static final float mmTargetHeight   = 6 * mmPerInch;          // the height of the center of the target image above the floor
+    public static final float halfField        = 72 * mmPerInch;
+    public static final float halfTile         = 12 * mmPerInch;
+    public static final float oneAndHalfTile   = 36 * mmPerInch;
+    
+    //Pose2ds
+    public static MvrkPose2d Red_Start = new MvrkPose2d(35.5, 63.75, -90);
+    public static MvrkPose2d Red_Push_Signal = new MvrkPose2d(35.5,0, -90);
+    public static MvrkPose2d Red_Pickup = new MvrkPose2d(54.75,12, 0); // x = 54.25
+    public static MvrkPose2d Red_Inter_Pos = new MvrkPose2d(43.5,12, 0);
+    public static MvrkPose2d Red_Dropoff = new MvrkPose2d(36,11.5, -140); //  x = 35
+    public static MvrkPose2d Red_Park_Pos1 = new MvrkPose2d(59,12, 0);
+    public static MvrkPose2d Red_Park_Pos2 = new MvrkPose2d(36,12, 0);
+    public static MvrkPose2d Red_Park_Pos3 = new MvrkPose2d(13,12, 0);
+
+    public static MvrkPose2d Blue_Start = new MvrkPose2d(-35.5, 63.75, -90);
+    public static MvrkPose2d Blue_Push_Signal = new MvrkPose2d(-35.5,0, -90);
+    public static MvrkPose2d Blue_Pickup = new MvrkPose2d(-54.75,12, -180);
+    public static MvrkPose2d Blue_Inter_Pos = new MvrkPose2d(-43.5,12, -180);
+    public static MvrkPose2d Blue_Dropoff = new MvrkPose2d(-35.5,12, -40);
+    public static MvrkPose2d Blue_Park_Pos1 = new MvrkPose2d(-13,12, -180);
+    public static MvrkPose2d Blue_Park_Pos2 = new MvrkPose2d(-36,12, -180);
+    public static MvrkPose2d Blue_Park_Pos3 = new MvrkPose2d(-57.5,12, -180);;;
+
+
+
+    //claw variables
+    public static double Claw_Open_Pos = 0.5;
+    public static double Claw_Close_Pos = 0.35;
+
+//    public static double IntakeInsidePos = 1;
+//    public static double RightFunkyOutsidePos = 0.5;
+//    public static double LeftMonkeyOutsidePos = 0.4;
+
+    //Flamethrower variables
+    public static double xSlideOutPos = 0.75;
+    public static double xSlideDropPos = 0.5;
+    public static double xSlideInPos = 0.43;
+
+    double xSlideMaxExtension = xSlideOutPos;
+    double xSlideMinExtension = xSlideOutPos;
+
+
+
+    public static double xSlideIncrement = 0.1;
+
+        //minimum extension when the turret is past the restricted range, so it doesn't crash into anything
+    public static double xSlideSafetyBarrier = 0.6;
+
+    //Slide variables
     public static int HighJunction = 16300;
     public static int MidJunction = 12370 ;
     public static int LowJunction = 7900;
@@ -112,71 +189,35 @@ public class Mvrk_Robot
     public static int MiddleCone = 2830;
     public static int TopMidCone = 3130;
     public static int TopCone = 3730;
-    public static double SlidePower_Up= 1;
-    public static double SlidePower_Down = 0.5;
-    public static int ticks_stepSize = 13;
-    public static int BUTTON_TRIGGER_TIMER_MS = 500;
 
-    public static int cyclesToRun = 4;
+        //minimum height when the turret is past the restricted range, so it doesn't crash into anything
+    public static double slideHeightSafetyBarrier = 10000;
 
-    public static final String VUFORIA_KEY =
-            "AZRnab7/////AAABmTUhzFGJLEyEnSXEYWthkjhGRzu8klNOmOa9WEHaryl9AZCo2bZwq/rtvx83YRIgV60/Jy/2aivoXaHNzwi7dEMGoaglSVmdmzPF/zOPyiz27dDJgLVvIROD8ww7lYzL8eweJ+5PqLAavvX3wgrahkOxxOCNeKG9Tl0LkbS5R11ATXL7LLWeUv5FP1aDNgMZvb8P/u96OdOvD6D40Nf01Xf+KnkF5EXwNQKk1r7qd/hiv9h80gvBXMFqMkVgUyogwEnlK2BfmeUhGVm/99BiwwW65LpKSaLVPpW/6xqz9SyPgZ/L/vshbWgSkTB/KoERiV8MsW79RPUuQS6NTOLY32I/kukmsis3MFst5LP/d3gx";
+    //turret variables
+    public static double[] turret_Range = {0.0, 0.0};
+    public static double[] turret_fullRange = {0.0, 1.0};
+        //restricted range when slides/xSlide is not extended, to prevent the other stuff from crashing
+    public static double[] turret_restrictedRange = {0.0, 0.5};
 
-    // Since ImageTarget trackables use mm to specifiy their dimensions, we must use mm for all the physical dimension.
-    // We will define some constants and conversions here
-    public static final float mmPerInch        = 25.4f;
-    public static final float mmTargetHeight   = 6 * mmPerInch;          // the height of the center of the target image above the floor
-    public static final float halfField        = 72 * mmPerInch;
-    public static final float halfTile         = 12 * mmPerInch;
-    public static final float oneAndHalfTile   = 36 * mmPerInch;
+    public static double turretIncrement = 0.1;
 
-    // Class Members
-    public static OpenGLMatrix lastLocation   = null;
-    public static VuforiaLocalizer vuforia    = null;
-    public static VuforiaTrackables targets   = null ;
-    public static WebcamName webcamName       = null;
 
-    public static boolean targetVisible       = false;
 
-    public static MvrkPose2d Red_Start = new MvrkPose2d(35.5, 63.75, -90);
-    public static MvrkPose2d Red_Push_Signal = new MvrkPose2d(35.5,0, -90);
-    public static MvrkPose2d Red_Pickup = new MvrkPose2d(54.25,12, 0);
-    public static MvrkPose2d Red_Dropoff = new MvrkPose2d(35.5,12, -140);
-    public static MvrkPose2d Red_Park_Pos1 = new MvrkPose2d(57,12, 0);
-    public static MvrkPose2d Red_Park_Pos2 = new MvrkPose2d(36,12, 0);
-    public static MvrkPose2d Red_Park_Pos3 = new MvrkPose2d(13,12, 0);
 
-    public static MvrkPose2d Blue_Start = new MvrkPose2d(-35.5, 63.75, -90);
-    public static MvrkPose2d Blue_Push_Signal = new MvrkPose2d(-35.5,0, -90);
-    public static MvrkPose2d Blue_Pickup = new MvrkPose2d(-54.25,12, -180);
-    public static MvrkPose2d Blue_Dropoff = new MvrkPose2d(-35.5,12, -40);
-    public static MvrkPose2d Blue_Park_Pos1 = new MvrkPose2d(-13,12, -180);
-    public static MvrkPose2d Blue_Park_Pos2 = new MvrkPose2d(-36,12, -180);
-    public static MvrkPose2d Blue_Park_Pos3 = new MvrkPose2d(-57,12, -180);;
 
-    public static double Slide_Ticks_Per_Rev = 537.7; // From REV Robotics Core HEX
 
-    double dSlidePower = 1;
 
-    public static double Claw_Open_Pos = 0.5;
-    public static double Claw_Close_Pos = 0.35;
-
-    public static double IntakeInsidePos = 1;
-    public static double RightFunkyOutsidePos = 0.5;
-    public static double LeftMonkeyOutsidePos = 0.4;
-
-    public static double xSlideOutPos = 0.75;
-    public static double xSlideDropPos = 0.5;
-    public static double xSlideInPos = 0.43;
-
-    public static double auto_move_wait = 0.3; // before .5
-    public static double auto_drop_wait = 0; // before .5
-    public static double auto_pickup_wait = 0.2; // before .65
+    //waits
+    public static double auto_move_wait = 0; // before .5
+    public static double auto_drop_wait = 0.25; // before .5
+    public static double auto_pickup_wait = 0.1; // before .65
     public static double auto_half_raise_wait = 0.3; // before .5
     public static double auto_raise_wait = 0; // before 2
     public static double auto_extend_wait = 0; // before .8
     public static double auto_extend_half_wait = 0.3; // before .4
     public static double auto_retract_wait = 0; // before .25
+
+    //offset waits
 
     public static double PlSlideUpOffset = -1.5;
     public static double PlSlideDownOffset = -0.2;
@@ -185,6 +226,9 @@ public class Mvrk_Robot
 
     public static double CycleExtendFlamethrowerOffset = -0.5;
     public static double CycleRetractFlamethrowerOffset = -0.25;
+
+    public static Pose2d currentPose = new Pose2d();
+
 
 
     /* local OpMode members. */
@@ -240,6 +284,8 @@ public class Mvrk_Robot
 
         mecanumDrive = new SampleMecanumDrive(hwMap);
 //        eyeOfSauron = hwMap.get(WebcamName.class, "Sauron");
+        imu = hwMap.get(BNO055IMU.class, "imu");
+
 
 
     }
