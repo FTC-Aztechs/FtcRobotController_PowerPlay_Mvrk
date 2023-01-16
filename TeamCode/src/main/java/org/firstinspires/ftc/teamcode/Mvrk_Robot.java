@@ -133,10 +133,17 @@ public class Mvrk_Robot
     public static double GrabbelClawLastPos = 0.0f;
 
     // speeds/times
+
     public static double UpAdjust = 10;
+    public static double speedAdjust = 5;
+    public static double bumperSpeedAdjust = 9;
+    public static double dPadSpeedAdjust = 7;
+
     public static double SlidePower_Up= 1;
-    public static double SlidePower_Down = 0.5;
-    public static int ticks_stepSize = 13;
+    public static double SlidePower_Down = -0.01;
+    public static double SlidePower = 0.5;
+
+    public static int ticks_stepSize = 2000;
     public static int BUTTON_TRIGGER_TIMER_MS = 500;
 
     //auto cycles
@@ -196,7 +203,7 @@ public class Mvrk_Robot
     public static double xSlideInPos = 0.43;
 
     double xSlideMaxExtension = xSlideOutPos;
-    double xSlideMinExtension = xSlideOutPos;
+    double xSlideMinExtension = xSlideInPos;
 
 
 
@@ -206,7 +213,7 @@ public class Mvrk_Robot
     public static double xSlideSafetyBarrier = 0.6;
 
     //Slide variables
-    public static int HighJunction = 16300;
+    public static int HighJunction = 17315;
     public static int MidJunction = 12370 ;
     public static int LowJunction = 7900;
     public static int GroundJunction = 1940;
@@ -219,13 +226,21 @@ public class Mvrk_Robot
     public static int TopCone = 3730;
 
         //minimum height when the turret is past the restricted range, so it doesn't crash into anything
-    public static double slideHeightSafetyBarrier = 10000;
+    public static int slideHeightSafetyBarrier = 10000;
+    public static int slideHeightMinExtension = FloorPosition;
+    public static int slideHeightMaxExtension = HighJunction;
+
 
     //turret variables
     public static double[] turret_Range = {0.0, 0.0};
     public static double[] turret_fullRange = {0.0, 1.0};
         //restricted range when slides/xSlide is not extended, to prevent the other stuff from crashing
     public static double[] turret_restrictedRange = {0.0, 0.5};
+
+    public static double turretUp = 0.1;
+    public static double turretDown = 0.1;
+    public static double turretLeft= 0.1;
+    public static double turretRight = 0.1;
 
     public static double turretIncrement = 0.1;
 
@@ -263,7 +278,7 @@ public class Mvrk_Robot
     HardwareMap hwMap           =  null;
     private ElapsedTime period  = new ElapsedTime();
     SampleMecanumDrive mecanumDrive;
-    public static MvrkPIDController control = new MvrkPIDController(10, 0, 0.25, 0);
+    public static MvrkPIDController control = new MvrkPIDController(10, 0, 0.25, 2000);
 
 
     /* Constructor */
@@ -305,8 +320,8 @@ public class Mvrk_Robot
         lower_left.setDirection(DcMotor.Direction.REVERSE); //- used to be
         lower_right.setDirection(DcMotor.Direction.FORWARD); //+ used to be
 
-        Jerry.setDirection(DcMotor.Direction.FORWARD); //- used to be
-        Tom.setDirection(DcMotor.Direction.FORWARD); //+ used to be
+        Jerry.setDirection(DcMotor.Direction.REVERSE); //- used to be
+        Tom.setDirection(DcMotor.Direction.REVERSE); //+ used to be
 
 
         Looney.setDirection(Servo.Direction.FORWARD);

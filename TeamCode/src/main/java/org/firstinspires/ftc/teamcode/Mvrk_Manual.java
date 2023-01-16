@@ -35,9 +35,24 @@ import static com.qualcomm.robotcore.util.ElapsedTime.Resolution.MILLISECONDS;
 
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.BUTTON_TRIGGER_TIMER_MS;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.FloorPosition;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.HighJunction;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.LowJunction;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.MidJunction;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.SlidePower_Down;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.SlidePower_Up;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.bumperSpeedAdjust;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.dPadSpeedAdjust;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.imu;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.slideHeightMaxExtension;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.slideHeightMinExtension;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.slideHeightSafetyBarrier;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.speedAdjust;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.ticks_stepSize;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.turretDown;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.turretIncrement;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.turretLeft;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.turretRight;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.turretUp;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.turret_Range;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.turret_fullRange;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.turret_restrictedRange;
@@ -75,10 +90,11 @@ public class Mvrk_Manual extends LinearOpMode {
 //    static final double INCREMENT = 0.1;     // amount to slew servo each CYCLE_MS cycle
 //    static final double[] RANGE_FULL = {0.0, 1.0};
 
-    public static double speedAdjust = 5;
-    public static double UpAdjust = 10;
     private boolean changingWheelSpeed = false;
     private boolean changingSlideSpeed = false;
+
+    private int currPos = 0;
+    private int newPos = currPos;
 
 
     public static int Mode = 1;
@@ -118,21 +134,22 @@ public class Mvrk_Manual extends LinearOpMode {
 
     private static ElapsedTime timer_gp1_left_bumper = new ElapsedTime(MILLISECONDS);
 
-
+    //slide button booleans
     private boolean assumingHighPosition = false;
     private boolean assumingMidPosition = false;
     private boolean assumingLowPosition = false;
     private boolean assumingFloorPosition = false;
     private boolean assumingTopMidCone = false;
     private boolean assumingMiddleCone = false;
-    private int currentSlidePos = FloorPosition;
+
+
+    //drive booleans
     private boolean changing_drive_mode = false;
     private boolean fieldCentric = true;
 
 
     FtcDashboard mvrkDashboard;
-    private double bumperSpeedAdjust = 8;
-    private double dPadSpeedAdjust = 5;
+
 
     @Override
     public void runOpMode() {
@@ -145,7 +162,7 @@ public class Mvrk_Manual extends LinearOpMode {
 
 
         while (opModeIsActive()) {
-            //MvrkUpSlide_rtp();
+            MvrkUpSlide_Pid();
             MvrkClaw();
 //            MvrkIntake();
             MvrkXSlide();
@@ -178,6 +195,13 @@ public class Mvrk_Manual extends LinearOpMode {
         FtcDashboard Dash = mvrkDashboard;
 
         Claw_Position = Mavryk.Claw_Close_Pos;
+        Mavryk.Looney.setPosition(Claw_Position);
+
+        xSlide_Position = xSlideInPos;
+        Mavryk.FlameThrower.setPosition(xSlide_Position);
+
+        turret_Position = turretUp;
+        Mavryk.Teacup.setPosition(turret_Position);
 
         //Current_Intake_Position = IntakeInsidePos;
 
@@ -257,6 +281,7 @@ public class Mvrk_Manual extends LinearOpMode {
 //    }
 
     public void MvrkManualDrive() {
+        // changing the speed
         if (gamepad1.dpad_left) {
             if (!changingWheelSpeed) {
                 timer_gp1_dpad_left.reset();
@@ -290,12 +315,14 @@ public class Mvrk_Manual extends LinearOpMode {
             }
         }
 
+        //bumper speed boost mode
         if (gamepad1.right_bumper) {
             speedAdjust = bumperSpeedAdjust;
         } else {
             speedAdjust = dPadSpeedAdjust;
         }
 
+        // actually making the robot move
         float turnDir = gamepad1.right_stick_x;
         float moveDir = gamepad1.left_stick_y;
         float strafeDir = gamepad1.left_stick_x;
@@ -375,147 +402,134 @@ public class Mvrk_Manual extends LinearOpMode {
 
     }
 
-//        public void MvrkUpSlide_rtp(){
-//            //Gamepad2 left -> Decrease Speed
-//            if (gamepad2.dpad_left) {
-//                if (!changingSlideSpeed) {
-//                    timer_gp2_dpad_left.reset();
-//                    changingSlideSpeed = true;
-//                } else if (timer_gp2_dpad_left.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-//                    if (Mvrk_Robot.UpAdjust <= 1) {
-//                        Mvrk_Robot.UpAdjust = 1;
-//                    } else {
-//                        Mvrk_Robot.UpAdjust -= 1;
-//                    }
-//                    telemetry.addLine("Current Slide Speed: " + Mvrk_Robot.UpAdjust);
-//                    telemetry.update();
-//                    changingSlideSpeed = false;
-//                }
-//            }
-//
-//            //Gamepad 2right -> Increase Speed
-//            if (gamepad2.dpad_right) {
-//                if (!changingSlideSpeed) {
-//                    timer_gp2_dpad_right.reset();
-//                    changingSlideSpeed = true;
-//                } else if (timer_gp2_dpad_right.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-//                    if (Mvrk_Robot.UpAdjust >= 10) {
-//                        Mvrk_Robot.UpAdjust = 10;
-//                    } else {
-//                        Mvrk_Robot.UpAdjust += 1;
-//                    }
-//                    telemetry.addLine("Current Slide Speed: " + Mvrk_Robot.UpAdjust);
-//                    telemetry.update();
-//                    changingSlideSpeed = false;
-//                }
-//            }
-//
-//            int newPos = currentSlidePos + (int) (-gamepad2.left_stick_y * ticks_stepSize);
-//            if (newPos >= HighJunction)
-//                newPos = HighJunction;
-//            else if (newPos <= FloorPosition)
-//                newPos = FloorPosition;
-//            telemetry.addLine("newPos calc from gamePad2.left_stick_y: " + newPos);
-//            telemetry.update();
-//
-//            if (gamepad2.y) {
-//                if (!assumingHighPosition) {
-//                    timer_gp2_buttonY.reset();
-//                    assumingHighPosition = true;
-//                } else if (timer_gp2_buttonY.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-//                    telemetry.addLine("GP2_Y triggered. Set Tom&Jerry to High position");
-//                    telemetry.update();
-//
-//                    newPos = HighJunction;
-//                    assumingHighPosition = false;
-//                }
-//            }
-//
-//            if (gamepad2.x) {
-//                if (!assumingMidPosition) {
-//                    timer_gp2_buttonX.reset();
-//                    assumingMidPosition = true;
-//                } else if (timer_gp2_buttonX.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-//                    telemetry.addLine("GP2_X triggered. Set Tom&Jerry to Mid position");
-//                    telemetry.update();
-//                    newPos = MidJunction;
-//                    assumingMidPosition = false;
-//                }
-//            }
-//
-//            if (gamepad2.a) {
-//                if (!assumingLowPosition) {
-//                    timer_gp2_buttonY.reset();
-//                    assumingLowPosition = true;
-//                } else if (timer_gp2_buttonA.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-//                    telemetry.addLine("GP2_A triggered. Set Tom&Jerry to Low position");
-//                    telemetry.update();
-//
-//                    newPos = LowJunction;
-//                    assumingLowPosition = false;
-//                }
-//            }
-//
-//            if (gamepad2.b) {
-//                if (!assumingFloorPosition) {
-//                    timer_gp2_buttonB.reset();
-//                    assumingFloorPosition = true;
-//                } else if (timer_gp2_buttonB.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-//                    telemetry.addLine("GP2_B triggered. Set Tom&Jerry to Floor position");
-//                    telemetry.update();
-//
-//                    newPos = FloorPosition;
-//                    assumingFloorPosition = false;
-//                }
-//            }
-//
-//            if (gamepad2.dpad_up) {
-//                if (!assumingTopMidCone) {
-//                    timer_gp2_dpad_up.reset();
-//                    assumingTopMidCone = true;
-//                } else if (timer_gp2_dpad_up.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-//                    telemetry.addLine("GP2_dpad_up triggered. Set Tom&Jerry to TopMidCone");
-//                    telemetry.update();
-//
-//                    newPos = TopMidCone;
-//                    assumingTopMidCone = false;
-//                }
-//            }
-//
-//            if (gamepad2.dpad_down) {
-//                if (!assumingMiddleCone) {
-//                    timer_gp2_dpad_down.reset();
-//                    assumingMiddleCone = true;
-//                } else if (timer_gp2_dpad_down.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
-//                    telemetry.addLine("GP2_dpad_up triggered. Set Tom&Jerry to MiddleCone");
-//                    telemetry.update();
-//
-//                    newPos = MiddleCone;
-//                    assumingMiddleCone = false;
-//                }
-//            }
-//
-//            telemetry.addLine("newPos from Any button triggers: " + newPos);
-//            telemetry.update();
-//
-//            if (newPos != currentSlidePos && newPos >= FloorPosition && newPos <= HighJunction) {
-//                Mavryk.setTargetPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE, newPos);
-//                Mavryk.setRunMode(Mvrk_Robot.MvrkMotors.CAT_MOUSE, RUN_TO_POSITION);
-//                if (newPos > currentSlidePos) {
-//                    Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, SlidePower_Up);
-//                } else if (newPos < currentSlidePos) {
-//                    Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, SlidePower_Down);
-//                }
-//                currentSlidePos = newPos;
-//                telemetry.addLine("currPos updated to: " + currentSlidePos);
-//                telemetry.update();
-//            }
-//
-//            telemetry.addLine("mvrkUpSlide_rue: Current Slide Position: " + Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE));
-//            telemetry.update();
-//        }
-//
+    public void MvrkUpSlide_Pid() {
+        //restrict range and provide warnings
+        if (turret_restrictedRange[0] < Mavryk.Teacup.getPosition() && Mavryk.Teacup.getPosition() < turret_restrictedRange[1]) {
+            Mavryk.slideHeightMinExtension = FloorPosition;
+            Mavryk.slideHeightMaxExtension = HighJunction;
+            telemetry.addData("Vertical Slides", "Full range is ready to go!");
+        } else {
+            Mavryk.slideHeightMinExtension = slideHeightSafetyBarrier;
+            Mavryk.slideHeightMaxExtension = HighJunction;
+            telemetry.addData("Vertical Slides", "Full retraction is locked. Turn the turret forward to unlock full range!");
+        }
+
+        //joystick control
+        newPos = newPos + (int) (-gamepad2.left_stick_y * ticks_stepSize);
+        if(newPos >= slideHeightMaxExtension)
+            newPos = slideHeightMaxExtension;
+        else if (newPos <= slideHeightMinExtension)
+            newPos = slideHeightMinExtension;
+        telemetry.addData("newPos", newPos);
+        telemetry.update();
+
+        //button control
+        if (gamepad2.y) {
+            if (!assumingHighPosition) {
+                timer_gp2_buttonY.reset();
+                assumingHighPosition = true;
+            } else if (timer_gp2_buttonY.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+
+                if(slideHeightMinExtension == slideHeightSafetyBarrier && HighJunction < slideHeightSafetyBarrier) {
+                    telemetry.addData("Vertical Slides", "Move to High Junction locked. Turn the turret forward to unlock full range!");
+                    telemetry.update();
+
+                    assumingHighPosition = false;
+                } else {
+
+                    telemetry.addLine("GP2_Y triggered. Set Tom&Jerry to High position");
+                    telemetry.update();
+
+                    newPos = HighJunction;
+                    assumingHighPosition = false;
+                }
+            }
+        }
+
+        if (gamepad2.x) {
+            if (!assumingMidPosition) {
+                timer_gp2_buttonX.reset();
+                assumingMidPosition = true;
+            } else if (timer_gp2_buttonX.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+
+                if(slideHeightMinExtension == slideHeightSafetyBarrier && MidJunction < slideHeightSafetyBarrier) {
+                    telemetry.addData("Vertical Slides", "Move to MidJunction is locked. Turn the turret forward to unlock full range!");
+                    telemetry.update();
+
+                    assumingMidPosition = false;
+                } else {
+                    telemetry.addLine("GP2_X triggered. Set Tom&Jerry to Mid position");
+                    telemetry.update();
+
+                    newPos = MidJunction;
+                    assumingHighPosition = false;
+                }
+            }
+        }
+
+        if(gamepad2.a) {
+            if (!assumingLowPosition) {
+                timer_gp2_buttonY.reset();
+                assumingLowPosition = true;
+            } else if (timer_gp2_buttonA.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+
+                if(slideHeightMinExtension == slideHeightSafetyBarrier && LowJunction < slideHeightSafetyBarrier) {
+                    telemetry.addData("Vertical Slides", "Move to Low Junction is locked. Turn the turret forward to unlock full range!");
+                    telemetry.update();
+                    assumingLowPosition = false;
+                } else {
+                    telemetry.addLine("GP2_A triggered. Set Tom&Jerry to Low position");
+                    telemetry.update();
+                    newPos = LowJunction;
+                    assumingLowPosition = false;
+                }
+
+
+            }
+        }
+
+        if (gamepad2.b) {
+            if (!assumingFloorPosition) {
+                timer_gp2_buttonB.reset();
+                assumingFloorPosition = true;
+            } else if (timer_gp2_buttonB.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
+
+                if(slideHeightMinExtension == slideHeightSafetyBarrier && FloorPosition < slideHeightSafetyBarrier) {
+                    telemetry.addData("Vertical Slides", "Move to Floor Position is locked. Turn the turret forward to unlock full range!");
+                    telemetry.update();
+
+                    assumingFloorPosition = false;
+                } else {
+                    telemetry.addLine("GP2_B triggered. Set Tom&Jerry to Floor position");
+                    telemetry.update();
+
+                    newPos = FloorPosition;
+                    assumingFloorPosition = false;
+                }
+            }
+        }
+
+        telemetry.addData("newPos", newPos);
+        telemetry.update();
+
+        //actually using the pid to move the slides
+        if( newPos != currPos && newPos >= slideHeightMinExtension && newPos <= slideHeightMaxExtension ) {
+            double command = Mvrk_Robot.control.output(newPos, Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE));
+            if(newPos < currPos)
+                Mvrk_Robot.SlidePower = Math.max(command/HighJunction, SlidePower_Down);
+            else
+                Mvrk_Robot.SlidePower = Math.min(command/HighJunction, SlidePower_Up);
+
+            Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE,Mvrk_Robot.SlidePower);
+            currPos = Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE);
+        }
+
+        telemetry.addData("rykUpSlide_pid: Current Slide Position: ", Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE));
+        telemetry.update();
+    }
     public void MrvkTurret(){
+
+        //restricting the range and providing warnings
         if (Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE) >= slideHeightSafetyBarrier || Mavryk.FlameThrower.getPosition() >= xSlideSafetyBarrier) {
             turret_Range[0] = turret_fullRange[0];
             turret_Range[1] = turret_fullRange[1];
@@ -531,22 +545,50 @@ public class Mvrk_Manual extends LinearOpMode {
             telemetry.update();
         }
 
-        if (gamepad2.dpad_left) {
-            if (turret_Position >= turret_Range[1]) {
-                turret_Position = turret_Range[1];
-            } else {
-                turret_Position += turretIncrement;
-            }
+        //joystick control
+        turret_Position += turretIncrement * gamepad1.right_stick_x;
+        if (turret_Position >= turret_Range[1]) {
+            turret_Position = turret_Range[1];
+        } else if (turret_Position <= turret_Range[0]) {
+            turret_Position = turret_Range[0];
+        }
 
+        //dPad control
+        if (gamepad2.dpad_left) {
+                if(turretLeft >= turret_Range[0] && turretLeft <= turret_Range[1]) {
+                    turret_Position = turretLeft;
+                    telemetry.addLine("dPad left triggered. Set turret to left");
+                    telemetry.update();
+                }
         }
+
         if (gamepad2.dpad_right) {
-            if (turret_Position <= turret_Range[0]) {
-                turret_Position = turret_Range[0];
-            } else {
-                turret_Position -= turretIncrement;
+            if(turretRight >= turret_Range[0] && turretRight <= turret_Range[1]) {
+                turret_Position = turretRight;
+                telemetry.addLine("dPad right triggered. Set turret to right");
+                telemetry.update();
             }
-            Mavryk.setPosition(Mvrk_Robot.MvrkServos.TEACUP, turret_Position);
         }
+
+        if (gamepad2.dpad_up) {
+            if(turretUp >= turret_Range[0] && turretUp <= turret_Range[1]) {
+                turret_Position = turretUp;
+                telemetry.addLine("dPad up triggered. Set turret to forward");
+                telemetry.update();
+            }
+        }
+
+        if (gamepad2.dpad_down) {
+            if(turretDown >= turret_Range[0] && turretDown <= turret_Range[1]) {
+                turret_Position = turretDown;
+                telemetry.addLine("dPad down triggered. Set turret to down");
+                telemetry.update();
+            }
+        }
+
+        //actually setting the position
+        Mavryk.setPosition(Mvrk_Robot.MvrkServos.TEACUP, turret_Position);
+
     }
 }
 

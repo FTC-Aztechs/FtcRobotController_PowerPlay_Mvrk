@@ -6,6 +6,7 @@ import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENC
 import static com.qualcomm.robotcore.util.ElapsedTime.Resolution.MILLISECONDS;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.BottomCone;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.BottomMidCone;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Claw_Close_Pos;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Claw_Open_Pos;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.CycleExtendFlamethrowerOffset;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.CycleRetractFlamethrowerOffset;
@@ -176,7 +177,7 @@ public class Mvrk_Autonomous extends LinearOpMode {
         double volts = getBatteryVoltage();
         telemetry.addLine(String.format("%d. Battery voltage: %.1f volts", iTeleCt++, volts));
 
-        Mavryk.setPosition(CARTOON, Mavryk.Claw_Close_Pos);
+        Mavryk.setPosition(CARTOON, Claw_Close_Pos);
 //        Mavryk.setPosition(FUNKY_MONKEY, IntakeInsidePos);
         Mavryk.setPosition(FLAMETHROWER, xSlideInPos);
 
@@ -416,9 +417,13 @@ public class Mvrk_Autonomous extends LinearOpMode {
 
             //setPower
             if( newSlidePos != currentSlidePos && newSlidePos >= FloorPosition && newSlidePos <= HighJunction ) {
-                double command = control.output(newSlidePos, Mavryk.getCurrentPosition(CAT_MOUSE));
-                Mavryk.setPower(CAT_MOUSE, Math.min(command/HighJunction, 1.0) );
-                currentSlidePos = Mavryk.getCurrentPosition(CAT_MOUSE);
+                double command = Mvrk_Robot.control.output(newSlidePos, Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE));
+                if(newSlidePos < currentSlidePos)
+                    Mvrk_Robot.SlidePower = Math.max(command/HighJunction, SlidePower_Down);
+                else
+                    Mvrk_Robot.SlidePower = Math.min(command/HighJunction, SlidePower_Up);
+                Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE,Mvrk_Robot.SlidePower);
+                currentSlidePos = Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE);
             }
 
             telemetry.addData("Current Slide Position: ", currentSlidePos);
@@ -574,7 +579,7 @@ public class Mvrk_Autonomous extends LinearOpMode {
                 })
                 .waitSeconds(auto_extend_half_wait)
                 .addTemporalMarker(() -> {
-                    Mavryk.setPosition(CARTOON, Claw_Open_Pos);
+                    Mavryk.setPosition(CARTOON, Claw_Close_Pos);
                 })
                 .waitSeconds(auto_pickup_wait)
                 .addTemporalMarker(() -> {

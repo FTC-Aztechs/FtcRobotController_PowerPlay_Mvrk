@@ -707,7 +707,7 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
             newPos = HighJunction;
         else if (newPos <= FloorPosition)
             newPos = FloorPosition;
-        telemetry.addData("newPos calc from gamePad2.left_stick_y: ", newPos);
+        telemetry.addData("newPos", newPos);
         telemetry.update();
 
         if (gamepad2.y) {
@@ -761,16 +761,20 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
             }
         }
 
-        telemetry.addData("newPos from Any button triggers: ", newPos);
+        telemetry.addData("newPos", newPos);
         telemetry.update();
 
         if( newPos != currPos && newPos >= FloorPosition && newPos <= HighJunction ) {
             double command = Mvrk_Robot.control.output(newPos, Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE));
-            Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE, Math.min(command/HighJunction, 1.0) );
+            if(newPos < currPos)
+                Mvrk_Robot.SlidePower = Math.max(command/HighJunction, SlidePower_Down);
+            else
+                Mvrk_Robot.SlidePower = Math.min(command/HighJunction, SlidePower_Up);
 
+            Mavryk.setPower(Mvrk_Robot.MvrkMotors.CAT_MOUSE,Mvrk_Robot.SlidePower);
             currPos = Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE);
             telemetry.addData("currPos updated to: ", currPos);
-            telemetry.addData("command power:", Math.min(command/HighJunction, 1.0));
+            telemetry.addData("command power:", Mvrk_Robot.SlidePower);
             telemetry.update();
         }
 

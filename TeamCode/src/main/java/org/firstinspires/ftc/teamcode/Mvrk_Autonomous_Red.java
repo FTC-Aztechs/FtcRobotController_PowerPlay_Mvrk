@@ -15,6 +15,7 @@ import static org.firstinspires.ftc.teamcode.Mvrk_Robot.FloorPosition;
 //import static org.firstinspires.ftc.teamcode.Mvrk_Robot.IntakeInsidePos;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.MiddleCone;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.DropoffExtendFlamethrowerOffset;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.MvrkServos.CARTOON;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.PlSlideDownOffset;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.PlSlideUpOffset;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Red_Dropoff;
@@ -458,7 +459,7 @@ public class Mvrk_Autonomous_Red extends LinearOpMode {
                 })
                 .waitSeconds(auto_extend_half_wait)
                 .addTemporalMarker(() -> {
-//                    Mavryk.setPosition(TWIN_TOWERS, Claw_Close_Pos);
+                    Mavryk.setPosition(CARTOON, Claw_Close_Pos);
                 })
                 .waitSeconds(auto_pickup_wait)
                 .addTemporalMarker(() -> {
