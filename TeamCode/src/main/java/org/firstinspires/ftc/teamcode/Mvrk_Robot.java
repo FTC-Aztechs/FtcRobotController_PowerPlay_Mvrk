@@ -73,6 +73,34 @@ public class Mvrk_Robot
         TEACUP
     }
 
+    enum AutoState
+    {
+        PRELOAD,
+        TOPCONE,
+        TOPMIDCONE,
+        MIDCONE,
+        BOTTOMMIDCONE,
+        BOTTOMCONE,
+        PARK,
+        IDLE
+    }
+
+    enum SlideState
+    {
+        FLOOR,
+        GROUND,
+        LOW,
+        MID,
+        HIGH,
+        TOPCONE,
+        TOPMIDCONE,
+        MIDCONE,
+        BOTTOMMIDCONE,
+        BOTTOMCONE,
+        DROPOFF
+
+    }
+
 
     /* Public OpMode members. */
     public DcMotor upper_right = null;
@@ -235,6 +263,8 @@ public class Mvrk_Robot
     HardwareMap hwMap           =  null;
     private ElapsedTime period  = new ElapsedTime();
     SampleMecanumDrive mecanumDrive;
+    public static MvrkPIDController control = new MvrkPIDController(10, 0, 0.25, 0);
+
 
     /* Constructor */
     public Mvrk_Robot(){

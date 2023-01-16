@@ -336,9 +336,11 @@ public class Mvrk_Manual extends LinearOpMode {
         if (turret_restrictedRange[0] < Mavryk.Teacup.getPosition() && Mavryk.Teacup.getPosition() < turret_restrictedRange[1]) {
             Mavryk.xSlideMinExtension = xSlideInPos;
             Mavryk.xSlideMaxExtension = xSlideOutPos;
+            telemetry.addData("Horizontal Slides", "Full range is ready to go!");
         } else {
             Mavryk.xSlideMinExtension = xSlideSafetyBarrier;
             Mavryk.xSlideMaxExtension = xSlideOutPos;
+            telemetry.addData("Horizontal Slides", "Full retraction is locked. Turn the turret forward to unlock full range!");
         }
 
         if (gamepad1.dpad_up) {
@@ -517,9 +519,16 @@ public class Mvrk_Manual extends LinearOpMode {
         if (Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE) >= slideHeightSafetyBarrier || Mavryk.FlameThrower.getPosition() >= xSlideSafetyBarrier) {
             turret_Range[0] = turret_fullRange[0];
             turret_Range[1] = turret_fullRange[1];
+            telemetry.addData("Turret", "Full rotation is ready to go!");
         } else {
             turret_Range[0] = turret_restrictedRange[0];
             turret_Range[1] = turret_restrictedRange[1];
+            if(Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE) >= slideHeightSafetyBarrier){
+                telemetry.addData("Turret", "Full rotation is locked. Raise the slides to unlock full range!");
+            }{
+                telemetry.addData("Turret", "Full rotation is locked. Extend the horizontal slides to unlock full range!");
+            }
+            telemetry.update();
         }
 
         if (gamepad2.dpad_left) {
@@ -538,16 +547,6 @@ public class Mvrk_Manual extends LinearOpMode {
             }
             Mavryk.setPosition(Mvrk_Robot.MvrkServos.TEACUP, turret_Position);
         }
-
     }
 }
-
-
-
-
-
-
-
-
-
 
