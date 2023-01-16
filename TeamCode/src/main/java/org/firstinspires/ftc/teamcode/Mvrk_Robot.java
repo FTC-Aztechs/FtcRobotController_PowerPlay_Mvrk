@@ -136,14 +136,15 @@ public class Mvrk_Robot
 
     public static double UpAdjust = 10;
     public static double speedAdjust = 5;
-    public static double bumperSpeedAdjust = 9;
-    public static double dPadSpeedAdjust = 7;
+    public static double bumperSpeedAdjust = 8;
+    public static double dPadSpeedAdjust = 5;
 
     public static double SlidePower_Up= 1;
     public static double SlidePower_Down = -0.01;
     public static double SlidePower = 0.5;
+    public static int slideTicks_stepSize = 800;
 
-    public static int ticks_stepSize = 2000;
+
     public static int BUTTON_TRIGGER_TIMER_MS = 500;
 
     //auto cycles
@@ -190,27 +191,24 @@ public class Mvrk_Robot
 
 
     //claw variables
-    public static double Claw_Open_Pos = 0.5;
-    public static double Claw_Close_Pos = 0.35;
+    public static double Claw_Open_Pos = 0.435;
+    public static double Claw_Close_Pos = 0.65;
 
 //    public static double IntakeInsidePos = 1;
 //    public static double RightFunkyOutsidePos = 0.5;
 //    public static double LeftMonkeyOutsidePos = 0.4;
 
     //Flamethrower variables
-    public static double xSlideOutPos = 0.75;
+    public static double xSlideOutPos = 0.12;
     public static double xSlideDropPos = 0.5;
-    public static double xSlideInPos = 0.43;
+    public static double xSlideInPos = 0.58;
 
     double xSlideMaxExtension = xSlideOutPos;
     double xSlideMinExtension = xSlideInPos;
 
-
-
     public static double xSlideIncrement = 0.1;
-
         //minimum extension when the turret is past the restricted range, so it doesn't crash into anything
-    public static double xSlideSafetyBarrier = 0.6;
+    public static double xSlideSafetyBarrier = 0.32;
 
     //Slide variables
     public static int HighJunction = 17315;
@@ -226,23 +224,21 @@ public class Mvrk_Robot
     public static int TopCone = 3730;
 
         //minimum height when the turret is past the restricted range, so it doesn't crash into anything
-    public static int slideHeightSafetyBarrier = 10000;
+    public static int slideHeightSafetyBarrier = 5000;
     public static int slideHeightMinExtension = FloorPosition;
     public static int slideHeightMaxExtension = HighJunction;
 
 
     //turret variables
     public static double[] turret_Range = {0.0, 0.0};
-    public static double[] turret_fullRange = {0.0, 1.0};
         //restricted range when slides/xSlide is not extended, to prevent the other stuff from crashing
-    public static double[] turret_restrictedRange = {0.0, 0.5};
+    public static double[] turret_restrictedRange = {0.5, 0.59};
+    public static double turretUp = 0.545;
+    public static double turretDown = 0;
+    public static double turretLeft= 0.8275;
+    public static double turretRight = 0.2675;
 
-    public static double turretUp = 0.1;
-    public static double turretDown = 0.1;
-    public static double turretLeft= 0.1;
-    public static double turretRight = 0.1;
-
-    public static double turretIncrement = 0.1;
+    public static double turretIncrement = 0.005;
 
 
 

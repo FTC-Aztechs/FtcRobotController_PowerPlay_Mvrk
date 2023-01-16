@@ -47,14 +47,13 @@ import static org.firstinspires.ftc.teamcode.Mvrk_Robot.slideHeightMaxExtension;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.slideHeightMinExtension;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.slideHeightSafetyBarrier;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.speedAdjust;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.ticks_stepSize;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.slideTicks_stepSize;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.turretDown;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.turretIncrement;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.turretLeft;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.turretRight;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.turretUp;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.turret_Range;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.turret_fullRange;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.turret_restrictedRange;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.xSlideInPos;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.xSlideIncrement;
@@ -145,7 +144,7 @@ public class Mvrk_Manual extends LinearOpMode {
 
     //drive booleans
     private boolean changing_drive_mode = false;
-    private boolean fieldCentric = true;
+    private boolean fieldCentric = false;
 
 
     FtcDashboard mvrkDashboard;
@@ -162,10 +161,10 @@ public class Mvrk_Manual extends LinearOpMode {
 
 
         while (opModeIsActive()) {
-            MvrkUpSlide_Pid();
             MvrkClaw();
-//            MvrkIntake();
             MvrkXSlide();
+            MvrkUpSlide_Pid();
+//            MvrkIntake();
             MrvkTurret();
 
             if(gamepad1.left_bumper) {
@@ -199,7 +198,7 @@ public class Mvrk_Manual extends LinearOpMode {
 
         xSlide_Position = xSlideInPos;
         Mavryk.FlameThrower.setPosition(xSlide_Position);
-
+//
         turret_Position = turretUp;
         Mavryk.Teacup.setPosition(turret_Position);
 
@@ -360,32 +359,28 @@ public class Mvrk_Manual extends LinearOpMode {
 
     public void MvrkXSlide() {
 
-        if (turret_restrictedRange[0] < Mavryk.Teacup.getPosition() && Mavryk.Teacup.getPosition() < turret_restrictedRange[1]) {
             Mavryk.xSlideMinExtension = xSlideInPos;
             Mavryk.xSlideMaxExtension = xSlideOutPos;
-            telemetry.addData("Horizontal Slides", "Full range is ready to go!");
-        } else {
-            Mavryk.xSlideMinExtension = xSlideSafetyBarrier;
-            Mavryk.xSlideMaxExtension = xSlideOutPos;
-            telemetry.addData("Horizontal Slides", "Full retraction is locked. Turn the turret forward to unlock full range!");
-        }
+
 
         if (gamepad1.dpad_up) {
-            if (xSlide_Position >= Mavryk.xSlideMaxExtension) {
+            if (xSlide_Position < Mavryk.xSlideMaxExtension) {
                 xSlide_Position = Mavryk.xSlideMaxExtension;
+            } else {
+                xSlide_Position -= xSlideIncrement;
+            }
+        }
+
+        if (gamepad1.dpad_down) {
+            if (xSlide_Position > Mavryk.xSlideMinExtension) {
+                xSlide_Position = Mavryk.xSlideMinExtension;
             } else {
                 xSlide_Position += xSlideIncrement;
             }
 
         }
-        if (gamepad1.dpad_down) {
-            if (xSlide_Position <= Mavryk.xSlideMinExtension) {
-                xSlide_Position = Mavryk.xSlideMaxExtension;
-            } else {
-                xSlide_Position -= xSlideIncrement;
-            }
-            Mavryk.setPosition(Mvrk_Robot.MvrkServos.FLAMETHROWER, xSlide_Position);
-        }
+        Mavryk.setPosition(Mvrk_Robot.MvrkServos.FLAMETHROWER, xSlide_Position);
+
     }
 
     public void MvrkClaw() {
@@ -404,18 +399,18 @@ public class Mvrk_Manual extends LinearOpMode {
 
     public void MvrkUpSlide_Pid() {
         //restrict range and provide warnings
-        if (turret_restrictedRange[0] < Mavryk.Teacup.getPosition() && Mavryk.Teacup.getPosition() < turret_restrictedRange[1]) {
+        if ((turret_restrictedRange[0] <= Mavryk.Teacup.getPosition() && Mavryk.Teacup.getPosition() <= turret_restrictedRange[1]) || Mavryk.FlameThrower.getPosition() <= xSlideSafetyBarrier) {
             Mavryk.slideHeightMinExtension = FloorPosition;
             Mavryk.slideHeightMaxExtension = HighJunction;
             telemetry.addData("Vertical Slides", "Full range is ready to go!");
         } else {
             Mavryk.slideHeightMinExtension = slideHeightSafetyBarrier;
             Mavryk.slideHeightMaxExtension = HighJunction;
-            telemetry.addData("Vertical Slides", "Full retraction is locked. Turn the turret forward to unlock full range!");
+            telemetry.addData("Vertical Slides", "Full retraction is locked. Turn the turret forward/extend horizontal to unlock full range!");
         }
 
         //joystick control
-        newPos = newPos + (int) (-gamepad2.left_stick_y * ticks_stepSize);
+        newPos = newPos + (int) (-gamepad2.left_stick_y * slideTicks_stepSize);
         if(newPos >= slideHeightMaxExtension)
             newPos = slideHeightMaxExtension;
         else if (newPos <= slideHeightMinExtension)
@@ -430,7 +425,7 @@ public class Mvrk_Manual extends LinearOpMode {
                 assumingHighPosition = true;
             } else if (timer_gp2_buttonY.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
 
-                if(slideHeightMinExtension == slideHeightSafetyBarrier && HighJunction < slideHeightSafetyBarrier) {
+                if(slideHeightMinExtension == slideHeightSafetyBarrier && HighJunction >= slideHeightSafetyBarrier) {
                     telemetry.addData("Vertical Slides", "Move to High Junction locked. Turn the turret forward to unlock full range!");
                     telemetry.update();
 
@@ -452,7 +447,7 @@ public class Mvrk_Manual extends LinearOpMode {
                 assumingMidPosition = true;
             } else if (timer_gp2_buttonX.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
 
-                if(slideHeightMinExtension == slideHeightSafetyBarrier && MidJunction < slideHeightSafetyBarrier) {
+                if(slideHeightMinExtension == slideHeightSafetyBarrier && MidJunction >= slideHeightSafetyBarrier) {
                     telemetry.addData("Vertical Slides", "Move to MidJunction is locked. Turn the turret forward to unlock full range!");
                     telemetry.update();
 
@@ -473,7 +468,7 @@ public class Mvrk_Manual extends LinearOpMode {
                 assumingLowPosition = true;
             } else if (timer_gp2_buttonA.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
 
-                if(slideHeightMinExtension == slideHeightSafetyBarrier && LowJunction < slideHeightSafetyBarrier) {
+                if(slideHeightMinExtension == slideHeightSafetyBarrier && LowJunction >= slideHeightSafetyBarrier) {
                     telemetry.addData("Vertical Slides", "Move to Low Junction is locked. Turn the turret forward to unlock full range!");
                     telemetry.update();
                     assumingLowPosition = false;
@@ -494,7 +489,7 @@ public class Mvrk_Manual extends LinearOpMode {
                 assumingFloorPosition = true;
             } else if (timer_gp2_buttonB.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
 
-                if(slideHeightMinExtension == slideHeightSafetyBarrier && FloorPosition < slideHeightSafetyBarrier) {
+                if(slideHeightMinExtension == slideHeightSafetyBarrier && FloorPosition >= slideHeightSafetyBarrier) {
                     telemetry.addData("Vertical Slides", "Move to Floor Position is locked. Turn the turret forward to unlock full range!");
                     telemetry.update();
 
@@ -528,25 +523,11 @@ public class Mvrk_Manual extends LinearOpMode {
         telemetry.update();
     }
     public void MrvkTurret(){
-
-        //restricting the range and providing warnings
-        if (Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE) >= slideHeightSafetyBarrier || Mavryk.FlameThrower.getPosition() >= xSlideSafetyBarrier) {
-            turret_Range[0] = turret_fullRange[0];
-            turret_Range[1] = turret_fullRange[1];
-            telemetry.addData("Turret", "Full rotation is ready to go!");
-        } else {
-            turret_Range[0] = turret_restrictedRange[0];
-            turret_Range[1] = turret_restrictedRange[1];
-            if(Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE) >= slideHeightSafetyBarrier){
-                telemetry.addData("Turret", "Full rotation is locked. Raise the slides to unlock full range!");
-            }{
-                telemetry.addData("Turret", "Full rotation is locked. Extend the horizontal slides to unlock full range!");
-            }
-            telemetry.update();
-        }
+            turret_Range[0] = turretDown;
+            turret_Range[1] = turretLeft;
 
         //joystick control
-        turret_Position += turretIncrement * gamepad1.right_stick_x;
+        turret_Position += turretIncrement * -gamepad2.right_stick_x;
         if (turret_Position >= turret_Range[1]) {
             turret_Position = turret_Range[1];
         } else if (turret_Position <= turret_Range[0]) {

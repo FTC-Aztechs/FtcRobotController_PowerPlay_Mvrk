@@ -40,8 +40,6 @@ import static com.qualcomm.robotcore.util.ElapsedTime.Resolution.MILLISECONDS;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.BUTTON_TRIGGER_TIMER_MS;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.BottomCone;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.BottomMidCone;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Claw_Close_Pos;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Claw_Open_Pos;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.FloorPosition;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.HighJunction;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.LowJunction;
@@ -51,12 +49,12 @@ import static org.firstinspires.ftc.teamcode.Mvrk_Robot.SlidePower_Down;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.SlidePower_Up;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.TopCone;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.TopMidCone;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.ticks_stepSize;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.slideTicks_stepSize;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.turretUp;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -197,6 +195,8 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
         Mavryk.Tom.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Mavryk.Jerry.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        Mavryk.Teacup.setPosition(turretUp);
+
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetry.addData("Ryk reporting voltage: ", Mavryk.getBatteryVoltage());
         telemetry.addData("Status:", "Ryk is ready to roll!");
@@ -301,7 +301,7 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
             }
         }
 
-        int newPos = currPos + (int) ( -gamepad2.left_stick_y * ticks_stepSize);
+        int newPos = currPos + (int) ( -gamepad2.left_stick_y * slideTicks_stepSize);
         if( newPos >= HighJunction)
             newPos = HighJunction;
         else if (newPos <= FloorPosition)
@@ -423,7 +423,7 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
             }
         }
 
-        int newPos = currPos + (int) ( -gamepad2.left_stick_y * ticks_stepSize);
+        int newPos = currPos + (int) ( -gamepad2.left_stick_y * slideTicks_stepSize);
         if( newPos >= HighJunction)
             newPos = HighJunction;
         else if (newPos <= FloorPosition)
@@ -702,7 +702,7 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
             }
         }
 
-        newPos = newPos + (int) (-gamepad2.left_stick_y * ticks_stepSize);
+        newPos = newPos + (int) (-gamepad2.left_stick_y * slideTicks_stepSize);
         if( newPos >= HighJunction)
             newPos = HighJunction;
         else if (newPos <= FloorPosition)
