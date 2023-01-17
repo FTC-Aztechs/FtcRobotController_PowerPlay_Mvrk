@@ -102,7 +102,10 @@ public class Mvrk_Manual extends LinearOpMode {
     boolean ServoTurn = false;
     double Claw_Position; // Start at halfway position
     double xSlide_Position;
-    double turret_Position;
+    double turret_newPos;
+    double turret_Move;
+    double turret_currentPos;
+    
     double Current_Intake_Position;
     double Sweeper_Power;
 
@@ -527,17 +530,17 @@ public class Mvrk_Manual extends LinearOpMode {
             turret_Range[1] = turretLeft;
 
         //joystick control
-        turret_Position += turretIncrement * -gamepad2.right_stick_x;
-        if (turret_Position >= turret_Range[1]) {
-            turret_Position = turret_Range[1];
-        } else if (turret_Position <= turret_Range[0]) {
-            turret_Position = turret_Range[0];
+        turret_newPos += turretIncrement * -gamepad2.right_stick_x;
+        if (turret_newPos >= turret_Range[1]) {
+            turret_newPos = turret_Range[1];
+        } else if (turret_newPos <= turret_Range[0]) {
+            turret_newPos = turret_Range[0];
         }
 
         //dPad control
         if (gamepad2.dpad_left) {
                 if(turretLeft >= turret_Range[0] && turretLeft <= turret_Range[1]) {
-                    turret_Position = turretLeft;
+                    turret_newPos = turretLeft;
                     telemetry.addLine("dPad left triggered. Set turret to left");
                     telemetry.update();
                 }
@@ -545,7 +548,7 @@ public class Mvrk_Manual extends LinearOpMode {
 
         if (gamepad2.dpad_right) {
             if(turretRight >= turret_Range[0] && turretRight <= turret_Range[1]) {
-                turret_Position = turretRight;
+                turret_newPos = turretRight;
                 telemetry.addLine("dPad right triggered. Set turret to right");
                 telemetry.update();
             }
@@ -553,7 +556,7 @@ public class Mvrk_Manual extends LinearOpMode {
 
         if (gamepad2.dpad_up) {
             if(turretUp >= turret_Range[0] && turretUp <= turret_Range[1]) {
-                turret_Position = turretUp;
+                turret_newPos = turretUp;
                 telemetry.addLine("dPad up triggered. Set turret to forward");
                 telemetry.update();
             }
@@ -561,14 +564,19 @@ public class Mvrk_Manual extends LinearOpMode {
 
         if (gamepad2.dpad_down) {
             if(turretDown >= turret_Range[0] && turretDown <= turret_Range[1]) {
-                turret_Position = turretDown;
+                turret_newPos = turretDown;
                 telemetry.addLine("dPad down triggered. Set turret to down");
                 telemetry.update();
             }
         }
 
         //actually setting the position
-        Mavryk.setPosition(Mvrk_Robot.MvrkServos.TEACUP, turret_Position);
+         if( turret_newPos != turret_currentPos()  && turret_newPos >= turret_Range[0] && turret_newPos <= turret_Range[1] ) {
+            turret_Move = (turret_newPos - turret_currentPos) * Mvrk_Robot.turretSpeed;
+            Mavryk.Teacup.setPosition(Mavryk.Teacup.getPosition() + turret_Move);
+            turret_currentPos = Mavryk.Teacup.getPosition();
+        }
+        Mavryk.setPosition(Mvrk_Robot.MvrkServos.TEACUP, turret_newPos);
 
     }
 }

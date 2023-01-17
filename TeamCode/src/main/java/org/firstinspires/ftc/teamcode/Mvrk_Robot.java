@@ -144,6 +144,8 @@ public class Mvrk_Robot
     public static double SlidePower = 0.5;
     public static int slideTicks_stepSize = 800;
 
+    public static double turretSpeed = 0.5;
+
 
     public static int BUTTON_TRIGGER_TIMER_MS = 500;
 
