@@ -263,7 +263,7 @@ public class Mvrk_Robot
     HardwareMap hwMap           =  null;
     private ElapsedTime period  = new ElapsedTime();
     SampleMecanumDrive mecanumDrive;
-    public static MvrkPIDController control = new MvrkPIDController(10, 0, 0.25, 2000);
+    public static MvrkPIDController control = new MvrkPIDController(11, 0, 0.25, 3600);
 
 
     /* Constructor */
@@ -306,8 +306,8 @@ public class Mvrk_Robot
         lower_left.setDirection(DcMotor.Direction.REVERSE); //- used to be
         lower_right.setDirection(DcMotor.Direction.FORWARD); //+ used to be
 
-        Jerry.setDirection(DcMotor.Direction.REVERSE); //- used to be
-        Tom.setDirection(DcMotor.Direction.REVERSE); //+ used to be
+        Jerry.setDirection(DcMotor.Direction.FORWARD); //- used to be
+        Tom.setDirection(DcMotor.Direction.FORWARD); //+ used to be
 
 
         Looney.setDirection(Servo.Direction.FORWARD);
