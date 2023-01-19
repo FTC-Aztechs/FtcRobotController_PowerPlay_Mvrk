@@ -7,12 +7,10 @@ import static com.qualcomm.robotcore.util.ElapsedTime.Resolution.MILLISECONDS;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Blue_Inter_Pos;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.BottomCone;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.BottomMidCone;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Claw_Close_Pos;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Claw_Open_Pos;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.CycleExtendFlamethrowerOffset;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.CycleRetractFlamethrowerOffset;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.DropoffPos;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.FloorPosition;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.BottomLimit;
 //import static org.firstinspires.ftc.teamcode.Mvrk_Robot.IntakeInsidePos;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.MiddleCone;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.DropoffExtendFlamethrowerOffset;
@@ -171,7 +169,7 @@ public class Mvrk_Autonomous_Blue extends LinearOpMode {
         if(Blue_cyclesToRun > 3)
             trajCycleDropOffBottomMidCone = buildCycleTrajectory(BottomCone); // Note: Drop slides to pick up the next cone, in this case Bottom
         if(Blue_cyclesToRun > 4)
-            trajCycleDropOffBottomCone = buildCycleTrajectory(FloorPosition); // Note: Drop slides to pick up the next cone, in this case Floor
+            trajCycleDropOffBottomCone = buildCycleTrajectory(BottomLimit); // Note: Drop slides to pick up the next cone, in this case Floor
 
         telemetry.update();
 

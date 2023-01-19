@@ -7,11 +7,10 @@ import static com.qualcomm.robotcore.util.ElapsedTime.Resolution.MILLISECONDS;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.BottomCone;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.BottomMidCone;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Claw_Close_Pos;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Claw_Open_Pos;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.CycleExtendFlamethrowerOffset;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.CycleRetractFlamethrowerOffset;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.DropoffPos;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.FloorPosition;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.BottomLimit;
 //import static org.firstinspires.ftc.teamcode.Mvrk_Robot.IntakeInsidePos;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.MiddleCone;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.DropoffExtendFlamethrowerOffset;
@@ -19,7 +18,6 @@ import static org.firstinspires.ftc.teamcode.Mvrk_Robot.MvrkServos.CARTOON;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.PlSlideDownOffset;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.PlSlideUpOffset;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Red_Dropoff;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Red_Inter_Pos;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Red_Park_Pos1;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Red_Park_Pos2;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Red_Park_Pos3;
@@ -57,7 +55,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
@@ -173,7 +170,7 @@ public class Mvrk_Autonomous_Red extends LinearOpMode {
         if(Red_cyclesToRun > 3)
             trajCycleDropOffBottomMidCone = buildCycleTrajectory(BottomCone); // Note: Drop slides to pick up the next cone, in this case Bottom
         if(Red_cyclesToRun > 4)
-            trajCycleDropOffBottomCone = buildCycleTrajectory(FloorPosition); // Note: Drop slides to pick up the next cone, in this case Floor
+            trajCycleDropOffBottomCone = buildCycleTrajectory(BottomLimit); // Note: Drop slides to pick up the next cone, in this case Floor
 
         telemetry.update();
 

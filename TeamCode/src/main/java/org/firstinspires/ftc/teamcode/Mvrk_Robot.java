@@ -33,9 +33,7 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -85,23 +83,6 @@ public class Mvrk_Robot
         IDLE
     }
 
-    enum SlideState
-    {
-        FLOOR,
-        GROUND,
-        LOW,
-        MID,
-        HIGH,
-        TOPCONE,
-        TOPMIDCONE,
-        MIDCONE,
-        BOTTOMMIDCONE,
-        BOTTOMCONE,
-        DROPOFF
-
-    }
-
-
     /* Public OpMode members. */
     public DcMotor upper_right = null;
     public DcMotor upper_left = null;
@@ -116,7 +97,7 @@ public class Mvrk_Robot
     public Servo Looney = null;
     public Servo Teacup = null;
 
-//    public WebcamName eyeOfSauron = null;
+    public WebcamName eyeOfSauron = null;
     OpenCvWebcam Sauron = null;
     public static BNO055IMU imu = null;
 
@@ -144,8 +125,9 @@ public class Mvrk_Robot
     public static double SlidePower = 0.5;
     public static int slideTicks_stepSize = 800;
 
-
+    public static double turretSpeed = 0.5;
     public static int BUTTON_TRIGGER_TIMER_MS = 500;
+
 
     //auto cycles
     public static int Red_cyclesToRun = 4; // Before 5 and 4
@@ -170,11 +152,11 @@ public class Mvrk_Robot
     public static final float oneAndHalfTile   = 36 * mmPerInch;
     
     //Pose2ds
-    public static MvrkPose2d Red_Start = new MvrkPose2d(35.5, 63.75, -90);
+    public static MvrkPose2d Red_Start = new MvrkPose2d(35.5, 63.5, -90);
     public static MvrkPose2d Red_Push_Signal = new MvrkPose2d(35.5,0, -90);
     public static MvrkPose2d Red_Pickup = new MvrkPose2d(54.75,12, 0); // x = 54.25
     public static MvrkPose2d Red_Inter_Pos = new MvrkPose2d(43.5,12, 0);
-    public static MvrkPose2d Red_Dropoff = new MvrkPose2d(36,11.5, -140); //  x = 35
+    public static MvrkPose2d Red_Dropoff = new MvrkPose2d(24,13, 0); //  x = 35
     public static MvrkPose2d Red_Park_Pos1 = new MvrkPose2d(59,12, 0);
     public static MvrkPose2d Red_Park_Pos2 = new MvrkPose2d(36,12, 0);
     public static MvrkPose2d Red_Park_Pos3 = new MvrkPose2d(13,12, 0);
@@ -188,23 +170,17 @@ public class Mvrk_Robot
     public static MvrkPose2d Blue_Park_Pos2 = new MvrkPose2d(-36,12, -180);
     public static MvrkPose2d Blue_Park_Pos3 = new MvrkPose2d(-57.5,12, -180);;;
 
-
-
     //claw variables
     public static double Claw_Open_Pos = 0.435;
     public static double Claw_Close_Pos = 0.65;
-
-//    public static double IntakeInsidePos = 1;
-//    public static double RightFunkyOutsidePos = 0.5;
-//    public static double LeftMonkeyOutsidePos = 0.4;
 
     //Flamethrower variables
     public static double xSlideOutPos = 0.12;
     public static double xSlideDropPos = 0.5;
     public static double xSlideInPos = 0.58;
 
-    double xSlideMaxExtension = xSlideOutPos;
-    double xSlideMinExtension = xSlideInPos;
+    public static double xSlideMaxExtension = xSlideOutPos;
+    public static double xSlideMinExtension = xSlideInPos;
 
     public static double xSlideIncrement = 0.1;
         //minimum extension when the turret is past the restricted range, so it doesn't crash into anything
@@ -215,7 +191,8 @@ public class Mvrk_Robot
     public static int MidJunction = 12370 ;
     public static int LowJunction = 7900;
     public static int GroundJunction = 1940;
-    public static int FloorPosition = 0;
+    public static int FloorPosition = 600;
+    public static int BottomLimit = 0;
     public static int DropoffPos = 13860;
     public static int BottomCone = 1200;
     public static int BottomMidCone = 2460;
@@ -225,7 +202,7 @@ public class Mvrk_Robot
 
         //minimum height when the turret is past the restricted range, so it doesn't crash into anything
     public static int slideHeightSafetyBarrier = 5000;
-    public static int slideHeightMinExtension = FloorPosition;
+    public static int slideHeightMinExtension = BottomLimit;
     public static int slideHeightMaxExtension = HighJunction;
 
 
@@ -268,6 +245,18 @@ public class Mvrk_Robot
 
     public static Pose2d currentPose = new Pose2d();
 
+    //device positions
+    public static double Claw_Position; // Start at halfway position
+
+    public static double xSlide_Position;
+
+    public static double slide_newPos = FloorPosition;
+    public static double slide_currentPos = 0;
+
+    public static double turret_currentPos = turretUp;
+    public static double turret_newPos = turretUp;
+    public static double turret_Move;
+
 
 
     /* local OpMode members. */
@@ -306,6 +295,7 @@ public class Mvrk_Robot
         upper_right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         lower_left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         lower_right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         Jerry.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         Tom.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -324,7 +314,7 @@ public class Mvrk_Robot
         Teacup.setDirection(Servo.Direction.FORWARD);
 
         mecanumDrive = new SampleMecanumDrive(hwMap);
-//        eyeOfSauron = hwMap.get(WebcamName.class, "Sauron");
+        eyeOfSauron = hwMap.get(WebcamName.class, "Sauron");
         imu = hwMap.get(BNO055IMU.class, "imu");
 
 
