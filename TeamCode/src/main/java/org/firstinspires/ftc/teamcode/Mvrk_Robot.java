@@ -92,7 +92,6 @@ public class Mvrk_Robot
     public DcMotor Jerry = null;
     public DcMotor Tom = null;
 
-        public DcMotor duck_wheel = null;
     public Servo FlameThrower = null;
     public Servo Looney = null;
     public Servo Teacup = null;
@@ -101,20 +100,7 @@ public class Mvrk_Robot
     OpenCvWebcam Sauron = null;
     public static BNO055IMU imu = null;
 
-
-//    public DigitalChannel Touche_Linac = null;
-//    public DigitalChannel Touche_Winch = null;
-
-//    Orientation angles;
-//
-    public static int stallDetectionThreshold = 500;
-    public static ElapsedTime HandselClawTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-    public static ElapsedTime GrabbelClawTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-    public static double HandselClawLastPos = 0.0f;
-    public static double GrabbelClawLastPos = 0.0f;
-
     // speeds/times
-
     public static double UpAdjust = 10;
     public static double speedAdjust = 5;
     public static double bumperSpeedAdjust = 8;
@@ -128,9 +114,8 @@ public class Mvrk_Robot
     public static double turretSpeed = 0.5;
     public static int BUTTON_TRIGGER_TIMER_MS = 500;
 
-
     //auto cycles
-    public static int Red_cyclesToRun = 4; // Before 5 and 4
+    public static int Red_cyclesToRun = 3; // Before 5 and 4
     public static int Blue_cyclesToRun = 3;
    
     // Vuforia Class Members
@@ -156,27 +141,27 @@ public class Mvrk_Robot
     public static MvrkPose2d Red_Push_Signal = new MvrkPose2d(35.5,0, -90);
     public static MvrkPose2d Red_Pickup = new MvrkPose2d(54.75,12, 0); // x = 54.25
     public static MvrkPose2d Red_Inter_Pos = new MvrkPose2d(43.5,12, 0);
-    public static MvrkPose2d Red_Dropoff = new MvrkPose2d(24,13, 0); //  x = 35
+    public static MvrkPose2d Red_Dropoff = new MvrkPose2d(22,12, 0); //  x = 35
     public static MvrkPose2d Red_Park_Pos1 = new MvrkPose2d(59,12, 0);
     public static MvrkPose2d Red_Park_Pos2 = new MvrkPose2d(36,12, 0);
-    public static MvrkPose2d Red_Park_Pos3 = new MvrkPose2d(13,12, 0);
+    public static MvrkPose2d Red_Park_Pos3 = new MvrkPose2d(12,12, 0);
 
-    public static MvrkPose2d Blue_Start = new MvrkPose2d(-35.5, 63.75, -90);
+    public static MvrkPose2d Blue_Start = new MvrkPose2d(-35.5, 63.5, -90);
     public static MvrkPose2d Blue_Push_Signal = new MvrkPose2d(-35.5,0, -90);
     public static MvrkPose2d Blue_Pickup = new MvrkPose2d(-54.75,12, -180);
     public static MvrkPose2d Blue_Inter_Pos = new MvrkPose2d(-43.5,12, -180);
-    public static MvrkPose2d Blue_Dropoff = new MvrkPose2d(-35.5,12, -40);
-    public static MvrkPose2d Blue_Park_Pos1 = new MvrkPose2d(-13,12, -180);
+    public static MvrkPose2d Blue_Dropoff = new MvrkPose2d(-24,12, -180);
+    public static MvrkPose2d Blue_Park_Pos1 = new MvrkPose2d(-12,12, -180);
     public static MvrkPose2d Blue_Park_Pos2 = new MvrkPose2d(-36,12, -180);
-    public static MvrkPose2d Blue_Park_Pos3 = new MvrkPose2d(-57.5,12, -180);;;
+    public static MvrkPose2d Blue_Park_Pos3 = new MvrkPose2d(-59,12, -180);;;
 
     //claw variables
-    public static double Claw_Open_Pos = 0.435;
-    public static double Claw_Close_Pos = 0.65;
+    public static double Claw_Open_Pos = 0.55;
+    public static double Claw_Close_Pos = 0.75;
 
     //Flamethrower variables
     public static double xSlideOutPos = 0.12;
-    public static double xSlideDropPos = 0.5;
+    public static double xSlideDropPos = 0.4; //0.5;
     public static double xSlideInPos = 0.58;
 
     public static double xSlideMaxExtension = xSlideOutPos;
@@ -205,7 +190,6 @@ public class Mvrk_Robot
     public static int slideHeightMinExtension = BottomLimit;
     public static int slideHeightMaxExtension = HighJunction;
 
-
     //turret variables
     public static double[] turret_Range = {0.0, 0.0};
         //restricted range when slides/xSlide is not extended, to prevent the other stuff from crashing
@@ -214,31 +198,24 @@ public class Mvrk_Robot
     public static double turretDown = 0;
     public static double turretLeft= 0.8275;
     public static double turretRight = 0.2675;
-
     public static double turretIncrement = 0.005;
 
-
-
-
-
-
-
     //waits
-    public static double auto_move_wait = 0; // before .5
-    public static double auto_drop_wait = 0.25; // before .5
-    public static double auto_pickup_wait = 0.1; // before .65
-    public static double auto_half_raise_wait = 0.3; // before .5
-    public static double auto_raise_wait = 0; // before 2
-    public static double auto_extend_wait = 0; // before .8
-    public static double auto_extend_half_wait = 0.3; // before .4
-    public static double auto_retract_wait = 0; // before .25
+    public static double auto_move_wait = 0; // before 0
+    public static double auto_drop_wait = 0.2; // before .5
+    public static double auto_pickup_wait = 0.2; // before .3
+    public static double auto_half_raise_wait = 0.2; // before .5
+    public static double auto_raise_wait = 0.2; // before 0.3
+    public static double auto_extend_wait = 0.0; // before .0
+    public static double auto_extend_half_wait = 0.2; // before .5
+    public static double auto_retract_wait = 0.2; // before .2
 
-    //offset waits
-
-    public static double PlSlideUpOffset = -1.5;
-    public static double PlSlideDownOffset = -0.2;
-    public static double DropoffExtendFlamethrowerOffset = -0.5;
-    public static double DropoffRetractFlamethrowerOffset = -0.5;
+    //offset waits auto_retract_wait_offset
+    public static double auto_raise_wait_offset = -1.5;
+    public static double auto_lower_wait_offset = -0.2; // -0.2;
+    public static double auto_extend_wait_offset = -0.2;
+    public static double auto_retract_wait_offset = -0.2;
+    public static double auto_move_wait_offset = -1;
 
     public static double CycleExtendFlamethrowerOffset = -0.5;
     public static double CycleRetractFlamethrowerOffset = -0.25;

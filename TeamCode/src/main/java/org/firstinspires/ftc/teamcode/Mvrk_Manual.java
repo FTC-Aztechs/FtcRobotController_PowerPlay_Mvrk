@@ -203,7 +203,7 @@ public class Mvrk_Manual extends LinearOpMode {
         Claw_Position = Claw_Close_Pos;
         Mavryk.Looney.setPosition(Claw_Position);
 
-        xSlide_Position = xSlideOutPos;
+        xSlide_Position = xSlideInPos;
         Mavryk.FlameThrower.setPosition(xSlide_Position);
 
         Mavryk.Teacup.setPosition(turretUp);
@@ -337,15 +337,8 @@ public class Mvrk_Manual extends LinearOpMode {
 
     public void MvrkUpSlide_Pid() {
         //restrict range and provide warnings
-        if ((turret_restrictedRange[0] <= turret_currentPos && turret_currentPos <= turret_restrictedRange[1]) || Mavryk.FlameThrower.getPosition() <= xSlideSafetyBarrier) {
             slideHeightMinExtension = BottomLimit;
             slideHeightMaxExtension = HighJunction;
-            telemetry.addData("Vertical Slides", "Full range is ready to go!");
-        } else {
-            slideHeightMinExtension = slideHeightSafetyBarrier;
-            slideHeightMaxExtension = HighJunction;
-            telemetry.addData("Vertical Slides", "Full retraction is locked. Turn the turret forward/extend horizontal to unlock full range!");
-        }
 
         //joystick control
         slide_newPos += (int) (-gamepad2.left_stick_y * slideTicks_stepSize);
@@ -454,9 +447,23 @@ public class Mvrk_Manual extends LinearOpMode {
         telemetry.addData("rykUpSlide_pid: Current Slide Position: ", Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE));
         telemetry.update();
     }
-    public void MrvkTurret(){
-        turret_Range[0] = turretRight;
-        turret_Range[1] = turretLeft;
+    public void MrvkTurret() {
+        if (Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE) > slideHeightSafetyBarrier || Mavryk.FlameThrower.getPosition() <= xSlideSafetyBarrier){
+            turret_Range[0] = turretRight;
+            turret_Range[1] = turretLeft;
+            telemetry.addData("Turret", "Full range is ready to go!");
+        }
+        else{
+            if (Claw_Position == Claw_Open_Pos){
+                turret_Range[0] = turret_restrictedRange[0];
+                turret_Range[1] = turret_restrictedRange[1];
+            }else{
+                turret_Range[0] = turretUp;
+                turret_Range[1] = turretUp;
+            }
+            telemetry.addData("Vertical Slides", "Full retraction is locked. Turn the turret forward/extend horizontal to unlock full range!");
+        }
+        telemetry.update();
 
         //joystick control
         turret_newPos += turretIncrement * -gamepad2.right_stick_x;

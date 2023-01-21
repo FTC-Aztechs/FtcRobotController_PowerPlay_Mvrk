@@ -13,9 +13,9 @@ import static org.firstinspires.ftc.teamcode.Mvrk_Robot.DropoffPos;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.BottomLimit;
 //import static org.firstinspires.ftc.teamcode.Mvrk_Robot.IntakeInsidePos;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.MiddleCone;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.DropoffExtendFlamethrowerOffset;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.PlSlideDownOffset;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.PlSlideUpOffset;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.auto_extend_wait_offset;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.auto_lower_wait_offset;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.auto_raise_wait_offset;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Blue_Dropoff;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Blue_Park_Pos1;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Blue_Park_Pos2;
@@ -351,20 +351,20 @@ public class Mvrk_Autonomous_Blue extends LinearOpMode {
                 //preload
                 .lineToLinearHeading(Blue_Push_Signal.pose2d())
                 .lineToLinearHeading(Blue_Dropoff.pose2d())
-                .UNSTABLE_addTemporalMarkerOffset(PlSlideUpOffset, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(auto_raise_wait_offset, () -> {
                     // Raise Tom&Jerry
                     Mavryk.setTargetPosition(CAT_MOUSE, HighJunction);
                     Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
                     Mavryk.setPower(CAT_MOUSE, SlidePower_Up);
                 })
                 .waitSeconds(auto_raise_wait)
-                .UNSTABLE_addTemporalMarkerOffset(DropoffExtendFlamethrowerOffset, () -> { // Start after 1.5s of raise
+                .UNSTABLE_addTemporalMarkerOffset(auto_extend_wait_offset, () -> { // Start after 1.5s of raise
                     // Extend FlameThrower
                     Mavryk.setPosition(FLAMETHROWER, xSlideOutPos);
                 })
 
                 .waitSeconds(auto_extend_half_wait)
-                .UNSTABLE_addTemporalMarkerOffset(PlSlideDownOffset, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(auto_lower_wait_offset, () -> {
                     // Lower Tom&Jerry to Top Cone
                     Mavryk.setTargetPosition(CAT_MOUSE, DropoffPos);
                     Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
@@ -377,7 +377,7 @@ public class Mvrk_Autonomous_Blue extends LinearOpMode {
                     Mavryk.setPosition(FLAMETHROWER, xSlideDropPos);
                 })
                 .waitSeconds(auto_retract_wait) // Eliminate
-                .UNSTABLE_addTemporalMarkerOffset(PlSlideDownOffset, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(auto_lower_wait_offset, () -> {
                     // Lower Tom&Jerry to Top Cone
                     Mavryk.setTargetPosition(CAT_MOUSE, TopCone);
                     Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
@@ -468,19 +468,19 @@ public class Mvrk_Autonomous_Blue extends LinearOpMode {
                 })
                 .waitSeconds(auto_retract_wait) // Eliminate
                 .lineToLinearHeading(Blue_Dropoff.pose2d())
-                .UNSTABLE_addTemporalMarkerOffset(PlSlideUpOffset, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(auto_raise_wait_offset, () -> {
                     // Raise Tom&Jerry
                     Mavryk.setTargetPosition(CAT_MOUSE, HighJunction);
                     Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
                     Mavryk.setPower(CAT_MOUSE, SlidePower_Up);
                 })
                 .waitSeconds(auto_raise_wait)
-                .UNSTABLE_addTemporalMarkerOffset(DropoffExtendFlamethrowerOffset, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(auto_extend_wait_offset, () -> {
                     // Extend FlameThrower
                     Mavryk.setPosition(FLAMETHROWER, xSlideOutPos);
                 })
                 .waitSeconds(auto_extend_half_wait)
-                .UNSTABLE_addTemporalMarkerOffset(PlSlideDownOffset, () -> {
+                .UNSTABLE_addTemporalMarkerOffset(auto_lower_wait_offset, () -> {
                     // Lower Tom&Jerry to Top Cone
                     Mavryk.setTargetPosition(CAT_MOUSE, DropoffPos);
                     Mavryk.setRunMode(CAT_MOUSE, RUN_TO_POSITION);
