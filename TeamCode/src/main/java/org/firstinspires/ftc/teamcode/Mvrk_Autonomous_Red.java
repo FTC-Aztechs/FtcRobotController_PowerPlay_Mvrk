@@ -7,9 +7,7 @@ import static org.firstinspires.ftc.teamcode.Mvrk_Robot.BottomCone;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.BottomMidCone;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Claw_Close_Pos;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Claw_Open_Pos;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.CycleExtendFlamethrowerOffset;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.CycleRetractFlamethrowerOffset;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.DropoffPos;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.DropOffPos;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.FloorPosition;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.MiddleCone;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Red_cyclesToRun;
@@ -39,7 +37,6 @@ import static org.firstinspires.ftc.teamcode.Mvrk_Robot.LowJunction;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.auto_drop_wait;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.auto_extend_half_wait;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.auto_half_raise_wait;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.auto_move_wait;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.auto_pickup_wait;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.auto_raise_wait;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.auto_retract_wait;
@@ -268,9 +265,9 @@ public class Mvrk_Autonomous_Red extends LinearOpMode {
 
         // Drop off preload
         trajectoryTimer.reset();
-        Mavryk.mecanumDrive.setPoseEstimate(Red_Start.pose2d());
+        Mavryk.MecanumDrive.setPoseEstimate(Red_Start.pose2d());
         currentAutoState = Mvrk_Robot.AutoState.PRELOAD;
-        Mavryk.mecanumDrive.followTrajectorySequenceAsync(trajPreLoadDropOff);
+        Mavryk.MecanumDrive.followTrajectorySequenceAsync(trajPreLoadDropOff);
 
         boolean bTrajCompleted = false;
         while (opModeIsActive() && !isStopRequested() && !bTrajCompleted ) {
@@ -281,69 +278,69 @@ public class Mvrk_Autonomous_Red extends LinearOpMode {
             // We essentially define the flow of the state machine through this switch statement
             switch (currentAutoState) {
                 case PRELOAD:
-                    if (!Mavryk.mecanumDrive.isBusy()) {
+                    if (!Mavryk.MecanumDrive.isBusy()) {
                         if(Red_cyclesToRun >= 1){
                             currentAutoState = Mvrk_Robot.AutoState.TOPCONE;
-                            Mavryk.mecanumDrive.followTrajectorySequenceAsync(trajCycleDropOffTopCone);
+                            Mavryk.MecanumDrive.followTrajectorySequenceAsync(trajCycleDropOffTopCone);
                         }else{
                             currentAutoState = Mvrk_Robot.AutoState.PARK;
-                            Mavryk.mecanumDrive.followTrajectorySequenceAsync(trajParking);
+                            Mavryk.MecanumDrive.followTrajectorySequenceAsync(trajParking);
                         }
                     }
                     break;
                 case TOPCONE:
-                    if (!Mavryk.mecanumDrive.isBusy()) {
+                    if (!Mavryk.MecanumDrive.isBusy()) {
                         if(Red_cyclesToRun >= 2){
                             currentAutoState = Mvrk_Robot.AutoState.TOPMIDCONE;
-                            Mavryk.mecanumDrive.followTrajectorySequenceAsync(trajCycleDropOffTopMidCone);
+                            Mavryk.MecanumDrive.followTrajectorySequenceAsync(trajCycleDropOffTopMidCone);
                         }else{
                             currentAutoState = Mvrk_Robot.AutoState.PARK;
-                            Mavryk.mecanumDrive.followTrajectorySequenceAsync(trajParking);
+                            Mavryk.MecanumDrive.followTrajectorySequenceAsync(trajParking);
                         }
 
                     }
                     break;
                 case TOPMIDCONE:
-                    if (!Mavryk.mecanumDrive.isBusy()) {
+                    if (!Mavryk.MecanumDrive.isBusy()) {
                         if(Red_cyclesToRun >= 3){
                             currentAutoState = Mvrk_Robot.AutoState.MIDCONE;
-                            Mavryk.mecanumDrive.followTrajectorySequenceAsync(trajCycleDropOffMiddleCone);
+                            Mavryk.MecanumDrive.followTrajectorySequenceAsync(trajCycleDropOffMiddleCone);
                         }else{
                             currentAutoState = Mvrk_Robot.AutoState.PARK;
-                            Mavryk.mecanumDrive.followTrajectorySequenceAsync(trajParking);
+                            Mavryk.MecanumDrive.followTrajectorySequenceAsync(trajParking);
                         }
                     }
                     break;
                 case MIDCONE:
-                    if (!Mavryk.mecanumDrive.isBusy()) {
+                    if (!Mavryk.MecanumDrive.isBusy()) {
                         if(Red_cyclesToRun >= 4){
                             currentAutoState = Mvrk_Robot.AutoState.BOTTOMMIDCONE;
-                            Mavryk.mecanumDrive.followTrajectorySequenceAsync(trajCycleDropOffBottomMidCone);
+                            Mavryk.MecanumDrive.followTrajectorySequenceAsync(trajCycleDropOffBottomMidCone);
                         }else{
                             currentAutoState = Mvrk_Robot.AutoState.PARK;
-                            Mavryk.mecanumDrive.followTrajectorySequenceAsync(trajParking);
+                            Mavryk.MecanumDrive.followTrajectorySequenceAsync(trajParking);
                         }
                     }
                     break;
                 case BOTTOMMIDCONE:
-                    if (!Mavryk.mecanumDrive.isBusy()) {
+                    if (!Mavryk.MecanumDrive.isBusy()) {
                         if(Red_cyclesToRun >= 5){
                             currentAutoState = Mvrk_Robot.AutoState.BOTTOMCONE;
-                            Mavryk.mecanumDrive.followTrajectorySequenceAsync(trajCycleDropOffBottomCone);
+                            Mavryk.MecanumDrive.followTrajectorySequenceAsync(trajCycleDropOffBottomCone);
                         }else{
                             currentAutoState = Mvrk_Robot.AutoState.PARK;
-                            Mavryk.mecanumDrive.followTrajectorySequenceAsync(trajParking);
+                            Mavryk.MecanumDrive.followTrajectorySequenceAsync(trajParking);
                         }
                     }
                     break;
                 case BOTTOMCONE:
-                    if (!Mavryk.mecanumDrive.isBusy()) {
+                    if (!Mavryk.MecanumDrive.isBusy()) {
                         currentAutoState = Mvrk_Robot.AutoState.PARK;
-                        Mavryk.mecanumDrive.followTrajectorySequenceAsync(trajParking);
+                        Mavryk.MecanumDrive.followTrajectorySequenceAsync(trajParking);
                     }
                     break;
                 case PARK:
-                    if (!Mavryk.mecanumDrive.isBusy()) {
+                    if (!Mavryk.MecanumDrive.isBusy()) {
                         currentAutoState = Mvrk_Robot.AutoState.IDLE;
                         telemetry.addData("switching", "yes" );
                     }
@@ -359,7 +356,7 @@ public class Mvrk_Autonomous_Red extends LinearOpMode {
             telemetry.addData("Currently Running", currentAutoState);
             telemetry.update();
 
-            Mavryk.mecanumDrive.update();
+            Mavryk.MecanumDrive.update();
 
             //Slides
             if( slide_newPos != slide_currentPos && slide_newPos >= FloorPosition && slide_newPos <= HighJunction ) {
@@ -382,7 +379,7 @@ public class Mvrk_Autonomous_Red extends LinearOpMode {
     void buildPreloadTrajectory() {
         telemetry.addLine(String.format("%d. buildPreloadTrajectory", iTeleCt++));
 
-        trajPreLoadDropOff = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Start.pose2d())
+        trajPreLoadDropOff = Mavryk.MecanumDrive.trajectorySequenceBuilder(Red_Start.pose2d())
                 //preload
                 .lineToLinearHeading(Red_Push_Signal.pose2d())
                 .UNSTABLE_addTemporalMarkerOffset(-2.5, () -> {
@@ -405,7 +402,7 @@ public class Mvrk_Autonomous_Red extends LinearOpMode {
                 .waitSeconds(auto_extend_half_wait)
                 .UNSTABLE_addTemporalMarkerOffset(auto_lower_wait_offset, () -> {
                     // Lower Tom&Jerry to Dropoff Height
-                    slide_newPos = DropoffPos;
+                    slide_newPos = DropOffPos;
                     Mavryk.Looney.setPosition(Claw_Open_Pos);
                 })
                 .waitSeconds(auto_drop_wait)
@@ -439,7 +436,7 @@ public class Mvrk_Autonomous_Red extends LinearOpMode {
         switch (iPos) {
             case 1:
             default:
-                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Dropoff.pose2d())
+                trajParking = Mavryk.MecanumDrive.trajectorySequenceBuilder(Red_Dropoff.pose2d())
                         .addTemporalMarker(()->{
                             Mavryk.Teacup.setPosition(turretUp);
                             Mavryk.FlameThrower.setPosition(xSlideInPos);
@@ -449,7 +446,7 @@ public class Mvrk_Autonomous_Red extends LinearOpMode {
                         .build();
                 break;
             case 2:
-                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Dropoff.pose2d())
+                trajParking = Mavryk.MecanumDrive.trajectorySequenceBuilder(Red_Dropoff.pose2d())
                         .addTemporalMarker(()->{
                             Mavryk.Teacup.setPosition(turretUp);
                             Mavryk.FlameThrower.setPosition(xSlideInPos);
@@ -459,7 +456,7 @@ public class Mvrk_Autonomous_Red extends LinearOpMode {
                         .build();
                 break;
             case 3:
-                trajParking = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Dropoff.pose2d())
+                trajParking = Mavryk.MecanumDrive.trajectorySequenceBuilder(Red_Dropoff.pose2d())
                         .addTemporalMarker(()->{
                             Mavryk.Teacup.setPosition(turretUp);
                             Mavryk.FlameThrower.setPosition(xSlideInPos);
@@ -483,7 +480,7 @@ public class Mvrk_Autonomous_Red extends LinearOpMode {
     TrajectorySequence buildCycleTrajectory(int iCycleConePickup)
     {
         telemetry.addLine(String.format("%d. buildCycleTrajectory %d", iTeleCt++, iCycleConePickup));
-        TrajectorySequence trajSeq = Mavryk.mecanumDrive.trajectorySequenceBuilder(Red_Dropoff.pose2d())
+        TrajectorySequence trajSeq = Mavryk.MecanumDrive.trajectorySequenceBuilder(Red_Dropoff.pose2d())
                 .lineToLinearHeading(Red_Pickup.pose2d())
                 .UNSTABLE_addTemporalMarkerOffset(auto_move_wait_offset, () -> {
                     // Extend Flamethrower & Grab Cone
@@ -521,7 +518,7 @@ public class Mvrk_Autonomous_Red extends LinearOpMode {
                 .waitSeconds(auto_extend_half_wait)
                 .UNSTABLE_addTemporalMarkerOffset(auto_lower_wait_offset, () -> {
                     // Lower Tom&Jerry to Top Cone
-                    slide_newPos = DropoffPos;
+                    slide_newPos = DropOffPos;
                     Mavryk.Looney.setPosition(Claw_Open_Pos);
                 })
                 .waitSeconds(auto_drop_wait)

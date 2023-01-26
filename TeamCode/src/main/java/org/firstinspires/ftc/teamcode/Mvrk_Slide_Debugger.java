@@ -40,7 +40,7 @@ import static com.qualcomm.robotcore.util.ElapsedTime.Resolution.MILLISECONDS;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.BUTTON_TRIGGER_TIMER_MS;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.BottomCone;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.BottomMidCone;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.BottomLimit;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.LowerLimit;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.HighJunction;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.LowJunction;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.MidJunction;
@@ -304,8 +304,8 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
         int newPos = currPos + (int) ( -gamepad2.left_stick_y * slideTicks_stepSize);
         if( newPos >= HighJunction)
             newPos = HighJunction;
-        else if (newPos <= BottomLimit)
-            newPos = BottomLimit;
+        else if (newPos <= LowerLimit)
+            newPos = LowerLimit;
         telemetry.addData("newPos calc from gamePad2.left_stick_y: ", newPos);
         telemetry.update();
 
@@ -355,7 +355,7 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
                 telemetry.addLine("GP2_B triggered. Set Tom&Jerry to Floor position");
                 telemetry.update();
 
-                newPos = BottomLimit;
+                newPos = LowerLimit;
                 assumingFloorPosition = false;
             }
         }
@@ -363,7 +363,7 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
         telemetry.addData("newPos from Any button triggers: ", newPos);
         telemetry.update();
 
-        if( newPos != currPos && newPos >= BottomLimit && newPos <= HighJunction ) {
+        if( newPos != currPos && newPos >= LowerLimit && newPos <= HighJunction ) {
             Mavryk.setTargetPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE, newPos);
             Mavryk.setRunMode(Mvrk_Robot.MvrkMotors.CAT_MOUSE, RUN_TO_POSITION);
             if (newPos > currPos) {
@@ -426,8 +426,8 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
         int newPos = currPos + (int) ( -gamepad2.left_stick_y * slideTicks_stepSize);
         if( newPos >= HighJunction)
             newPos = HighJunction;
-        else if (newPos <= BottomLimit)
-            newPos = BottomLimit;
+        else if (newPos <= LowerLimit)
+            newPos = LowerLimit;
         telemetry.addData("newPos calc from gamePad2.left_stick_y: ", newPos);
         telemetry.update();
 
@@ -477,7 +477,7 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
                 telemetry.addLine("GP2_B triggered. Set Tom&Jerry to Floor position");
                 telemetry.update();
 
-                newPos = BottomLimit;
+                newPos = LowerLimit;
                 assumingFloorPosition = false;
             }
         }
@@ -485,7 +485,7 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
         telemetry.addData("newPos from Any button triggers: ", newPos);
         telemetry.update();
 
-        if( newPos != currPos && newPos >= BottomLimit && newPos <= HighJunction ) {
+        if( newPos != currPos && newPos >= LowerLimit && newPos <= HighJunction ) {
             Mavryk.setTargetPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE, newPos);
             Mavryk.setRunMode(Mvrk_Robot.MvrkMotors.CAT_MOUSE, RUN_TO_POSITION);
             if (newPos > currPos) {
@@ -705,8 +705,8 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
         newPos = newPos + (int) (-gamepad2.left_stick_y * slideTicks_stepSize);
         if( newPos >= HighJunction)
             newPos = HighJunction;
-        else if (newPos <= BottomLimit)
-            newPos = BottomLimit;
+        else if (newPos <= LowerLimit)
+            newPos = LowerLimit;
         telemetry.addData("newPos", newPos);
         telemetry.update();
 
@@ -756,7 +756,7 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
                 telemetry.addLine("GP2_B triggered. Set Tom&Jerry to Floor position");
                 telemetry.update();
 
-                newPos = BottomLimit;
+                newPos = LowerLimit;
                 assumingFloorPosition = false;
             }
         }
@@ -764,7 +764,7 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
         telemetry.addData("newPos", newPos);
         telemetry.update();
 
-        if( newPos != currPos && newPos >= BottomLimit && newPos <= HighJunction ) {
+        if( newPos != currPos && newPos >= LowerLimit && newPos <= HighJunction ) {
             double command = Mvrk_Robot.control.output(newPos, Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE));
             if(newPos < currPos)
                 Mvrk_Robot.SlidePower = Math.max(command/HighJunction, SlidePower_Down);

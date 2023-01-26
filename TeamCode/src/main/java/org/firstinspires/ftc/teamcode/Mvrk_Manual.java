@@ -39,7 +39,7 @@ import static org.firstinspires.ftc.teamcode.Mvrk_Robot.BUTTON_TRIGGER_TIMER_MS;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Claw_Close_Pos;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Claw_Open_Pos;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.Claw_Position;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.BottomLimit;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.LowerLimit;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.FloorPosition;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.HighJunction;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.LowJunction;
@@ -284,13 +284,13 @@ public class Mvrk_Manual extends LinearOpMode {
     public void MvrkManualDrive_FieldCentric()
     {
 
-        Localizer myLocaliizer = Mavryk.mecanumDrive.getLocalizer();
+        Localizer myLocaliizer = Mavryk.MecanumDrive.getLocalizer();
         myLocaliizer.getPoseVelocity();
         Vector2d input = new Vector2d( -gamepad1.left_stick_y,
                 -gamepad1.left_stick_x).rotated(-imu.getAngularOrientation().firstAngle);
 
-        Mavryk.mecanumDrive.setWeightedDrivePower(new Pose2d(input.getX(), input.getY(), -gamepad1.right_stick_x));
-        Mavryk.mecanumDrive.update();
+        Mavryk.MecanumDrive.setWeightedDrivePower(new Pose2d(input.getX(), input.getY(), -gamepad1.right_stick_x));
+        Mavryk.MecanumDrive.update();
 
         return;
     }
@@ -337,7 +337,7 @@ public class Mvrk_Manual extends LinearOpMode {
 
     public void MvrkUpSlide_Pid() {
         //restrict range and provide warnings
-            slideHeightMinExtension = BottomLimit;
+            slideHeightMinExtension = LowerLimit;
             slideHeightMaxExtension = HighJunction;
 
         //joystick control
@@ -408,7 +408,7 @@ public class Mvrk_Manual extends LinearOpMode {
                 assumingFloorPosition = true;
             } else if (timer_gp2_buttonB.time(TimeUnit.MILLISECONDS) > BUTTON_TRIGGER_TIMER_MS) {
 
-                if( BottomLimit >= slideHeightMinExtension) {
+                if( LowerLimit >= slideHeightMinExtension) {
                     telemetry.addLine("GP2_B triggered. Set Tom&Jerry to Floor position");
                     telemetry.update();
                     slide_newPos = FloorPosition;
@@ -461,7 +461,7 @@ public class Mvrk_Manual extends LinearOpMode {
                 turret_Range[0] = turretUp;
                 turret_Range[1] = turretUp;
             }
-            telemetry.addData("Vertical Slides", "Full retraction is locked. Turn the turret forward/extend horizontal to unlock full range!");
+            telemetry.addData("Turret", "Full rotation is locked. Turn the turret forward/extend horizontal to unlock full range!");
         }
         telemetry.update();
 
