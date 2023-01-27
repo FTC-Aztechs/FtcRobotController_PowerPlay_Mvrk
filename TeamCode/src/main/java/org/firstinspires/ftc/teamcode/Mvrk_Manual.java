@@ -48,7 +48,7 @@ import static org.firstinspires.ftc.teamcode.Mvrk_Robot.SlidePower;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.SlidePower_Down;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.SlidePower_Up;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.bumperSpeedAdjust;
-import static org.firstinspires.ftc.teamcode.Mvrk_Robot.control;
+import static org.firstinspires.ftc.teamcode.Mvrk_Robot.manualSlidePID;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.dPadSpeedAdjust;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.imu;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.slideHeightMaxExtension;
@@ -434,7 +434,7 @@ public class Mvrk_Manual extends LinearOpMode {
 
         //actually using the pid to move the slides
         if( slide_newPos != slide_currentPos && slide_newPos >= slideHeightMinExtension && slide_newPos <= slideHeightMaxExtension ) {
-            double command = control.output(slide_newPos, Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE));
+            double command = manualSlidePID.output(slide_newPos, Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE));
             if(slide_newPos < slide_currentPos)
                 SlidePower = Math.max(command/HighJunction, SlidePower_Down);
             else
@@ -447,6 +447,7 @@ public class Mvrk_Manual extends LinearOpMode {
         telemetry.addData("rykUpSlide_pid: Current Slide Position: ", Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE));
         telemetry.update();
     }
+
     public void MrvkTurret() {
         if (Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE) > slideHeightSafetyBarrier || Mavryk.FlameThrower.getPosition() <= xSlideSafetyBarrier){
             turret_Range[0] = turretRight;

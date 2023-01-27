@@ -360,7 +360,7 @@ public class Mvrk_Autonomous_Blue extends LinearOpMode {
 
             //Slides
             if( slide_newPos != slide_currentPos && slide_newPos >= FloorPosition && slide_newPos <= HighJunction ) {
-                double command = Mvrk_Robot.control.output(slide_newPos, Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE));
+                double command = Mvrk_Robot.manualSlidePID.output(slide_newPos, Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE));
                 if(slide_newPos < slide_currentPos)
                     Mvrk_Robot.SlidePower = Math.max(command/HighJunction, SlidePower_Down);
                 else

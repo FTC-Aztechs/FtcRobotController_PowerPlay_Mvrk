@@ -99,6 +99,7 @@ public class Mvrk_Robot
 
     public Mvrk_LiftController TomAndJerrySlide;
     public Mvrk_TurretController TeacupTurret;
+    public Mvrk_ClawController LooneyClaw;
 
     public WebcamName eyeOfSauron = null;
     OpenCvWebcam Sauron = null;
@@ -287,8 +288,6 @@ public class Mvrk_Robot
     public static double fauto_retract_wait_offset = -0.2;
     public static double fauto_move_wait_offset = -0.8;
 
-
-
     public static double CycleExtendFlamethrowerOffset = -0.5;
     public static double CycleRetractFlamethrowerOffset = -0.25;
 
@@ -306,14 +305,12 @@ public class Mvrk_Robot
     public static double turret_newPos = turretUp;
     public static double turret_Move;
 
-
-
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
     private ElapsedTime period  = new ElapsedTime();
     SampleMecanumDrive MecanumDrive;
-    public static MvrkPIDController control = new MvrkPIDController(11, 0, 0.25, 3600);
-
+    //public static MvrkPIDController control = new MvrkPIDController(11, 0, 0.25, 3600);
+    public static MvrkPIDController manualSlidePID = new MvrkPIDController(11, 0, 0.25, 3600);
 
     /* Constructor */
     public Mvrk_Robot(){
@@ -367,6 +364,7 @@ public class Mvrk_Robot
 
         TomAndJerrySlide = new Mvrk_LiftController(hwMap);
         TeacupTurret = new Mvrk_TurretController(hwMap);
+        LooneyClaw = new Mvrk_ClawController(hwMap);
 
     }
     String formatAngle( AngleUnit angleUnit, double angle) {

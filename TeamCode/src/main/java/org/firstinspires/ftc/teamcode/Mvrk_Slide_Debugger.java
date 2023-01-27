@@ -765,7 +765,7 @@ public class Mvrk_Slide_Debugger extends LinearOpMode {
         telemetry.update();
 
         if( newPos != currPos && newPos >= LowerLimit && newPos <= HighJunction ) {
-            double command = Mvrk_Robot.control.output(newPos, Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE));
+            double command = Mvrk_Robot.manualSlidePID.output(newPos, Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE));
             if(newPos < currPos)
                 Mvrk_Robot.SlidePower = Math.max(command/HighJunction, SlidePower_Down);
             else

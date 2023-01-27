@@ -376,13 +376,17 @@ public class Mvrk_Autonomous extends LinearOpMode {
             Mavryk.TomAndJerrySlide.update();
             Mavryk.TeacupTurret.update();
 
+            // Once we figure out the right steps to drop off the cone.
+            // Mavryk.LooneyClaw.update();
+
+
             // Print state to telemetry
             telemetry.addData("Currently Running", currentAutoState);
             telemetry.update();
 
             //Slides
             if( slide_newPos != slide_currentPos && slide_newPos >= FloorPosition && slide_newPos <= HighJunction ) {
-                double command = Mvrk_Robot.control.output(slide_newPos, Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE));
+                double command = Mvrk_Robot.manualSlidePID.output(slide_newPos, Mavryk.getCurrentPosition(Mvrk_Robot.MvrkMotors.CAT_MOUSE));
                 if(slide_newPos < slide_currentPos)
                     Mvrk_Robot.SlidePower = Math.max(command/HighJunction, SlidePower_Down);
                 else
