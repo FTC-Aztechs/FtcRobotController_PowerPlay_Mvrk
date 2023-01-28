@@ -33,6 +33,8 @@ import static org.firstinspires.ftc.teamcode.Mvrk_ClawController.clawState.Auto;
 import static org.firstinspires.ftc.teamcode.Mvrk_ClawController.clawState.Close;
 import static org.firstinspires.ftc.teamcode.Mvrk_ClawController.clawState.Open;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -54,8 +56,7 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Basic: Linear OpMode", group="Linear Opmode")
-@Disabled
+@TeleOp(name="Sandbox", group="Linear Opmode")
 public class Mvrk_SandboxOpMode extends LinearOpMode
 {
     // Declare OpMode members.
@@ -69,6 +70,8 @@ public class Mvrk_SandboxOpMode extends LinearOpMode
     public void runOpMode() {
 
         Mavryk.init(hardwareMap);
+
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -91,7 +94,7 @@ public class Mvrk_SandboxOpMode extends LinearOpMode
                 Mavryk.LooneyClaw.setTargetState(Open);
                 telemetry.addLine("No Trigger active, Claw Opened");
             }
-            Mavryk.LooneyClaw.update();
+            Mavryk.LooneyClaw.update(telemetry);
             telemetry.update();
         }
     }

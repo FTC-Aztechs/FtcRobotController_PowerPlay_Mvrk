@@ -5,10 +5,10 @@ import static org.firstinspires.ftc.teamcode.Mvrk_Robot.HighJunction;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class MvrkPIDController {
-    public static double Kp;
-    public static double Ki;
-    public static double Kd;
-    public static double Kg;
+    public double Kp;
+    public double Ki;
+    public double Kd;
+    public double Kg;
     double lastError = 0;
     double integral = 0;
     boolean angleWrap = false;

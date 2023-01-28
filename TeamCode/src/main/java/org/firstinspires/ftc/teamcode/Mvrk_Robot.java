@@ -33,12 +33,14 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcontroller.external.samples.SensorREV2mDistance;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -114,7 +116,7 @@ public class Mvrk_Robot
     public static double SlidePower_Up= 1;
     public static double SlidePower_Down = -0.01;
     public static double SlidePower = 0.5;
-    public static int slideTicks_stepSize = 800;
+    public static int slideTicks_stepSize = 600;
 
     public static double turretSpeed = 0.5;
     public static int BUTTON_TRIGGER_TIMER_MS = 500;
@@ -287,6 +289,7 @@ public class Mvrk_Robot
     public static double fauto_extend_wait_offset = -0.2;
     public static double fauto_retract_wait_offset = -0.2;
     public static double fauto_move_wait_offset = -0.8;
+    public static MvrkPIDController manualSlidePID = new MvrkPIDController(11, 0, 0.25, 3600);
 
     public static double CycleExtendFlamethrowerOffset = -0.5;
     public static double CycleRetractFlamethrowerOffset = -0.25;
@@ -310,7 +313,6 @@ public class Mvrk_Robot
     private ElapsedTime period  = new ElapsedTime();
     SampleMecanumDrive MecanumDrive;
     //public static MvrkPIDController control = new MvrkPIDController(11, 0, 0.25, 3600);
-    public static MvrkPIDController manualSlidePID = new MvrkPIDController(11, 0, 0.25, 3600);
 
     /* Constructor */
     public Mvrk_Robot(){
@@ -330,6 +332,7 @@ public class Mvrk_Robot
 
         Jerry = hwMap.get(DcMotor.class, "Jerry");
         Tom = hwMap.get(DcMotor.class, "Tom");
+
 
         //Servo
         FlameThrower = hwMap.get(Servo.class, "Flamethrower");
