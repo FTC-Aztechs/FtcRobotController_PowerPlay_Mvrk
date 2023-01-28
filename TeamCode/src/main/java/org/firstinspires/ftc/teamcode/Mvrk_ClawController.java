@@ -31,9 +31,9 @@ public class Mvrk_ClawController {
     private DistanceSensor distance = null;
     private double currPos;
     public static double ConeDetectDistanceMM = 45;
-    public static float ColorSensorGainTuner = 1;
-    public static float ColorSensorRedThreshold = .7f;
-    public static float ColorSensorBlueThreshold = .7f;
+    public static double ColorSensorGainTuner = 1;
+    public static double ColorSensorRedThreshold = .7f;
+    public static double ColorSensorBlueThreshold = .7f;
     float[] hsvValues = new float[3];
     final float values[] = hsvValues;
     enum clawState
@@ -44,6 +44,7 @@ public class Mvrk_ClawController {
     }
     clawState currState;
     clawState targetState;
+    Telemetry telemetry;
 
     public Mvrk_ClawController(HardwareMap hardwareMap) {
         claw = hardwareMap.get(Servo.class, "Looney_Toons");
@@ -52,11 +53,16 @@ public class Mvrk_ClawController {
         currState = clawState.Open;
     }
 
+    public void setTelemetry(Telemetry tele)
+    {
+        telemetry = tele;
+    }
+
     public void setTargetState(clawState state) {
         targetState = state;
     }
 
-    public void update(Telemetry telemetry)
+    public void update()
     {
         //  Open -> Open: No-op
         //  Open -> Close: Close, update curr
@@ -84,16 +90,26 @@ public class Mvrk_ClawController {
                 // If something is in my grasp
                 // And it is red or blue
                 // Close the claw
-               // if (updateDistance(telemetry)) {
-//                    telemetry.addLine("Distance triggerted");
-//                    telemetry.update();
-                    if (updateColor(telemetry)) {
-                        telemetry.addLine("Color triggerted");
+                if (updateDistance()) {
+
+                    if(telemetry != null) {
+                        telemetry.addLine("Distance triggered");
                         telemetry.update();
+                    }
+
+                    if (updateColor()) {
+                        if(telemetry != null) {
+                            telemetry.addLine("Color triggered");
+                            telemetry.update();
+                        }
                         claw.setPosition(Claw_Close_Pos);
-                   // }
+                   }
+
                 } else {
-                    telemetry.addLine("Nothing detected");
+                    if(telemetry != null) {
+                        telemetry.addLine("Nothing detected");
+                        telemetry.update();
+                    }
                     claw.setPosition(Claw_Open_Pos);
                 }
                 currState = clawState.Auto;
@@ -103,54 +119,62 @@ public class Mvrk_ClawController {
         return;
     }
 
-    private boolean updateDistance(Telemetry telemetry) {
+    private boolean updateDistance() {
 
         double dist = distance.getDistance(DistanceUnit.MM);
-        telemetry.addData("Distance: %f", dist);
-        telemetry.update();
+        if(telemetry != null) {
+            telemetry.addData("Distance: %f", dist);
+            telemetry.update();
+        }
         return (dist < ConeDetectDistanceMM);
     }
 
-    private boolean updateColor(Telemetry telemetry) {
+    private boolean updateColor() {
 
         boolean bReturn = false;
 
-        color.setGain(ColorSensorGainTuner);
+        color.setGain((float)ColorSensorGainTuner);
 
         NormalizedRGBA colors = color.getNormalizedColors();
 
-        telemetry.addData("Normalized", colors);
-        telemetry.addData("Alpha", "%.3f", colors.alpha);
-        telemetry.addData("Red", "%.3f", colors.red);
-        telemetry.addData("Green", "%.3f", colors.green);
-        telemetry.addData("Blue", "%.3f", colors.blue);
-        telemetry.update();
+        if(telemetry != null) {
+            telemetry.addData("Normalized", colors);
+            telemetry.addData("Alpha", "%.3f", colors.alpha);
+            telemetry.addData("Red", "%.3f", colors.red);
+            telemetry.addData("Green", "%.3f", colors.green);
+            telemetry.addData("Blue", "%.3f", colors.blue);
+            telemetry.update();
+        }
 
         Color.colorToHSV(colors.toColor(), hsvValues);
 
         if(color instanceof SwitchableLight) {
             SwitchableLight light = (SwitchableLight) color;
             light.enableLight(true);
-            telemetry.addLine("Cone not detected");
-            telemetry.addData("Normalized", color.getNormalizedColors());
-            telemetry.addData("Alpha", "%.3f", colors.alpha);
-            telemetry.addData("Red", "%.3f", colors.red);
-            telemetry.addData("Green", "%.3f", colors.green);
-            telemetry.addData("Blue", "%.3f", colors.blue);
-            telemetry.update();
+            if(telemetry != null) {
+                telemetry.addLine("Cone not detected");
+                telemetry.addData("Normalized", color.getNormalizedColors());
+                telemetry.addData("Alpha", "%.3f", colors.alpha);
+                telemetry.addData("Red", "%.3f", colors.red);
+                telemetry.addData("Green", "%.3f", colors.green);
+                telemetry.addData("Blue", "%.3f", colors.blue);
+                telemetry.update();
+            }
 
         }
 
         if( (colors.red > ColorSensorRedThreshold && colors.blue < ColorSensorBlueThreshold) ||
                 (colors.blue > ColorSensorBlueThreshold && colors.red < ColorSensorRedThreshold)) {
             bReturn = true;
-            telemetry.addLine("Cone detected");
-            telemetry.addData("Normalized", color.getNormalizedColors());
-            telemetry.addData("Alpha", "%.3f", colors.alpha);
-            telemetry.addData("Red", "%.3f", colors.red);
-            telemetry.addData("Green", "%.3f", colors.green);
-            telemetry.addData("Blue", "%.3f", colors.blue);
-            telemetry.update();
+            if(telemetry != null) {
+                telemetry.addLine("Cone detected");
+                telemetry.addData("Normalized", color.getNormalizedColors());
+                telemetry.addData("Alpha", "%.3f", colors.alpha);
+                telemetry.addData("Red", "%.3f", colors.red);
+                telemetry.addData("Green", "%.3f", colors.green);
+                telemetry.addData("Blue", "%.3f", colors.blue);
+                telemetry.update();
+            }
         }
 
         if(color instanceof SwitchableLight) {

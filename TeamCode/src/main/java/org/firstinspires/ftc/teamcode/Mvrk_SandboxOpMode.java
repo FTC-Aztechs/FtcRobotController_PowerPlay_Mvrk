@@ -72,6 +72,7 @@ public class Mvrk_SandboxOpMode extends LinearOpMode
         Mavryk.init(hardwareMap);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        Mavryk.LooneyClaw.setTelemetry(telemetry);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -94,7 +95,7 @@ public class Mvrk_SandboxOpMode extends LinearOpMode
                 Mavryk.LooneyClaw.setTargetState(Open);
                 telemetry.addLine("No Trigger active, Claw Opened");
             }
-            Mavryk.LooneyClaw.update(telemetry);
+            Mavryk.LooneyClaw.update();
             telemetry.update();
         }
     }

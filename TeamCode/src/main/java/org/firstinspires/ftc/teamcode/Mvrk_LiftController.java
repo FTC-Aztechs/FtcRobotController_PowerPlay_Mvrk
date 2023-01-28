@@ -8,6 +8,8 @@ import static org.firstinspires.ftc.teamcode.Mvrk_Robot.UpperLimit;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 
 public class Mvrk_LiftController {
     private DcMotor tom;
@@ -15,6 +17,12 @@ public class Mvrk_LiftController {
     double tgtPos;
     double currPos;
     public static MvrkPIDController liftController = new MvrkPIDController(11, 0, 0.25, 3600);
+    private Telemetry telemetry;
+
+    public void setTelemetry(Telemetry tele) {
+        telemetry = tele;
+    }
+
 
     public Mvrk_LiftController(HardwareMap hardwareMap) {
         jerry = hardwareMap.get(DcMotor.class, "Jerry");
@@ -37,6 +45,10 @@ public class Mvrk_LiftController {
             jerry.setPower(slidePower);
             tom.setPower(slidePower);
             currPos = tom.getCurrentPosition();
+        }
+        if(telemetry != null) {
+            telemetry.addData("Mvrk_LiftController: Current Slide position: %f", currPos);
+            telemetry.update();
         }
     }
 }
