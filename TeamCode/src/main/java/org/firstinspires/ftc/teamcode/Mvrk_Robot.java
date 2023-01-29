@@ -122,7 +122,7 @@ public class Mvrk_Robot
     public static int BUTTON_TRIGGER_TIMER_MS = 500;
 
     //auto cycles
-    public static int Red_cyclesToRun = 0; // Before 5 and 4
+    public static int Red_cyclesToRun = 1;
     public static int Blue_cyclesToRun = 0;
    
     // Vuforia Class Members
@@ -134,8 +134,6 @@ public class Mvrk_Robot
             "AZRnab7/////AAABmTUhzFGJLEyEnSXEYWthkjhGRzu8klNOmOa9WEHaryl9AZCo2bZwq/rtvx83YRIgV60/Jy/2aivoXaHNzwi7dEMGoaglSVmdmzPF/zOPyiz27dDJgLVvIROD8ww7lYzL8eweJ+5PqLAavvX3wgrahkOxxOCNeKG9Tl0LkbS5R11ATXL7LLWeUv5FP1aDNgMZvb8P/u96OdOvD6D40Nf01Xf+KnkF5EXwNQKk1r7qd/hiv9h80gvBXMFqMkVgUyogwEnlK2BfmeUhGVm/99BiwwW65LpKSaLVPpW/6xqz9SyPgZ/L/vshbWgSkTB/KoERiV8MsW79RPUuQS6NTOLY32I/kukmsis3MFst5LP/d3gx";
 
 
-    public static boolean targetVisible       = false;
-
     //dimensions for vuforia recognition
     public static final float mmPerInch        = 25.4f;
     public static final float mmTargetHeight   = 6 * mmPerInch;          // the height of the center of the target image above the floor
@@ -143,72 +141,65 @@ public class Mvrk_Robot
     public static final float halfTile         = 12 * mmPerInch;
     public static final float oneAndHalfTile   = 36 * mmPerInch;
     
-    //Pose2ds
     public static MvrkPose2d Red_Start = new MvrkPose2d(35.5, 63.5, -90);
-    public static MvrkPose2d Red_Push_Signal = new MvrkPose2d(35.5,0, -90);
-    public static MvrkPose2d Red_Pickup = new MvrkPose2d(54,12, 0); // x = 54.25
-    public static MvrkPose2d Red_Inter_Pos = new MvrkPose2d(43.5,12, 0);
-    public static MvrkPose2d Red_Dropoff = new MvrkPose2d(24,16, 0); //  x = 35
-    public static MvrkPose2d Red_Park_Pos1 = new MvrkPose2d(59,12, 0);
+    public static MvrkPose2d Red_Preload_Dropoff = new MvrkPose2d(35.5,0, -90);
+    public static MvrkPose2d Red_CycleStart = new MvrkPose2d(34.5,12, -90); //  x = 35.5
+    public static MvrkPose2d Red_CycleEnd  = new MvrkPose2d(52,12,-90); // 53
+    public static MvrkPose2d Red_Park_Pos1 = new MvrkPose2d(57,12, 0); //59
     public static MvrkPose2d Red_Park_Pos2 = new MvrkPose2d(36,12, 0);
-    public static MvrkPose2d Red_Park_Pos3 = new MvrkPose2d(12,12, 0);
+    public static MvrkPose2d Red_Park_Pos3 = new MvrkPose2d(10,12, 0);
 
-    public static MvrkPose2d Blue_Start = new MvrkPose2d(-35.5, 63.5, -90);
-    public static MvrkPose2d Blue_Push_Signal = new MvrkPose2d(-35.5,0, -90);
-    public static MvrkPose2d Blue_Pickup = new MvrkPose2d(-54,12, -180);
-    public static MvrkPose2d Blue_Inter_Pos = new MvrkPose2d(-43.5,12, -180);
-    public static MvrkPose2d Blue_Dropoff = new MvrkPose2d(-22,16, -180);
-    public static MvrkPose2d Blue_Park_Pos1 = new MvrkPose2d(-12,12, -180);
-    public static MvrkPose2d Blue_Park_Pos2 = new MvrkPose2d(-36,12, -180);
-    public static MvrkPose2d Blue_Park_Pos3 = new MvrkPose2d(-59,12, -180);;;
+        public static double Preload_offset2 = -2.4;
+        public static double Preload_offset3 = -2.2;
+        public static double Preload_offset4 = -1.0;
+        public static double Preload_offset5 = -0.4;
+        public static double Preload_offset10 = -0.9;
+        public static double Preload_offset11 = -0.2;
+
+        public static double Preload_wait6 = 0.2;
+        public static double Preload_wait7 = 0.2;
+        public static double Preload_wait8 = 0.2;
+
+        public static double Cycle_offset2 = -1.2;
+        public static double Cycle_offset3 = -0.8;
+        public static double Cycle_offset4 = -0.6;
+        public static double Cycle_offset5 = 0;
+        public static double Cycle_offset6 = 0;
+        public static double Cycle_offset7 = 0;
+        public static double Cycle_offset8 = 0;
+        public static double Cycle_offset9 = -1.2;
+        public static double Cycle_offset10 = -1;
+        public static double Cycle_offset11 = -0.6;
+        public static double Cycle_offset12 = 0;
+        public static double Cycle_offset13 = 0;
+        public static double Cycle_offset14 = 0;
+        public static double Cycle_offset15 = -0.2;
+        public static double Cycle_offset16 = 0;
+        public static double Cycle_offset17 = 0;
+
+        public static double Cycle_wait2 = 0;
+        public static double Cycle_wait1 = 0;
+        public static double Cycle_wait3 = 0;
+        public static double Cycle_wait4 = 0;
+        public static double Cycle_wait5 = 0.2;
+        public static double Cycle_wait6 = 0.2;
+        public static double Cycle_wait7 = 0.2;
+        public static double Cycle_wait8 = 0;
+        public static double Cycle_wait9 = 0;
+        public static double Cycle_wait10 = 0;
+        public static double Cycle_wait11 = 0;
+        public static double Cycle_wait12 = 0.2;
+        public static double Cycle_wait13 = 0.2;
+        public static double Cycle_wait14 = 0.2;
+        public static double Cycle_wait15 = 0;
+        public static double Cycle_wait16 = 0;
+        public static double Cycle_wait17 = 0;
 
 
-    public static MvrkPose2d Red_Preload_Dropoff = new MvrkPose2d(35.5,-4, -90);
-    public static MvrkPose2d Red_CycleStart = new MvrkPose2d(35.5,12, -90); //  x = 35
-    public static MvrkPose2d Red_CycleEnd  = new MvrkPose2d(55.5,12,-90); //
-
-    class Offsets {
-        double offset1 = 0;
-        double offset2 = 0;
-        double offset3 = 0;
-        double offset4 = 0;
-        double offset5 = 0;
-        double offset6 = 0;
-        double offset7 = 0;
-        double offset8 = 0;
-        double offset9 = 0;
-        double offset10 = 0;
-        double offset11 = 0;
-        double offset12 = 0;
-        double offset13 = 0;
-        double offset14 = 0;
-        double offset15 = 0;
-        double offset16 = 0;
-    }
-
-    class Waits {
-        double wait1 = 0;
-        double wait2 = 0;
-        double wait3 = 0;
-        double wait4 = 0;
-        double wait5 = 0;
-        double wait6 = 0;
-        double wait7 = 0;
-        double wait8 = 0;
-        double wait9 = 0;
-        double wait10 = 0;
-        double wait11 = 0;
-        double wait12 = 0;
-        double wait13 = 0;
-        double wait14 = 0;
-        double wait15 = 0;
-        double wait16 = 0;
-    }
-
-    public static Offsets PreloadOffsets;
-    public static Offsets CycleOffsets;
-    public static Waits PreloadWaits;
-    public static Waits CycleWaits;
+//    public static Offsets PreloadOffsets;
+//    public static Offsets CycleOffsets;
+//    public static Waits PreloadWaits;
+//    public static Waits CycleWaits;
 
     //claw variables
     public static double Claw_Open_Pos = 0.56;
@@ -216,7 +207,8 @@ public class Mvrk_Robot
 
     //Flamethrower variables
     public static double xSlideOutPos = 0.12;
-    public static double xSlideDropPos = 0.12; //0.5;
+    public static double xSlideDropPos = 0.4; //0.5;
+    public static double xSlidePickupPos = 0.12; //todo: eliminate?
     public static double xSlideInPos = 0.58;
 
     public static double xSlideMaxExtension = xSlideOutPos;
@@ -229,12 +221,12 @@ public class Mvrk_Robot
     //Slide variables
     public static int LowerLimit     = 0;
     public static int FloorPosition  = 600;
-    public static int BottomCone     = 1200;
+    public static int BottomCone     = 1000; //1240
     public static int GroundJunction = 1940;
-    public static int BottomMidCone  = 2460;
-    public static int MiddleCone     = 2830;
-    public static int TopMidCone     = 3130;
-    public static int TopCone        = 3730;
+    public static int BottomMidCone  = 2260; //2460
+    public static int MiddleCone     = 2630; //2830
+    public static int TopMidCone     = 2930; //3130
+    public static int TopCone        = 3500; // 3730
     public static int LowJunction    = 7900;
     public static int MidJunction    = 12370;
     public static int DropOffPos     = 13860;
@@ -252,43 +244,13 @@ public class Mvrk_Robot
     public static double[] turret_restrictedRange = {0.5, 0.59};
     public static double turretUp = 0.56;
     public static double turretDown = 0;
-    public static double turretLeft= 0.8275;
+    public static double turretLeft = 0.8275;
     public static double turretRight = 0.2675;
+    public static double turretDropoff = 0.4138;
+
     public static double turretIncrement = 0.005;
     public static double turretHalfRight = 0.40625;
 
-    //waits
-    public static double auto_move_wait = 0; // before 0
-    public static double auto_drop_wait = 0.2; // before .5
-    public static double auto_pickup_wait = 0.2; // before .3
-    public static double auto_half_raise_wait = 0.2; // before .5
-    public static double auto_raise_wait = 0.2; // before 0.3
-    public static double auto_extend_wait = 0.0; // before .0
-    public static double auto_extend_half_wait = 0.2; // before .5
-    public static double auto_retract_wait = 0.2; // before .2
-
-    //offset waits auto_retract_wait_offset
-    public static double auto_raise_wait_offset = -1.5;
-    public static double auto_lower_wait_offset = -0.2; // -0.2;
-    public static double auto_extend_wait_offset = -0.2;
-    public static double auto_retract_wait_offset = -0.2;
-    public static double auto_move_wait_offset = -1;
-
-    public static double fauto_move_wait = 0; // before 0
-    public static double fauto_conedrop_wait = 0.2; // before .5
-    public static double fauto_pickup_wait = 0.2; // before .3
-    public static double fauto_half_raise_wait = 0.2; // before .5
-    public static double fauto_raise_wait = 0.2; // before 0.3
-    public static double fauto_extend_wait = 0.0; // before .0
-    public static double fauto_extend_half_wait = 0.2; // before .5
-    public static double fauto_retract_wait = 0.2; // before .2
-
-    //offset waits auto_retract_wait_offset
-    public static double fauto_raise_wait_offset = -1.5;
-    public static double fauto_conedrop_offset = -0.1; // -0.2;
-    public static double fauto_extend_wait_offset = -0.2;
-    public static double fauto_retract_wait_offset = -0.2;
-    public static double fauto_move_wait_offset = -0.8;
     public static MvrkPIDController manualSlidePID = new MvrkPIDController(11, 0, 0.25, 3600);
 
     public static double CycleExtendFlamethrowerOffset = -0.5;

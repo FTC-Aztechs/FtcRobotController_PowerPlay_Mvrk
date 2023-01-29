@@ -9,7 +9,7 @@ public class Mvrk_TurretController {
     private Servo turret;
     double tgtPos;
     double currPos;
-    public static MvrkPIDController turretController = new MvrkPIDController(0.5, 0, 0 , 0);
+    public static MvrkPIDController turretController = new MvrkPIDController(0.25, 0, 0 , 0);
     private Telemetry telemetry;
 
     public void setTelemetry(Telemetry tele) {

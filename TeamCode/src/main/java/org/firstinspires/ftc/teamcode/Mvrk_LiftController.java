@@ -5,12 +5,13 @@ import static org.firstinspires.ftc.teamcode.Mvrk_Robot.SlidePower_Down;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.SlidePower_Up;
 import static org.firstinspires.ftc.teamcode.Mvrk_Robot.UpperLimit;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
-
+@Config
 public class Mvrk_LiftController {
     private DcMotor tom;
     private DcMotor jerry;
